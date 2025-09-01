@@ -74,6 +74,9 @@
       <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
   <div class="site-nav-toggle">
     <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
     </div>
   </div>
 
@@ -94,6 +97,10 @@
 
 
 
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a></li>
+  </ul>
+</nav>
 
 
 
@@ -131,6 +138,16 @@
           <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
@@ -183,9 +200,24 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2025-08-29 18:49:27 / 修改时间：18:49:50" itemprop="dateCreated datePublished" datetime="2025-08-29T18:49:27+08:00">2025-08-29</time>
+      <time title="创建时间：2025-08-29 18:49:27" itemprop="dateCreated datePublished" datetime="2025-08-29T18:49:27+08:00">2025-08-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-09-01 15:52:17" itemprop="dateModified" datetime="2025-09-01T15:52:17+08:00">2025-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B7%A5%E4%BD%9C/" itemprop="url" rel="index"><span itemprop="name">工作</span></a>
+        </span>
     </span>
 
   
@@ -198,7 +230,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ol>
+          <h1 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a>1. 环境准备</h1><ol>
 <li>安装git</li>
 <li>安装nodejs</li>
 <li>在cmd或git命令行中，执行以下命令安装hexo。</li>
@@ -208,45 +240,66 @@
 <blockquote>
 <p>如果后续有些命令无法识别，可能说明安装完需要重启一下电脑。</p>
 </blockquote>
-<h1 id="仓库创建"><a href="#仓库创建" class="headerlink" title="仓库创建"></a>仓库创建</h1><p>创建一个GitHub仓库，仓库名固定<code>用户名.github.io</code>。</p>
+<h1 id="2-仓库创建"><a href="#2-仓库创建" class="headerlink" title="2. 仓库创建"></a>2. 仓库创建</h1><p>创建一个GitHub仓库，仓库名固定<code>用户名.github.io</code>。</p>
 <p>仓库默认包含一个主分支<code>main</code>，再手动创建一个分支<code>hexo</code>。</p>
 <ul>
 <li>main：存放编译后的静态页面，访问的博客也就是此处的内容。</li>
 <li>hexo：存放编译前的源码文件，在此处进行文档编写，此分支用来在多设备同步内容。</li>
 </ul>
 <p>在github仓库设置中，找到<code>Pages</code>，找到<code>Build and deployment</code>，选择从分支获取资源，分支选择main，然后保存。</p>
-<h1 id="创建博客"><a href="#创建博客" class="headerlink" title="创建博客"></a>创建博客</h1><p>创建一个空的文件夹<code>Blog</code>，并在此文件夹中打开<code>git命令</code>。</p>
+<h1 id="3-创建博客"><a href="#3-创建博客" class="headerlink" title="3. 创建博客"></a>3. 创建博客</h1><p>创建一个空的文件夹<code>Blog</code>，并在此文件夹中打开<code>git命令</code>。</p>
 <p>按顺序调用这三行命令。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo init  // 初始化，将本文件夹初始化为博客文件夹</span><br><span class="line"></span><br><span class="line">hexo g  // 将源文件生成静态文件</span><br><span class="line"></span><br><span class="line">hexo s  // 在本地启动服务</span><br></pre></td></tr></table></figure>
-
-
 
 <p>执行效果如下</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/Blog</span><br><span class="line">$ hexo init</span><br><span class="line">INFO  Cloning hexo-starter https://github.com/hexojs/hexo-starter.git</span><br><span class="line">INFO  Install dependencies</span><br><span class="line">INFO  Start blogging with Hexo!</span><br><span class="line"></span><br><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/Blog</span><br><span class="line">$ hexo g</span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO  Start processing</span><br><span class="line">INFO  Files loaded <span class="keyword">in</span> 368 ms</span><br><span class="line">INFO  Generated: archives/index.html</span><br><span class="line">INFO  Generated: index.html</span><br><span class="line">INFO  Generated: archives/2025/08/index.html</span><br><span class="line">INFO  Generated: fancybox/jquery.fancybox.min.css</span><br><span class="line">INFO  Generated: css/style.css</span><br><span class="line">INFO  Generated: js/script.js</span><br><span class="line">INFO  Generated: archives/2025/index.html</span><br><span class="line">INFO  Generated: fancybox/jquery.fancybox.min.js</span><br><span class="line">INFO  Generated: js/jquery-3.6.4.min.js</span><br><span class="line">INFO  Generated: 2025/08/29/hello-world/index.html</span><br><span class="line">INFO  Generated: css/images/banner.jpg</span><br><span class="line">INFO  11 files generated <span class="keyword">in</span> 283 ms</span><br><span class="line"></span><br><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/Blog</span><br><span class="line">$ hexo s</span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO  Start processing</span><br><span class="line">INFO  Hexo is running at http://localhost:4000/ . Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure>
 
 <p>执行完成后，将最后的地址<code>http://localhost:4000/</code>复制到浏览器即可看到默认的博客效果。</p>
-<h1 id="修改主题"><a href="#修改主题" class="headerlink" title="修改主题"></a>修改主题</h1><h2 id="下载主题源码"><a href="#下载主题源码" class="headerlink" title="下载主题源码"></a>下载主题源码</h2><p>在官网自带的主题<code>https://hexo.io/themes/</code>中找到一个喜欢的主题，这里选择<code>NexT</code>主题，github地址为<code>https://github.com/next-theme/hexo-theme-next</code></p>
+<h1 id="4-修改主题"><a href="#4-修改主题" class="headerlink" title="4. 修改主题"></a>4. 修改主题</h1><h2 id="4-1-下载主题源码"><a href="#4-1-下载主题源码" class="headerlink" title="4.1 下载主题源码"></a>4.1 下载主题源码</h2><p>在官网自带的主题<code>https://hexo.io/themes/</code>中找到一个喜欢的主题，这里选择<a target="_blank" rel="noopener" href="https://github.com/next-theme/hexo-theme-next">NexT主题</a></p>
 <p>按照github中提供的教程，将主题仓库clone到Blog&#x2F;theme文件夹下。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/Blog</span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br><span class="line">Cloning into <span class="string">&#x27;themes/next&#x27;</span>...</span><br><span class="line">remote: Enumerating objects: 7752, <span class="keyword">done</span>.</span><br><span class="line">remote: Counting objects: 100% (1052/1052), <span class="keyword">done</span>.</span><br><span class="line">remote: Compressing objects: 100% (209/209), <span class="keyword">done</span>.</span><br><span class="line">remote: Total 7752 (delta 926), reused 846 (delta 843), pack-reused 6700 (from 3)</span><br><span class="line">Receiving objects: 100% (7752/7752), 1.64 MiB | 13.08 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (4927/4927), <span class="keyword">done</span>.</span><br></pre></td></tr></table></figure>
 
 <p>可以看到多出了<code>Blog/theme/next</code>这个文件夹。</p>
-<h2 id="修改主题-1"><a href="#修改主题-1" class="headerlink" title="修改主题"></a>修改主题</h2><p>修改主题标志，打开<code>Blog/_config.yml</code>这个文件，找到最下面的<code>theme</code>字段，修改为目标主题<code>next</code>，然后保存。</p>
+<h2 id="4-2-主题美化"><a href="#4-2-主题美化" class="headerlink" title="4.2 主题美化"></a>4.2 主题美化</h2><h3 id="4-2-1-主题修改"><a href="#4-2-1-主题修改" class="headerlink" title="4.2.1 主题修改"></a>4.2.1 主题修改</h3><p>修改主题标志，打开<code>Blog/_config.yml</code>这个文件，找到最下面的<code>theme</code>字段，修改为目标主题<code>next</code>，然后保存。</p>
 <figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Extensions</span></span><br><span class="line"><span class="comment">## Plugins: https://hexo.io/plugins/</span></span><br><span class="line"><span class="comment">## Themes: https://hexo.io/themes/</span></span><br><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></table></figure>
 
 <p>语言修改，还是这个文件，找到<code>language: en</code>，修改为中文。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">language: zh-CN</span><br></pre></td></tr></table></figure>
 
-
-
-<p>这个主题内部还有很多其他的配置项，保存在<code>Blog\themes\next\_config.yml</code>，但是官方<code>https://theme-next.js.org/docs/getting-started/configuration.html</code>不推荐直接修改此文件，建议修改方式如下：</p>
+<h3 id="4-2-1-布局信息美化"><a href="#4-2-1-布局信息美化" class="headerlink" title="4.2.1 布局信息美化"></a>4.2.1 布局信息美化</h3><p>这个主题内部还有很多其他的配置项，保存在<code>Blog\themes\next\_config.yml</code>，但是<a target="_blank" rel="noopener" href="https://theme-next.js.org/docs/getting-started/configuration.html">NexT文档</a>不推荐直接修改此文件，建议修改方式如下：</p>
 <p>将主题文件夹下默认的配置文件<code>Blog\themes\next</code>复制到项目根目录并重命名为<code>Blog\_config.next.yml</code></p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> themes/next/_config.yml _config.next.yml</span><br></pre></td></tr></table></figure>
 
-<p>比如主题内部还分为四种不同的主题，配置方式如下：</p>
+<p><strong>主题布局选择</strong></p>
+<p>主题内部还分为四种不同的主题布局，配置方式如下：</p>
 <p>将<code>Blog\_config.next.yml</code>文件中的如下字段选择如下：</p>
 <figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Schemes</span></span><br><span class="line"><span class="comment"># scheme: Muse</span></span><br><span class="line"><span class="comment">#scheme: Mist</span></span><br><span class="line"><span class="comment">#scheme: Pisces</span></span><br><span class="line"><span class="attr">scheme:</span> <span class="string">Gemini</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="重新运行"><a href="#重新运行" class="headerlink" title="重新运行"></a>重新运行</h2><p>执行下面三行命令，重新生成静态文件。</p>
+<h3 id="4-2-3-分类和标签功能"><a href="#4-2-3-分类和标签功能" class="headerlink" title="4.2.3 分类和标签功能"></a>4.2.3 分类和标签功能</h3><p><code>Blog\_config.next.yml</code>文件下，找到以下字段，根据需要打开对应的菜单项</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">home:</span> <span class="string">/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-home</span></span><br><span class="line">  <span class="attr">about:</span> <span class="string">/about/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-user</span></span><br><span class="line">  <span class="attr">tags:</span> <span class="string">/tags/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-tags</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="string">/categories/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-th</span></span><br><span class="line">  <span class="attr">archives:</span> <span class="string">/archives/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-archive</span></span><br><span class="line">  <span class="attr">schedule:</span> <span class="string">/schedule/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-calendar</span></span><br><span class="line">  <span class="comment">#sitemap: /sitemap.xml || fa fa-sitemap</span></span><br><span class="line">  <span class="comment">#commonweal: /404/ || fa fa-heartbeat</span></span><br><span class="line">  </span><br><span class="line"><span class="comment"># Enable / Disable menu icons / item badges.</span></span><br><span class="line"><span class="attr">menu_settings:</span></span><br><span class="line">  <span class="attr">icons:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">badges:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<p>其中使用的菜单图标都是来自于<a target="_blank" rel="noopener" href="https://fontawesome.com/?from=io">Font Awesome</a>，可以在这个网站找到自己喜欢的图标后，把图标名称写在 <code>||</code> 后面即可。</p>
+<p>此时，当我们在首页点击 <code>标签</code> 或 <code>分类</code> 时，会报 404 ，这是因为我们还没有创建对应的文件夹，所以报 404 找不到。因此，需要在本地创建标签和分类文件夹。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo new page <span class="string">&#x27;tags&#x27;</span> <span class="comment"># 创建tags子目录</span></span><br><span class="line">hexo new page <span class="string">&#x27;categories&#x27;</span> <span class="comment"># 创建categories子目录</span></span><br></pre></td></tr></table></figure>
+
+<p>执行效果如下，本地会多出来两个文件夹。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/imhaozi.github.io (hexo)</span><br><span class="line">$ hexo new page <span class="string">&#x27;tags&#x27;</span></span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO  Created: ~\Desktop\imhaozi.github.io\<span class="built_in">source</span>\tags\index.md</span><br><span class="line"></span><br><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/imhaozi.github.io (hexo)</span><br><span class="line">$ hexo new page <span class="string">&#x27;categories&#x27;</span></span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO  Created: ~\Desktop\imhaozi.github.io\<span class="built_in">source</span>\categories\index.md</span><br></pre></td></tr></table></figure>
+
+<p>此时如果重新发布网站之后，页面不会报错，但是还不能自动检索文章，需要在刚才生成的文件夹中的<code>index.md</code> 中增加对应的 type 属性。</p>
+<p>添加完之后如下：</p>
+<p>categories下的index</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: categories</span><br><span class="line">date: 2025-09-01 15:44:04</span><br><span class="line"><span class="section">type: categories</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
+
+<p>tags下的index</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: tags</span><br><span class="line">date: 2025-09-01 15:43:56</span><br><span class="line"><span class="section">type: tags</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
+
+<p>新发布的文章也需要加上对应的标签和主题才可以被检索到，比如本文章。</p>
+<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: 博客搭建指南</span><br><span class="line">date: 2025-08-29 18:49:27</span><br><span class="line">tags: [hexo,blog]</span><br><span class="line"><span class="section">categories: 工具</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>上面这个文章，属于<code>工具</code>类别，标签加了两个<code>hexo</code>、<code>blog</code>.</p>
+</blockquote>
+<h3 id="4-3-重新运行"><a href="#4-3-重新运行" class="headerlink" title="4.3 重新运行"></a>4.3 重新运行</h3><p>执行下面三行命令，重新生成静态文件。</p>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
 
 <p>执行完成后，将最后的地址<code>http://localhost:4000/</code>复制到浏览器即可看到修改后的主题博客效果。</p>
@@ -265,8 +318,22 @@
 
 
 
-<p>完成后在浏览器中访问<code>用户名.githun.io</code>即可访问博客内容。</p>
-<h1 id="多端同步"><a href="#多端同步" class="headerlink" title="多端同步"></a>多端同步</h1><p>将远端仓库克隆到本地，并切换到<code>hexo</code>分支。</p>
+<p>完成后在浏览器中访问<code>用户名.github.io</code>即可访问博客内容。</p>
+<h1 id="多端同步"><a href="#多端同步" class="headerlink" title="多端同步"></a>多端同步</h1><p>本机操作：</p>
+<ol>
+<li>将远端仓库克隆到本地，并切换到<code>hexo</code>分支。并将此分支下的文件都删掉，仅留下<code>.git</code></li>
+<li>将创建的<code>Blog</code>文件夹中的内容全部复制到，<code>hexo</code>分支的仓库文件夹，并删去<code>.deploy_git</code>文件夹</li>
+<li>如果你在<code>Blog/themes</code>文件夹下 clone 过其它主题文件，把其中的 <code>.git</code>文件夹删除掉</li>
+<li>将<code>hexo</code>分支的内容推送到远端</li>
+</ol>
+<p>异地操作：</p>
+<ol>
+<li>首次创建博客的电脑需要先将首次创建完成的博客源码推送到远端（上面的步骤）</li>
+<li>本机下载已经上传到远端的源码</li>
+<li>本机安装环境<code>npm install hexo-cli -g</code>、<code>npm install hexo-deployer-git --save</code>（如果创建的博客还需要其他的就分别安装）</li>
+<li>在本机的<code>hexo</code>分支上继续写博客，写完之后生成并推送</li>
+<li>博客推送完成后，记得把源码推送到远端。</li>
+</ol>
 
       
     </div>

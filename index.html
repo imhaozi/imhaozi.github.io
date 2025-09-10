@@ -17,14 +17,16 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
 
-    <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
+    <meta name="description" content="身体和心灵总有一个在路上">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Blog">
 <meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="身体和心灵总有一个在路上">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="Haozi">
 <meta name="twitter:card" content="summary">
 
 
@@ -34,7 +36,7 @@
 <script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"index.html","title":""}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Hexo</title>
+<title>Blog</title>
   
 
 
@@ -48,7 +50,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
 <script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
 
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
 
 
 
@@ -84,13 +88,15 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">Hexo</h1>
+      <h1 class="site-title">Blog</h1>
       <i class="logo-line"></i>
     </a>
+      <p class="site-subtitle" itemprop="description">攻城狮装备搭建日记</p>
   </div>
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -98,12 +104,38 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </header>
         
@@ -128,29 +160,37 @@
 
         <div class="site-overview-wrap sidebar-panel">
           <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">John Doe</p>
-  <div class="site-description" itemprop="description"></div>
+  <p class="site-author-name" itemprop="name">Haozi</p>
+  <div class="site-description" itemprop="description">身体和心灵总有一个在路上</div>
 </div>
 <div class="site-state-wrap animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/imhaozi" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;imhaozi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/330622220" title="BiliBili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;330622220" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>BiliBili</a>
+      </span>
+  </div>
 
         </div>
       </div>
@@ -176,16 +216,16 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
+      <meta itemprop="name" content="Haozi">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-      <meta itemprop="description" content="">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | Hexo">
+      <meta itemprop="name" content=" | Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
@@ -205,18 +245,11 @@
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-09-01 15:52:17" itemprop="dateModified" datetime="2025-09-01T15:52:17+08:00">2025-09-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
         <i class="far fa-folder"></i>
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%B7%A5%E4%BD%9C/" itemprop="url" rel="index"><span itemprop="name">工作</span></a>
+          <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
         </span>
     </span>
 
@@ -230,111 +263,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a>1. 环境准备</h1><ol>
-<li>安装git</li>
-<li>安装nodejs</li>
-<li>在cmd或git命令行中，执行以下命令安装hexo。</li>
-</ol>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli </span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>如果后续有些命令无法识别，可能说明安装完需要重启一下电脑。</p>
-</blockquote>
-<h1 id="2-仓库创建"><a href="#2-仓库创建" class="headerlink" title="2. 仓库创建"></a>2. 仓库创建</h1><p>创建一个GitHub仓库，仓库名固定<code>用户名.github.io</code>。</p>
-<p>仓库默认包含一个主分支<code>main</code>，再手动创建一个分支<code>hexo</code>。</p>
-<ul>
-<li>main：存放编译后的静态页面，访问的博客也就是此处的内容。</li>
-<li>hexo：存放编译前的源码文件，在此处进行文档编写，此分支用来在多设备同步内容。</li>
-</ul>
-<p>在github仓库设置中，找到<code>Pages</code>，找到<code>Build and deployment</code>，选择从分支获取资源，分支选择main，然后保存。</p>
-<h1 id="3-创建博客"><a href="#3-创建博客" class="headerlink" title="3. 创建博客"></a>3. 创建博客</h1><p>创建一个空的文件夹<code>Blog</code>，并在此文件夹中打开<code>git命令</code>。</p>
-<p>按顺序调用这三行命令。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hexo init  // 初始化，将本文件夹初始化为博客文件夹</span><br><span class="line"></span><br><span class="line">hexo g  // 将源文件生成静态文件</span><br><span class="line"></span><br><span class="line">hexo s  // 在本地启动服务</span><br></pre></td></tr></table></figure>
-
-<p>执行效果如下</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/Blog</span><br><span class="line">$ hexo init</span><br><span class="line">INFO  Cloning hexo-starter https://github.com/hexojs/hexo-starter.git</span><br><span class="line">INFO  Install dependencies</span><br><span class="line">INFO  Start blogging with Hexo!</span><br><span class="line"></span><br><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/Blog</span><br><span class="line">$ hexo g</span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO  Start processing</span><br><span class="line">INFO  Files loaded <span class="keyword">in</span> 368 ms</span><br><span class="line">INFO  Generated: archives/index.html</span><br><span class="line">INFO  Generated: index.html</span><br><span class="line">INFO  Generated: archives/2025/08/index.html</span><br><span class="line">INFO  Generated: fancybox/jquery.fancybox.min.css</span><br><span class="line">INFO  Generated: css/style.css</span><br><span class="line">INFO  Generated: js/script.js</span><br><span class="line">INFO  Generated: archives/2025/index.html</span><br><span class="line">INFO  Generated: fancybox/jquery.fancybox.min.js</span><br><span class="line">INFO  Generated: js/jquery-3.6.4.min.js</span><br><span class="line">INFO  Generated: 2025/08/29/hello-world/index.html</span><br><span class="line">INFO  Generated: css/images/banner.jpg</span><br><span class="line">INFO  11 files generated <span class="keyword">in</span> 283 ms</span><br><span class="line"></span><br><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/Blog</span><br><span class="line">$ hexo s</span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO  Start processing</span><br><span class="line">INFO  Hexo is running at http://localhost:4000/ . Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure>
-
-<p>执行完成后，将最后的地址<code>http://localhost:4000/</code>复制到浏览器即可看到默认的博客效果。</p>
-<h1 id="4-修改主题"><a href="#4-修改主题" class="headerlink" title="4. 修改主题"></a>4. 修改主题</h1><h2 id="4-1-下载主题源码"><a href="#4-1-下载主题源码" class="headerlink" title="4.1 下载主题源码"></a>4.1 下载主题源码</h2><p>在官网自带的主题<code>https://hexo.io/themes/</code>中找到一个喜欢的主题，这里选择<a target="_blank" rel="noopener" href="https://github.com/next-theme/hexo-theme-next">NexT主题</a></p>
-<p>按照github中提供的教程，将主题仓库clone到Blog&#x2F;theme文件夹下。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/Blog</span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br><span class="line">Cloning into <span class="string">&#x27;themes/next&#x27;</span>...</span><br><span class="line">remote: Enumerating objects: 7752, <span class="keyword">done</span>.</span><br><span class="line">remote: Counting objects: 100% (1052/1052), <span class="keyword">done</span>.</span><br><span class="line">remote: Compressing objects: 100% (209/209), <span class="keyword">done</span>.</span><br><span class="line">remote: Total 7752 (delta 926), reused 846 (delta 843), pack-reused 6700 (from 3)</span><br><span class="line">Receiving objects: 100% (7752/7752), 1.64 MiB | 13.08 MiB/s, <span class="keyword">done</span>.</span><br><span class="line">Resolving deltas: 100% (4927/4927), <span class="keyword">done</span>.</span><br></pre></td></tr></table></figure>
-
-<p>可以看到多出了<code>Blog/theme/next</code>这个文件夹。</p>
-<h2 id="4-2-主题美化"><a href="#4-2-主题美化" class="headerlink" title="4.2 主题美化"></a>4.2 主题美化</h2><h3 id="4-2-1-主题修改"><a href="#4-2-1-主题修改" class="headerlink" title="4.2.1 主题修改"></a>4.2.1 主题修改</h3><p>修改主题标志，打开<code>Blog/_config.yml</code>这个文件，找到最下面的<code>theme</code>字段，修改为目标主题<code>next</code>，然后保存。</p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Extensions</span></span><br><span class="line"><span class="comment">## Plugins: https://hexo.io/plugins/</span></span><br><span class="line"><span class="comment">## Themes: https://hexo.io/themes/</span></span><br><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></table></figure>
-
-<p>语言修改，还是这个文件，找到<code>language: en</code>，修改为中文。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">language: zh-CN</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-2-1-布局信息美化"><a href="#4-2-1-布局信息美化" class="headerlink" title="4.2.1 布局信息美化"></a>4.2.1 布局信息美化</h3><p>这个主题内部还有很多其他的配置项，保存在<code>Blog\themes\next\_config.yml</code>，但是<a target="_blank" rel="noopener" href="https://theme-next.js.org/docs/getting-started/configuration.html">NexT文档</a>不推荐直接修改此文件，建议修改方式如下：</p>
-<p>将主题文件夹下默认的配置文件<code>Blog\themes\next</code>复制到项目根目录并重命名为<code>Blog\_config.next.yml</code></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> themes/next/_config.yml _config.next.yml</span><br></pre></td></tr></table></figure>
-
-<p><strong>主题布局选择</strong></p>
-<p>主题内部还分为四种不同的主题布局，配置方式如下：</p>
-<p>将<code>Blog\_config.next.yml</code>文件中的如下字段选择如下：</p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Schemes</span></span><br><span class="line"><span class="comment"># scheme: Muse</span></span><br><span class="line"><span class="comment">#scheme: Mist</span></span><br><span class="line"><span class="comment">#scheme: Pisces</span></span><br><span class="line"><span class="attr">scheme:</span> <span class="string">Gemini</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="4-2-3-分类和标签功能"><a href="#4-2-3-分类和标签功能" class="headerlink" title="4.2.3 分类和标签功能"></a>4.2.3 分类和标签功能</h3><p><code>Blog\_config.next.yml</code>文件下，找到以下字段，根据需要打开对应的菜单项</p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">home:</span> <span class="string">/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-home</span></span><br><span class="line">  <span class="attr">about:</span> <span class="string">/about/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-user</span></span><br><span class="line">  <span class="attr">tags:</span> <span class="string">/tags/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-tags</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="string">/categories/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-th</span></span><br><span class="line">  <span class="attr">archives:</span> <span class="string">/archives/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-archive</span></span><br><span class="line">  <span class="attr">schedule:</span> <span class="string">/schedule/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-calendar</span></span><br><span class="line">  <span class="comment">#sitemap: /sitemap.xml || fa fa-sitemap</span></span><br><span class="line">  <span class="comment">#commonweal: /404/ || fa fa-heartbeat</span></span><br><span class="line">  </span><br><span class="line"><span class="comment"># Enable / Disable menu icons / item badges.</span></span><br><span class="line"><span class="attr">menu_settings:</span></span><br><span class="line">  <span class="attr">icons:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">badges:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
-
-<p>其中使用的菜单图标都是来自于<a target="_blank" rel="noopener" href="https://fontawesome.com/?from=io">Font Awesome</a>，可以在这个网站找到自己喜欢的图标后，把图标名称写在 <code>||</code> 后面即可。</p>
-<p>此时，当我们在首页点击 <code>标签</code> 或 <code>分类</code> 时，会报 404 ，这是因为我们还没有创建对应的文件夹，所以报 404 找不到。因此，需要在本地创建标签和分类文件夹。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo new page <span class="string">&#x27;tags&#x27;</span> <span class="comment"># 创建tags子目录</span></span><br><span class="line">hexo new page <span class="string">&#x27;categories&#x27;</span> <span class="comment"># 创建categories子目录</span></span><br></pre></td></tr></table></figure>
-
-<p>执行效果如下，本地会多出来两个文件夹。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/imhaozi.github.io (hexo)</span><br><span class="line">$ hexo new page <span class="string">&#x27;tags&#x27;</span></span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO  Created: ~\Desktop\imhaozi.github.io\<span class="built_in">source</span>\tags\index.md</span><br><span class="line"></span><br><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/imhaozi.github.io (hexo)</span><br><span class="line">$ hexo new page <span class="string">&#x27;categories&#x27;</span></span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO  Created: ~\Desktop\imhaozi.github.io\<span class="built_in">source</span>\categories\index.md</span><br></pre></td></tr></table></figure>
-
-<p>此时如果重新发布网站之后，页面不会报错，但是还不能自动检索文章，需要在刚才生成的文件夹中的<code>index.md</code> 中增加对应的 type 属性。</p>
-<p>添加完之后如下：</p>
-<p>categories下的index</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: categories</span><br><span class="line">date: 2025-09-01 15:44:04</span><br><span class="line"><span class="section">type: categories</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
-
-<p>tags下的index</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: tags</span><br><span class="line">date: 2025-09-01 15:43:56</span><br><span class="line"><span class="section">type: tags</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
-
-<p>新发布的文章也需要加上对应的标签和主题才可以被检索到，比如本文章。</p>
-<figure class="highlight md"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: 博客搭建指南</span><br><span class="line">date: 2025-08-29 18:49:27</span><br><span class="line">tags: [hexo,blog]</span><br><span class="line"><span class="section">categories: 工具</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>上面这个文章，属于<code>工具</code>类别，标签加了两个<code>hexo</code>、<code>blog</code>.</p>
-</blockquote>
-<h3 id="4-3-重新运行"><a href="#4-3-重新运行" class="headerlink" title="4.3 重新运行"></a>4.3 重新运行</h3><p>执行下面三行命令，重新生成静态文件。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-
-<p>执行完成后，将最后的地址<code>http://localhost:4000/</code>复制到浏览器即可看到修改后的主题博客效果。</p>
-<h1 id="github推送"><a href="#github推送" class="headerlink" title="github推送"></a>github推送</h1><p>打开<code>Blog/_config.yml</code>这个文件，找到最下面的<code>deploy</code>字段，添加如下信息，然后保存。其中repo为仓库的链接。</p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/one-command-deployment</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">https://github.com/imhaozi/imhaozi.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">main</span> </span><br></pre></td></tr></table></figure>
-
-
-
-<p>安装git部署插件</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">XCHARGE-2024Q2-LT003@LAPTOP-F010DA3K MINGW64 ~/Desktop/Blog</span><br><span class="line">$ npm install hexo-deployer-git --save</span><br><span class="line"></span><br><span class="line">added 10 packages, and audited 237 packages <span class="keyword">in</span> 3s</span><br><span class="line"></span><br><span class="line">37 packages are looking <span class="keyword">for</span> funding</span><br><span class="line">  run `npm fund` <span class="keyword">for</span> details</span><br><span class="line"></span><br><span class="line">found 0 vulnerabilities</span><br></pre></td></tr></table></figure>
-
-
-
-<p>重新生成界面并推送到远端。</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d // 部署到服务上</span><br></pre></td></tr></table></figure>
-
-
-
-<p>完成后在浏览器中访问<code>用户名.github.io</code>即可访问博客内容。</p>
-<h1 id="多端同步"><a href="#多端同步" class="headerlink" title="多端同步"></a>多端同步</h1><p>本机操作：</p>
-<ol>
-<li>将远端仓库克隆到本地，并切换到<code>hexo</code>分支。并将此分支下的文件都删掉，仅留下<code>.git</code></li>
-<li>将创建的<code>Blog</code>文件夹中的内容全部复制到，<code>hexo</code>分支的仓库文件夹，并删去<code>.deploy_git</code>文件夹</li>
-<li>如果你在<code>Blog/themes</code>文件夹下 clone 过其它主题文件，把其中的 <code>.git</code>文件夹删除掉</li>
-<li>将<code>hexo</code>分支的内容推送到远端</li>
-</ol>
-<p>异地操作：</p>
-<ol>
-<li>首次创建博客的电脑需要先将首次创建完成的博客源码推送到远端（上面的步骤）</li>
-<li>本机下载已经上传到远端的源码</li>
-<li>本机安装环境<code>npm install hexo-cli -g</code>、<code>npm install hexo-deployer-git --save</code>（如果创建的博客还需要其他的就分别安装）</li>
-<li>在本机的<code>hexo</code>分支上继续写博客，写完之后生成并推送</li>
-<li>博客推送完成后，记得把源码推送到远端。</li>
-</ol>
-
+          <p>记录搭建博客和美化主题的过程</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/08/29/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -360,25 +297,25 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2025/08/29/hello-world/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
+      <meta itemprop="name" content="Haozi">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-      <meta itemprop="description" content="">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | Hexo">
+      <meta itemprop="name" content=" | Blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/08/29/hello-world/" class="post-title-link" itemprop="url">Hello World</a>
+          <a href="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/" class="post-title-link" itemprop="url">ros1学习笔记</a>
         </h2>
 
         <div class="post-meta-container">
@@ -389,7 +326,16 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2025-08-29 18:48:03" itemprop="dateCreated datePublished" datetime="2025-08-29T18:48:03+08:00">2025-08-29</time>
+      <time title="创建时间：2025-06-01 10:00:00" itemprop="dateCreated datePublished" datetime="2025-06-01T10:00:00+08:00">2025-06-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux%E5%BA%94%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">Linux应用</span></a>
+        </span>
     </span>
 
   
@@ -402,20 +348,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
+          <p>以一个差速轮小车为驱动，学习ros1的使用。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -433,6 +374,689 @@
 
 
 
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/" class="post-title-link" itemprop="url">充电桩国标协议解析</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-01 10:00:00" itemprop="dateCreated datePublished" datetime="2025-06-01T10:00:00+08:00">2025-06-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%A0%87%E5%87%86/" itemprop="url" rel="index"><span itemprop="name">标准</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>参考国标27930充电协议，对CAN协议进行解析，用于充电桩和车通信部分的功能实现。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/01/01/06.%20%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/qt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/01/01/06.%20%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/qt/" class="post-title-link" itemprop="url">qt学习笔记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-01-01 10:00:00" itemprop="dateCreated datePublished" datetime="2025-01-01T10:00:00+08:00">2025-01-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">上位机开发</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/01/01/06.%20%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/qt/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/01/04.%20Linux%E5%BA%94%E7%94%A8/ros2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/01/01/04.%20Linux%E5%BA%94%E7%94%A8/ros2/" class="post-title-link" itemprop="url">ros2学习笔记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-01-01 10:00:00" itemprop="dateCreated datePublished" datetime="2024-01-01T10:00:00+08:00">2024-01-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux%E5%BA%94%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">Linux应用</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>项目中需要将已有的ros1项目迁移到ros2系统中，因此学习了ros2的相关知识，并再次做个记录。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/01/04.%20Linux%E5%BA%94%E7%94%A8/ros2/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/" class="post-title-link" itemprop="url">CanOpen</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-01 00:00:00" itemprop="dateCreated datePublished" datetime="2023-01-01T00:00:00+08:00">2023-01-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index"><span itemprop="name">通信协议</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>CanOpen协议</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/" class="post-title-link" itemprop="url">Modbus</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-01 00:00:00" itemprop="dateCreated datePublished" datetime="2023-01-01T00:00:00+08:00">2023-01-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index"><span itemprop="name">通信协议</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Modbus协议解析和手写代码实现</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/" class="post-title-link" itemprop="url">Ymodem</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-01-01 00:00:00" itemprop="dateCreated datePublished" datetime="2023-01-01T00:00:00+08:00">2023-01-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index"><span itemprop="name">通信协议</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Ymodem协议解析和boot代码示例</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/10/01/03.%20RTOS/rtthread_nano/" class="post-title-link" itemprop="url">rtthread_nano移植</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-10-01 00:00:00" itemprop="dateCreated datePublished" datetime="2020-10-01T00:00:00+08:00">2020-10-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/RTOS/" itemprop="url" rel="index"><span itemprop="name">RTOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>RT-Thread Nano系统移植记录</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/10/01/03.%20RTOS/rtthread_nano/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/09/01/03.%20RTOS/rtthread_standard/" class="post-title-link" itemprop="url">rtthread使用</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-01 00:00:00" itemprop="dateCreated datePublished" datetime="2020-09-01T00:00:00+08:00">2020-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/RTOS/" itemprop="url" rel="index"><span itemprop="name">RTOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>RT-Thread Nano系统移植记录</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/09/01/03.%20RTOS/rtthread_standard/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
 
 </div>
   </main>
@@ -446,9 +1070,7 @@
     <span class="with-love">
       <i class="fa fa-heart"></i>
     </span>
-    <span class="author" itemprop="copyrightHolder">John Doe</span>
-  </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+    <span class="author" itemprop="copyrightHolder">Haozi</span>
   </div>
 
     </div>
@@ -465,6 +1087,7 @@
     <i class="fa fa-arrow-up fa-lg"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 <noscript>
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>

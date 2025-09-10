@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="以一个差速轮小车为驱动，学习ros1的使用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ros1学习笔记">
+<meta property="og:url" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/index.html">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="以一个差速轮小车为驱动，学习ros1的使用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/%E6%B5%8B%E8%AF%95%E6%A0%85%E6%A0%BC%E5%9C%B0%E5%9B%BE.jpg">
+<meta property="article:published_time" content="2025-06-01T02:00:00.000Z">
+<meta property="article:author" content="Haozi">
+<meta property="article:tag" content="ROS">
+<meta property="article:tag" content="ROS1">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/%E6%B5%8B%E8%AF%95%E6%A0%85%E6%A0%BC%E5%9C%B0%E5%9B%BE.jpg">
+
+
+<link rel="canonical" href="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/","path":"2025/06/01/04. Linux应用/ros1/","title":"ros1学习笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ros1学习笔记 | Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">攻城狮装备搭建日记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-text">1. 环境准备</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE"><span class="nav-text">2. 创建项目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%B0%8F%E8%BD%A6%E5%BC%80%E5%8F%91"><span class="nav-text">3. 小车开发</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E9%80%9F%E5%BA%A6%E8%AE%A2%E9%98%85"><span class="nav-text">3.1 速度订阅</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E9%80%9F%E5%BA%A6%E5%8F%91%E5%B8%83"><span class="nav-text">3.2 速度发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E6%9F%A5%E7%9C%8B%E6%B6%88%E6%81%AF"><span class="nav-text">3.3 查看消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Launch%E5%90%AF%E5%8A%A8"><span class="nav-text">3.4 Launch启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-%E9%9B%B7%E8%BE%BE%E6%95%B0%E6%8D%AE%E5%8F%91%E9%80%81"><span class="nav-text">3.5 雷达数据发送</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-6-%E9%9B%B7%E8%BE%BE%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-text">3.6 雷达数据处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-7-%E6%A0%85%E6%A0%BC%E5%9C%B0%E5%9B%BE"><span class="nav-text">3.7 栅格地图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-8-SLAM"><span class="nav-text">3.8 SLAM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-8-1-Hector-Mapping"><span class="nav-text">3.8.1 Hector_Mapping</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Haozi</p>
+  <div class="site-description" itemprop="description">身体和心灵总有一个在路上</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/imhaozi" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;imhaozi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/330622220" title="BiliBili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;330622220" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>BiliBili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ros1学习笔记 | Blog">
+      <meta itemprop="description" content="以一个差速轮小车为驱动，学习ros1的使用。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ros1学习笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-06-01 10:00:00" itemprop="dateCreated datePublished" datetime="2025-06-01T10:00:00+08:00">2025-06-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux%E5%BA%94%E7%94%A8/" itemprop="url" rel="index"><span itemprop="name">Linux应用</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">以一个差速轮小车为驱动，学习ros1的使用。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a>1. 环境准备</h1><ul>
+<li>ubuntu环境<ul>
+<li>这里使用的<code>ubuntu 20.04.3</code></li>
+<li>镜像名称：ubuntu-20.04.6-desktop-amd64.iso（文件大小：4.05G）</li>
+<li>下载地址：<a target="_blank" rel="noopener" href="http://mirrors.ustc.edu.cn/ubuntu-releases/">http://mirrors.ustc.edu.cn/ubuntu-releases/</a></li>
+</ul>
+</li>
+<li>ros1环境<ul>
+<li>这里使用的是<code>Noetic版本</code>。</li>
+<li>安装方式：小鱼一键安装</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://fishros.com/install -O fishros &amp;&amp; bash fishros</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="2-创建项目"><a href="#2-创建项目" class="headerlink" title="2. 创建项目"></a>2. 创建项目</h1><p>以下创建一个示例工程，也基于此工程完成本项目，后续的所有项目创建都是这个流程。</p>
+<p><strong>步骤一：创建工程</strong></p>
+<ol>
+<li>创建一个工作空间文件夹（就是一个工程文件夹）<ol>
+<li>工作空间中可以有多个软件包</li>
+<li>软件包中又可以又多个节点</li>
+</ol>
+</li>
+</ol>
+<p>比如这里想创建一个基于泰山派的小车项目，就可以创建下面的文件目录</p>
+<ul>
+<li>TspCarWs<ul>
+<li>src：存放代码，源代码、功能包等</li>
+</ul>
+</li>
+</ul>
+<p>创建一个<code>TspCarWs</code>目录作为本项目的工作空间。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop$ <span class="built_in">mkdir</span> TspCarWs</span><br><span class="line">haozi@haozi:~/work/develop$ <span class="built_in">cd</span> TspCarWs/</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs$ <span class="built_in">mkdir</span> src</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>步骤二：创建软件包</strong></p>
+<p>本项目采用上下位机的架构进行设计，上下位机通过通信进行交互和控制，首先实现一个用于控制下位机运动的软件包<code>lower_ctrl_pkg</code>。</p>
+<p>切换到工作空间的src目录下，执行如下指令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catkin_create_pkg 包名 &lt;依赖项1&gt; &lt;依赖项2&gt; ...</span><br></pre></td></tr></table></figure>
+
+<p>如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lower_ctrl_pkg rospy roscpp std_msgs</span><br><span class="line">Created file lower_ctrl_pkg/package.xml</span><br><span class="line">Created file lower_ctrl_pkg/CMakeLists.txt</span><br><span class="line">Created folder lower_ctrl_pkg/include/lower_ctrl_pkg</span><br><span class="line">Created folder lower_ctrl_pkg/src</span><br><span class="line">Successfully created files <span class="keyword">in</span> /home/haozi/work/develop/TspCarWs/src/lower_ctrl_pkg. Please adjust the values <span class="keyword">in</span> package.xml.</span><br></pre></td></tr></table></figure>
+
+<p>执行完成后，在src目录下就会多出一个新的目录<code>catkin_create_pkg</code>，该目录就是一个包了，包里面又包含了多个文件。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ <span class="built_in">ls</span></span><br><span class="line">lower_ctrl_pkg</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ <span class="built_in">cd</span> lower_ctrl_pkg/</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg$ <span class="built_in">ls</span></span><br><span class="line">CMakeLists.txt  include  package.xml  src</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>步骤三：添加代码</strong></p>
+<p>在软件包的src目录下创建代码文件<code>main.cpp</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;lower_ctrl_node running~ \n&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 后面的是节点名称</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;lower_ctrl_node&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;lower_ctrl_node running~ \n&quot;</span>);</span><br><span class="line">        <span class="built_in">sleep</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在CMakeLists.txt文件中，build部分，找到对应的注释的位置，添加如下两条（没注释掉的是添加的，注释掉的是原有的）。</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## Declare a C++ executable</span></span><br><span class="line"><span class="comment">## With catkin_make all packages are built within a single CMake context</span></span><br><span class="line"><span class="comment">## The recommended prefix ensures that target names across packages don&#x27;t collide</span></span><br><span class="line"><span class="comment"># add_executable($&#123;PROJECT_NAME&#125;_node src/lower_ctrl_pkg_node.cpp)</span></span><br><span class="line"><span class="keyword">add_executable</span>(lower_ctrl_node src/main.cpp)</span><br><span class="line"></span><br><span class="line"><span class="comment">## Specify libraries t</span></span><br><span class="line">o link a library <span class="keyword">or</span> executable <span class="keyword">target</span> against</span><br><span class="line"><span class="comment"># target_link_libraries($&#123;PROJECT_NAME&#125;_node</span></span><br><span class="line"><span class="comment">#   $&#123;catkin_LIBRARIES&#125;</span></span><br><span class="line"><span class="comment"># )</span></span><br><span class="line"><span class="keyword">target_link_libraries</span>(lower_ctrl_node</span><br><span class="line">  <span class="variable">$&#123;catkin_LIBRARIES&#125;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>其中</p>
+<p>add_executable：表示需要编译可执行文件</p>
+<p>target_link_libraries：表示需要链接ros库</p>
+<p><strong>步骤四：编译代码</strong></p>
+<p>在工作空间目录（tsp_car_ws）下执行编译命令</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs$ <span class="built_in">pwd</span></span><br><span class="line">/home/haozi/work/develop/TspCarWs</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs$ catkin_make</span><br><span class="line">Base path: /home/haozi/work/develop/TspCarWs</span><br><span class="line">Source space: /home/haozi/work/develop/TspCarWs/src</span><br><span class="line">Build space: /home/haozi/work/develop/TspCarWs/build</span><br><span class="line">Devel space: /home/haozi/work/develop/TspCarWs/devel</span><br><span class="line">Install space: /home/haozi/work/develop/TspCarWs/install</span><br><span class="line"><span class="comment">####</span></span><br><span class="line"><span class="comment">#### Running command: &quot;make cmake_check_build_system&quot; in &quot;/home/haozi/work/develop/TspCarWs/build&quot;</span></span><br><span class="line"><span class="comment">####</span></span><br><span class="line"><span class="comment">####</span></span><br><span class="line"><span class="comment">#### Running command: &quot;make -j4 -l4&quot; in &quot;/home/haozi/work/develop/TspCarWs/build&quot;</span></span><br><span class="line"><span class="comment">####</span></span><br><span class="line">[100%] Built target lower_ctrl_node</span><br></pre></td></tr></table></figure>
+
+<p>编译完成后，工作空间下就会多出来两个文件夹，build、devel</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs$ <span class="built_in">ls</span></span><br><span class="line">build  devel  src</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>build：编译文件</li>
+<li>devel：执行文件，执行前需要在这里添加源</li>
+</ul>
+<p><strong>步骤五：执行</strong></p>
+<p>启动一个新的终端，启动ros</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roscore</span><br></pre></td></tr></table></figure>
+
+<p>添加代码源（注意相对目录或者绝对目录）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs$ <span class="built_in">source</span> devel/setup.bash</span><br></pre></td></tr></table></figure>
+
+<p>执行代码</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># rosrun：执行</span></span><br><span class="line"><span class="comment"># lower_ctrl_pkg：报名</span></span><br><span class="line"><span class="comment"># lower_ctrl_node：节点名roslaunch launch_pkg all.launch tf</span></span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs$ rosrun lower_ctrl_pkg lower_ctrl_node</span><br><span class="line">lower_ctrl_node running~</span><br></pre></td></tr></table></figure>
+
+<p>到这里，创建一个ros软件包，并执行的流程就完成了。</p>
+<h1 id="3-小车开发"><a href="#3-小车开发" class="headerlink" title="3. 小车开发"></a>3. 小车开发</h1><h2 id="3-1-速度订阅"><a href="#3-1-速度订阅" class="headerlink" title="3.1 速度订阅"></a>3.1 速度订阅</h2><p>为了结构化实现功能，我们不会把所有逻辑都放到一个文件中，会按照功能进行划分一下。</p>
+<p>还是在<code>lower_ctrl_pkg</code>软件包下。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ <span class="built_in">pwd</span></span><br><span class="line">/home/haozi/work/develop/TspCarWs/src/lower_ctrl_pkg/src</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ <span class="built_in">ls</span></span><br><span class="line">lower_ctrl.cpp  lower_ctrl.h  main.cpp  uart.cpp  uart.h</span><br></pre></td></tr></table></figure>
+
+<p>功能如下：</p>
+<ol>
+<li>main.c：启动功能</li>
+<li>uart.x：提供和下位机通信的接口</li>
+<li>lower_ctrl.x：逻辑写在这里</li>
+</ol>
+<p>main.cpp</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lower_ctrl.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 防止ROS_INFO中文乱码</span></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_CTYPE, <span class="string">&quot;zh_CN.utf8&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;lower_ctrl_node running~ \n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下位机控制节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;lower_ctrl_node&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通信串口</span></span><br><span class="line">    <span class="function">Uart <span class="title">lower_uart</span><span class="params">(<span class="string">&quot;/dev/ttyS3&quot;</span>)</span></span>;</span><br><span class="line">    lower_uart.<span class="built_in">Open</span>(<span class="number">115200</span>, <span class="number">8</span>, <span class="string">&#x27;N&#x27;</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下位机控制节点</span></span><br><span class="line">    <span class="function">LowerCtrl <span class="title">lower_ctrl</span><span class="params">(lower_uart)</span></span>;</span><br><span class="line">    lower_ctrl.<span class="built_in">Run</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>uart.cpp</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;uart.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span>   <span class="comment">// 用于 open() 函数和文件控制选项</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;termios.h&gt;</span> <span class="comment">// 用于终端I/O接口 (tcgetattr, tcsetattr等)</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span>  <span class="comment">// 用于 close(), read(), write() 等系统调用</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span>   <span class="comment">// 用于 printf(), perror()</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;strings.h&gt;</span> <span class="comment">// 用于 bzero()</span></span></span><br><span class="line"></span><br><span class="line">Uart::<span class="built_in">Uart</span>(<span class="type">const</span> <span class="type">char</span> *name)</span><br><span class="line">&#123;</span><br><span class="line">    fd_ = <span class="number">0</span>;</span><br><span class="line">    name_ = name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Uart::~<span class="built_in">Uart</span>()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">Close</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 波特率，数据位，是否奇偶校验位，停止位</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Uart::Open</span><span class="params">(<span class="type">int</span> buad, <span class="type">int</span> nBits, <span class="type">char</span> nEvent, <span class="type">int</span> nStop)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    fd_ = <span class="built_in">open</span>(name_, O_RDWR | O_NOCTTY);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (fd_ &lt;= <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;open %s failed, not exist or need to chmod!&quot;</span>, name_);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">termios</span> newtio, oldtio;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">tcgetattr</span>(fd_, &amp;oldtio) != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;SetupSerial 1&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">bzero</span>(&amp;newtio, <span class="built_in">sizeof</span>(newtio));</span><br><span class="line">    newtio.c_cflag |= CLOCAL | CREAD;</span><br><span class="line">    newtio.c_cflag &amp;= ~CSIZE;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (nBits)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">7</span>:</span><br><span class="line">        newtio.c_cflag |= CS7;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">8</span>:</span><br><span class="line">        newtio.c_cflag |= CS8;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (nEvent)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;O&#x27;</span>:</span><br><span class="line">        newtio.c_cflag |= PARENB;</span><br><span class="line">        newtio.c_cflag |= PARODD;</span><br><span class="line">        newtio.c_iflag |= (INPCK | ISTRIP);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;E&#x27;</span>:</span><br><span class="line">        newtio.c_iflag |= (INPCK | ISTRIP);</span><br><span class="line">        newtio.c_cflag |= PARENB;</span><br><span class="line">        newtio.c_cflag &amp;= ~PARODD;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&#x27;N&#x27;</span>:</span><br><span class="line">        newtio.c_cflag &amp;= ~PARENB;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span> (buad)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">2400</span>:</span><br><span class="line">        <span class="built_in">cfsetispeed</span>(&amp;newtio, B2400);</span><br><span class="line">        <span class="built_in">cfsetospeed</span>(&amp;newtio, B2400);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">4800</span>:</span><br><span class="line">        <span class="built_in">cfsetispeed</span>(&amp;newtio, B4800);</span><br><span class="line">        <span class="built_in">cfsetospeed</span>(&amp;newtio, B4800);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">9600</span>:</span><br><span class="line">        <span class="built_in">cfsetispeed</span>(&amp;newtio, B9600);</span><br><span class="line">        <span class="built_in">cfsetospeed</span>(&amp;newtio, B9600);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">115200</span>:</span><br><span class="line">        <span class="built_in">cfsetispeed</span>(&amp;newtio, B115200);</span><br><span class="line">        <span class="built_in">cfsetospeed</span>(&amp;newtio, B115200);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">460800</span>:</span><br><span class="line">        <span class="built_in">cfsetispeed</span>(&amp;newtio, B460800);</span><br><span class="line">        <span class="built_in">cfsetospeed</span>(&amp;newtio, B460800);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="built_in">cfsetispeed</span>(&amp;newtio, B9600);</span><br><span class="line">        <span class="built_in">cfsetospeed</span>(&amp;newtio, B9600);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (nStop == <span class="number">1</span>)</span><br><span class="line">        newtio.c_cflag &amp;= ~CSTOPB;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (nStop == <span class="number">2</span>)</span><br><span class="line">        newtio.c_cflag |= CSTOPB;</span><br><span class="line"></span><br><span class="line">    newtio.c_cc[VTIME] = <span class="number">10</span>; <span class="comment">// 等待时间，0表示永远等待，单位是十分之一秒，10就是1秒</span></span><br><span class="line">    newtio.c_cc[VMIN] = <span class="number">0</span>;   <span class="comment">// 最小接收字节个数</span></span><br><span class="line">    <span class="built_in">tcflush</span>(fd_, TCIFLUSH);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((<span class="built_in">tcsetattr</span>(fd_, TCSANOW, &amp;newtio)) != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;com set error&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-3</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;vtime=%d vmin=%d\n&quot;</span>, newtio.c_cc[VTIME], newtio.c_cc[VMIN]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Uart::Close</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (fd_ &gt; <span class="number">0</span>)</span><br><span class="line">        <span class="built_in">close</span>(fd_);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Uart::Write</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">int</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (fd_ &lt;= <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// printf(&quot;send_data fd_ error!&quot;);</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> cnt = <span class="built_in">write</span>(fd_, data, len);</span><br><span class="line">    <span class="keyword">return</span> cnt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Uart::Read</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">int</span> len)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 阻塞接收，超时时间1秒（在Open函数中）</span></span><br><span class="line">    <span class="type">int</span> cnt = <span class="built_in">read</span>(fd_, data, len);</span><br><span class="line">    <span class="keyword">return</span> cnt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>uart.h</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Uart</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="comment">// 串口号</span></span><br><span class="line">    <span class="built_in">Uart</span>(<span class="type">const</span> <span class="type">char</span> *name);</span><br><span class="line">    ~<span class="built_in">Uart</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 波特率，数据位，是否奇偶校验位，停止位</span></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">Open</span><span class="params">(<span class="type">int</span> buad, <span class="type">int</span> nBits, <span class="type">char</span> nEvent, <span class="type">int</span> nStop)</span></span>;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">Close</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读写</span></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">Write</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">int</span> len)</span></span>;</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">Read</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">int</span> len)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">const</span> <span class="type">char</span> *name_;</span><br><span class="line">    <span class="type">int</span> fd_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>然后在<code>lower_ctrl.x</code>中实现速度订阅功能</p>
+<p>lower_ctrl.h</p>
+<figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;std_msgs/String.h&gt;</span>     <span class="comment">// 标准消息</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;geometry_msgs/Twist.h&gt;</span> <span class="comment">// 速度消息</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;uart.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LowerCtrl</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">public:</span><br><span class="line">    LowerCtrl(Uart &amp;uart);</span><br><span class="line">    ~LowerCtrl();</span><br><span class="line"></span><br><span class="line">    ros::NodeHandle nh_; <span class="comment">// 节点管理工具</span></span><br><span class="line">    ros::Subscriber tar_speed_sub_;                                 <span class="comment">// 订阅目标速度</span></span><br><span class="line">    <span class="type">void</span> <span class="title function_">CmdVelCallback</span><span class="params">(<span class="type">const</span> geometry_msgs::Twist::ConstPtr &amp;msg)</span>; <span class="comment">// 收到目标速度的响应</span></span><br><span class="line"></span><br><span class="line">    <span class="type">void</span> <span class="title function_">Run</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">private:</span><br><span class="line">    Uart &amp;uart_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>lower_ctrl.cpp</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;lower_ctrl.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">LowerCtrl::<span class="built_in">LowerCtrl</span>(Uart &amp;uart) : <span class="built_in">uart_</span>(uart)</span><br><span class="line">&#123;</span><br><span class="line">    tar_speed_sub_ = nh_.<span class="built_in">subscribe</span>(<span class="string">&quot;/cmd_vel&quot;</span>, <span class="number">10</span>, &amp;LowerCtrl::CmdVelCallback, <span class="keyword">this</span>); <span class="comment">// 订阅目标速度</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">LowerCtrl::~<span class="built_in">LowerCtrl</span>()</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 速度指令订阅回调函数</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LowerCtrl::CmdVelCallback</span><span class="params">(<span class="type">const</span> geometry_msgs::Twist::ConstPtr &amp;msg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;tar linear = %f(m/s), angular = %f(rad/s) ~ \n&quot;</span>, msg-&gt;linear.x, msg-&gt;angular.z);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LowerCtrl::Run</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 20ms执行一次</span></span><br><span class="line">    <span class="function">ros::Rate <span class="title">loop_rate</span><span class="params">(<span class="number">50</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 延时（约等于 sleep）</span></span><br><span class="line">        loop_rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样的写法在CMakeLists.txt中也要修改，将新增的几个文件也添加上。</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">add_executable(lower_ctrl_node </span><br><span class="line">  src/uart.cpp  </span><br><span class="line">  src/lower_ctrl.cpp </span><br><span class="line">  src/main.cpp </span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-2-速度发布"><a href="#3-2-速度发布" class="headerlink" title="3.2 速度发布"></a>3.2 速度发布</h2><p>另起一个软件包用来发布速度</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs$ <span class="built_in">cd</span> src/</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg move_ctrl_pkg rospy roscpp std_msgs</span><br><span class="line">Created file move_ctrl_pkg/package.xml</span><br><span class="line">Created file move_ctrl_pkg/CMakeLists.txt</span><br><span class="line">Created folder move_ctrl_pkg/include/move_ctrl_pkg</span><br><span class="line">Created folder move_ctrl_pkg/src</span><br><span class="line">Successfully created files <span class="keyword">in</span> /home/haozi/work/develop/TspCarWs/src/move_ctrl_pkg. Please adjust the values <span class="keyword">in</span> package.xml.</span><br></pre></td></tr></table></figure>
+
+<p>软件包中创建<code>main.cpp</code>，代码如下，其余操作流程同上</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;std_msgs/String.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;geometry_msgs/Twist.h&gt;</span> <span class="comment">// 速度消息</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;move_ctrl_node running~ \n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下位机控制节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;move_ctrl_node&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 节点管理工具</span></span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">    <span class="comment">// 创建一个发布者，话题名称为cmd_vel, 队列长度为10</span></span><br><span class="line">    ros::Publisher cmd_vel_pub = nh.<span class="built_in">advertise</span>&lt;geometry_msgs::Twist&gt;(<span class="string">&quot;/cmd_vel&quot;</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建一个频率控制对象,每秒循环10次</span></span><br><span class="line">    <span class="function">ros::Rate <span class="title">loop_rate</span><span class="params">(<span class="number">10</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        geometry_msgs::Twist vel_cmd;</span><br><span class="line">        vel_cmd.linear.x = <span class="number">0.1</span>;</span><br><span class="line">        vel_cmd.linear.y = <span class="number">0.0</span>;</span><br><span class="line">        vel_cmd.linear.z = <span class="number">0.0</span>;</span><br><span class="line">        vel_cmd.angular.x = <span class="number">0.0</span>;</span><br><span class="line">        vel_cmd.angular.y = <span class="number">0.0</span>;</span><br><span class="line">        vel_cmd.angular.z = <span class="number">0.0</span>;</span><br><span class="line">        cmd_vel_pub.<span class="built_in">publish</span>(vel_cmd);   <span class="comment">// 发布</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 延时（约等于 sleep）</span></span><br><span class="line">        loop_rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-3-查看消息"><a href="#3-3-查看消息" class="headerlink" title="3.3 查看消息"></a>3.3 查看消息</h2><p>将两个软件包中的两个节点都运行起来</p>
+<ul>
+<li><code>rostopic list</code>：查看当前存在的话题</li>
+<li><code>rostopic echo 话题名</code>：查看当前话题发布的消息</li>
+<li><code>rqt_graph</code>：查看话题之间的关系（需要图像显示）</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ rostopic list</span><br><span class="line">/cmd_vel</span><br><span class="line">/rosout</span><br><span class="line">/rosout_agg</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ rostopic <span class="built_in">echo</span> /cmd_vel</span><br><span class="line">linear: </span><br><span class="line">  x: 0.1</span><br><span class="line">  y: 0.0</span><br><span class="line">  z: 0.0</span><br><span class="line">angular: </span><br><span class="line">  x: 0.0</span><br><span class="line">  y: 0.0</span><br><span class="line">  z: 0.0</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-4-Launch启动"><a href="#3-4-Launch启动" class="headerlink" title="3.4 Launch启动"></a>3.4 Launch启动</h2><p>当软件包和节点多了之后，一个个启动节点需要很多很多命令，因此需要一个能同时启动多个节点的工具。</p>
+<ol>
+<li>重新创建一个软件包，<code>launch_pkg</code></li>
+<li>在软件包中创建一个launch文件夹</li>
+<li>文件夹中创建一个<code>all.launch</code>文件</li>
+</ol>
+<p>结果如下</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg launch_pkg rospy roscpp std_msgs</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ <span class="built_in">cd</span> launch_pkg/</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs/src/launch_pkg$ <span class="built_in">mkdir</span> launch</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs/src/launch_pkg$ <span class="built_in">cd</span> launch/</span><br><span class="line">haozi@haozi:~/work/develop/TspCarWs/src/launch_pkg/launch$ <span class="built_in">ls</span></span><br><span class="line">all.launch</span><br></pre></td></tr></table></figure>
+
+<p>文件中的内容如下，每一条都表示需要启动这个包中的一个节点。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;lower_ctrl_pkg&quot;</span> <span class="attr">type</span>=<span class="string">&quot;lower_ctrl_node&quot;</span> <span class="attr">name</span>=<span class="string">&quot;lower_ctrl_node&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;move_ctrl_pkg&quot;</span> <span class="attr">type</span>=<span class="string">&quot;move_ctrl_node&quot;</span> <span class="attr">name</span>=<span class="string">&quot;move_ctrl_node&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>output&#x3D;”screen”：表示将信息输出到屏幕。</p>
+</blockquote>
+<p>完成后编译工作空间，编译完成后，使用如下命令即可直接启动所有软件包。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roslaunch &lt;包名&gt; &lt;launch文件名&gt;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/ros1/tsp_car_ws$ roslaunch launch_pkg all.launch </span><br><span class="line">... logging to /home/haozi/.ros/log/82134f94-36e0-11f0-bea8-1303c288b02a/roslaunch-haozi-15144.<span class="built_in">log</span></span><br><span class="line">Checking <span class="built_in">log</span> directory <span class="keyword">for</span> disk usage. This may take a <span class="keyword">while</span>.</span><br><span class="line">Press Ctrl-C to interrupt</span><br><span class="line">Done checking <span class="built_in">log</span> file disk usage. Usage is &lt;1GB.</span><br><span class="line"></span><br><span class="line">started roslaunch server http://haozi:42535/</span><br><span class="line"></span><br><span class="line">SUMMARY</span><br><span class="line">========</span><br><span class="line"></span><br><span class="line">PARAMETERS</span><br><span class="line"> * /rosdistro: noetic</span><br><span class="line"> * /rosversion: 1.17.3</span><br><span class="line"></span><br><span class="line">NODES</span><br><span class="line">  /</span><br><span class="line">    lower_ctrl_node (lower_ctrl_pkg/lower_ctrl_node)</span><br><span class="line">    move_ctrl_node (move_ctrl_pkg/move_ctrl_node)</span><br><span class="line"></span><br><span class="line">auto-starting new master</span><br><span class="line">process[master]: started with pid [15155]</span><br><span class="line">ROS_MASTER_URI=http://localhost:11311</span><br><span class="line"></span><br><span class="line">setting /run_id to 82134f94-36e0-11f0-bea8-1303c288b02a</span><br><span class="line">process[rosout-1]: started with pid [15165]</span><br><span class="line">started core service [/rosout]</span><br><span class="line">process[lower_ctrl_node-2]: started with pid [15168]</span><br><span class="line">process[move_ctrl_node-3]: started with pid [15173]</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>实际上，这个launch文件，放在任意一个软件包里都可以，但是为了代码结构清晰，就创建了一个空的软件包来干这件事了。</p>
+</blockquote>
+<h2 id="3-5-雷达数据发送"><a href="#3-5-雷达数据发送" class="headerlink" title="3.5 雷达数据发送"></a>3.5 雷达数据发送</h2><p>激光雷达数据格式</p>
+<ul>
+<li>sensor_msgs::LaserScan<ul>
+<li>header<ul>
+<li>frame_id：坐标系基准</li>
+<li>stamp：本次扫描中接收到第一束反射信号的时间</li>
+</ul>
+</li>
+<li>angle_min：扫描的其实角度，弧度</li>
+<li>angle_max：扫描的终止角度，弧度</li>
+<li>angle_increment：相邻两次测距的旋转夹角，弧度</li>
+<li>time_increment：相邻两次测距的时间差，秒</li>
+<li>scan_time：两次扫描的起始时间差，秒</li>
+<li>range_min：有效测距范围的最小距离，米</li>
+<li>range_max：有效测距范围的最大距离，米</li>
+<li>ranges[]：本次扫描的所有测距值，米</li>
+<li>intensities[]：所有测距值返回的信号强度</li>
+</ul>
+</li>
+</ul>
+<p>创建雷达数据软件包，用于发送激光雷达数据</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lidar_pkg roscpp rospy sensor_msgs</span><br><span class="line">Created file lidar_pkg/package.xml</span><br><span class="line">Created file lidar_pkg/CMakeLists.txt</span><br><span class="line">Created folder lidar_pkg/include/lidar_pkg</span><br><span class="line">Created folder lidar_pkg/src</span><br><span class="line">Successfully created files <span class="keyword">in</span> /home/haozi/work/develop/TspCarWs/src/lidar_pkg. Please adjust the values <span class="keyword">in</span> package.xml.</span><br></pre></td></tr></table></figure>
+
+<p>并在软件包中创建五个文件</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src/lidar_pkg/src$ <span class="built_in">ls</span></span><br><span class="line">m1c1_mini.cpp  m1c1_mini.h  main.cpp  uart.cpp  uart.h</span><br></pre></td></tr></table></figure>
+
+<p>其中uart.x参考前面速度订阅的串口操作接口，内容相同。</p>
+<p>雷达消息接口如下：</p>
+<p>m1c1_mini.h</p>
+<figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">pragma</span> once</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;std_msgs/Bool.h&gt;</span>	 <span class="comment">// 标准消息</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;std_msgs/String.h&gt;</span> <span class="comment">// 标准消息</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;uart.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 雷达消息结构 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PKG_LEN_MIN 12</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PKG_LEN_MAX 60</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> POINT_NUM_MAX_IN_A_PKG 25 <span class="comment">// 一包最多25个点</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> pack(1)</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="type">uint8_t</span> head1;		  <span class="comment">// 数据头1 0xAA</span></span><br><span class="line">	<span class="type">uint8_t</span> head2;		  <span class="comment">// 数据头2 0x55</span></span><br><span class="line">	<span class="type">uint8_t</span> points_type;  <span class="comment">// 点云类型1--每圈起始点;0--非一圈起始点</span></span><br><span class="line">	<span class="type">uint8_t</span> points_num;	  <span class="comment">// 点云个数 结构体总长度 = 10 + points_num * 2</span></span><br><span class="line">	<span class="type">uint16_t</span> start_angle; <span class="comment">// 起始角度</span></span><br><span class="line">	<span class="type">uint16_t</span> end_angle;	  <span class="comment">// 结束角度</span></span><br><span class="line">	<span class="type">uint16_t</span> check_code;  <span class="comment">// 校验</span></span><br><span class="line">	<span class="type">uint16_t</span> data[POINT_NUM_MAX_IN_A_PKG];</span><br><span class="line">&#125; LidarData;</span><br><span class="line"><span class="meta">#<span class="keyword">pragma</span> pack()</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Lidar</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">public:</span><br><span class="line">	Lidar(Uart &amp;uart);</span><br><span class="line">	~Lidar();</span><br><span class="line"></span><br><span class="line">	<span class="type">int</span> <span class="title function_">ReadData</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">string</span> &amp;lidar_data)</span>;</span><br><span class="line"></span><br><span class="line">	ros::NodeHandle nh_;	   <span class="comment">// 节点管理工具</span></span><br><span class="line">	ros::Publisher lidar_pub_; <span class="comment">// 发布雷达数据</span></span><br><span class="line">	<span class="type">void</span> <span class="title function_">Run</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">private:</span><br><span class="line">	Uart &amp;uart_;</span><br><span class="line">	LidarData lidar_data_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>m1c1_mini.cpp</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;m1c1_mini.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sensor_msgs/LaserScan.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">Lidar::<span class="built_in">Lidar</span>(Uart &amp;uart) : <span class="built_in">uart_</span>(uart)</span><br><span class="line">&#123;</span><br><span class="line">    lidar_pub_ = nh_.<span class="built_in">advertise</span>&lt;sensor_msgs::LaserScan&gt;(<span class="string">&quot;/scan&quot;</span>, <span class="number">10</span>); <span class="comment">// 发布雷达数据</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Lidar::~<span class="built_in">Lidar</span>()</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Lidar::ReadData</span><span class="params">(std::string &amp;lidar_data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> recv_cnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 先清空雷达数据</span></span><br><span class="line">    lidar_data.<span class="built_in">clear</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 先寻找数据头，0xAA 0x55</span></span><br><span class="line">    <span class="type">uint8_t</span> buffer[<span class="number">100</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> c = <span class="number">0</span>; c &lt; <span class="number">100</span>; c++) <span class="comment">// 最多尝试100次寻找AA 55开头</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 阻塞接收，超时时间1s</span></span><br><span class="line">        recv_cnt = uart_.<span class="built_in">Read</span>(&amp;buffer[<span class="number">1</span>], <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> (recv_cnt != <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 逐个字节依次插入lidar_data</span></span><br><span class="line">        lidar_data.<span class="built_in">append</span>((<span class="type">char</span> *)(&amp;buffer[<span class="number">1</span>]), <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 已经找到数据头了</span></span><br><span class="line">        <span class="keyword">if</span> (buffer[<span class="number">0</span>] == <span class="number">0xAA</span> &amp;&amp; buffer[<span class="number">1</span>] == <span class="number">0x55</span>)</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        buffer[<span class="number">0</span>] = buffer[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 长度过长则返回</span></span><br><span class="line">        <span class="keyword">if</span> (lidar_data.<span class="built_in">size</span>() &gt;= <span class="number">100</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;lidar_data100: &quot;</span>);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; lidar_data.<span class="built_in">size</span>(); i++)</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%02x &quot;</span>, (<span class="type">unsigned</span> <span class="type">char</span>)lidar_data.<span class="built_in">data</span>()[i]);</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-2</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除数据头前面的部分，有可能是错误的数据，也有可能是上一包的部分</span></span><br><span class="line">    <span class="comment">// 只保留末尾两个字母AA 55作为数据头</span></span><br><span class="line">    <span class="keyword">if</span> (lidar_data.<span class="built_in">size</span>() &gt; <span class="number">2</span>)</span><br><span class="line">        lidar_data = lidar_data.<span class="built_in">substr</span>(lidar_data.<span class="built_in">size</span>() - <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 再读取两个字节 点云类型 和 点云点数(1~25)</span></span><br><span class="line">    recv_cnt = uart_.<span class="built_in">Read</span>(&amp;buffer[<span class="number">0</span>], <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">if</span> (recv_cnt &lt; <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 把读到的数据添加到消息</span></span><br><span class="line">    lidar_data.<span class="built_in">append</span>((<span class="type">char</span> *)(&amp;buffer[<span class="number">0</span>]), <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断点云类型 只能是0或1</span></span><br><span class="line">    <span class="keyword">if</span> ((lidar_data.<span class="built_in">data</span>()[<span class="number">2</span>] != <span class="number">0</span>) &amp;&amp; (lidar_data.<span class="built_in">data</span>()[<span class="number">2</span>] != <span class="number">1</span>))</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-4</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 点云点数只会在1~25之间</span></span><br><span class="line">    <span class="keyword">if</span> (lidar_data.<span class="built_in">data</span>()[<span class="number">3</span>] &gt; <span class="number">25</span> || lidar_data.<span class="built_in">data</span>()[<span class="number">3</span>] &lt; <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; lidar_data.<span class="built_in">size</span>(); i++)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%02x &quot;</span>, (<span class="type">unsigned</span> <span class="type">char</span>)lidar_data.<span class="built_in">data</span>()[i]);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-5</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断本包数据中 数据部分的长度</span></span><br><span class="line">    <span class="type">int</span> data_len = <span class="number">10</span> + lidar_data.<span class="built_in">data</span>()[<span class="number">3</span>] * <span class="number">2</span> - lidar_data.<span class="built_in">size</span>();</span><br><span class="line">    <span class="comment">// 计算出的长度过长或过短，则返回错误</span></span><br><span class="line">    <span class="keyword">if</span> (data_len &gt; <span class="number">100</span> || data_len &lt; <span class="number">5</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-6</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取数据部分</span></span><br><span class="line">    recv_cnt = uart_.<span class="built_in">Read</span>(&amp;buffer[<span class="number">0</span>], data_len);</span><br><span class="line">    <span class="keyword">if</span> (recv_cnt &lt; data_len)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// printf(&quot;read_len=%d &lt; need_read_len=%d !\n&quot;,read_len,need_read_len);</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    lidar_data.<span class="built_in">append</span>((<span class="type">char</span> *)(&amp;buffer[<span class="number">0</span>]), data_len);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果长度不正确</span></span><br><span class="line">    <span class="keyword">if</span> (lidar_data.<span class="built_in">size</span>() != <span class="number">10</span> + lidar_data.<span class="built_in">data</span>()[<span class="number">3</span>] * <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;read len %ld != points num %d *2+10 error!\n&quot;</span>, lidar_data.<span class="built_in">size</span>(), lidar_data.<span class="built_in">data</span>()[<span class="number">3</span>]);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; lidar_data.<span class="built_in">size</span>(); i++)</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%02x &quot;</span>, (<span class="type">unsigned</span> <span class="type">char</span>)lidar_data.<span class="built_in">data</span>()[i]);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-7</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Lidar::Run</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> ret = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> start_cnt = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 创建雷达数据 */</span></span><br><span class="line">    <span class="type">float</span> laser_min_range = <span class="number">0.1</span>; <span class="comment">// 雷达最小量程</span></span><br><span class="line">    <span class="type">float</span> laser_max_range = <span class="number">8.0</span>; <span class="comment">// 雷达最大量程</span></span><br><span class="line">    <span class="type">int</span> points_size = <span class="number">800</span>;       <span class="comment">// 修正和插值到800点(本身390个点左右)</span></span><br><span class="line">    sensor_msgs::LaserScan laser_scan;</span><br><span class="line">    laser_scan.header.frame_id = <span class="string">&quot;laser_link&quot;</span>;</span><br><span class="line">    laser_scan.angle_min = <span class="number">0</span>;</span><br><span class="line">    laser_scan.angle_max = <span class="number">2</span> * M_PI;</span><br><span class="line">    laser_scan.angle_increment = (laser_scan.angle_max - laser_scan.angle_min) / points_size;</span><br><span class="line">    laser_scan.range_min = laser_min_range;</span><br><span class="line">    laser_scan.range_max = laser_max_range;</span><br><span class="line">    laser_scan.ranges.<span class="built_in">resize</span>(points_size);</span><br><span class="line">    std::<span class="built_in">fill</span>(laser_scan.ranges.<span class="built_in">begin</span>(), laser_scan.ranges.<span class="built_in">end</span>(), std::numeric_limits&lt;<span class="type">float</span>&gt;::<span class="built_in">infinity</span>()); <span class="comment">// 全部填充为无限远</span></span><br><span class="line">    laser_scan.intensities.<span class="built_in">resize</span>(points_size, <span class="number">127</span>);                                                       <span class="comment">// 假设强度值为127</span></span><br><span class="line"></span><br><span class="line">    std::string lidar_str_data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 读取雷达数据</span></span><br><span class="line">        ret = <span class="built_in">ReadData</span>(lidar_str_data);</span><br><span class="line">        <span class="keyword">if</span> (ret &lt; <span class="number">0</span>) <span class="comment">// 报错，则重新读取</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (ret != <span class="number">-1</span>) <span class="comment">// 雷达断电后会返回-1</span></span><br><span class="line">                <span class="built_in">ROS_WARN</span>(<span class="string">&quot;read_lidar_data ret=%d&quot;</span>, ret);</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 校验数据长度</span></span><br><span class="line">        <span class="keyword">if</span> (lidar_str_data.<span class="built_in">size</span>() &lt; PKG_LEN_MIN || lidar_str_data.<span class="built_in">size</span>() &gt; PKG_LEN_MAX)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">ROS_WARN</span>(<span class="string">&quot;lidar_str_data size %ld error!&quot;</span>, lidar_str_data.<span class="built_in">size</span>());</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 拷贝进数据包结构体</span></span><br><span class="line">        <span class="built_in">memcpy</span>(&amp;lidar_data_, lidar_str_data.<span class="built_in">data</span>(), lidar_str_data.<span class="built_in">size</span>());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 每圈起始点，发布上一圈的数据</span></span><br><span class="line">        <span class="keyword">if</span> (lidar_data_.points_type == <span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (start_cnt &lt; <span class="number">10</span>) <span class="comment">// 前10圈数据丢弃</span></span><br><span class="line">            &#123;</span><br><span class="line">                start_cnt++;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            laser_scan.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">            <span class="comment">// 发布Lidat Scan消息</span></span><br><span class="line">            lidar_pub_.<span class="built_in">publish</span>(laser_scan);</span><br><span class="line">            <span class="built_in">ROS_INFO_ONCE</span>(<span class="string">&quot;Published LaserScan OK&quot;</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 必须给每个点刷入无效数据，防止下一圈产生重影, 全部填充为无限远</span></span><br><span class="line">            std::<span class="built_in">fill</span>(laser_scan.ranges.<span class="built_in">begin</span>(), laser_scan.ranges.<span class="built_in">end</span>(), std::numeric_limits&lt;<span class="type">float</span>&gt;::<span class="built_in">infinity</span>());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 开始解析数据包结构体中的数据</span></span><br><span class="line">        <span class="type">float</span> start_angle0 = (lidar_data_.start_angle &gt;&gt; <span class="number">1</span>) / <span class="number">64.0</span>;</span><br><span class="line">        <span class="type">float</span> end_angle0 = (lidar_data_.end_angle &gt;&gt; <span class="number">1</span>) / <span class="number">64.0</span>;</span><br><span class="line">        <span class="comment">// float start_angle = start_angle0-ang_corr_1;</span></span><br><span class="line">        <span class="comment">// float end_angle = end_angle0-ang_corr_n;</span></span><br><span class="line"></span><br><span class="line">        <span class="type">float</span> ang_corr_i, distance_mm_i, angle_i;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; lidar_data_.points_num; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 解析距离：单位mm</span></span><br><span class="line">            distance_mm_i = lidar_data_.data[i] &gt;&gt; <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 根据距离来求修正角度</span></span><br><span class="line">            ang_corr_i = (distance_mm_i == <span class="number">0</span>) ? <span class="number">0</span> : <span class="built_in">atan</span>(<span class="number">19.16</span> * (distance_mm_i - <span class="number">90.15</span>) / (<span class="number">90.15</span> * distance_mm_i)) * <span class="number">180.0</span> / M_PI;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (lidar_data_.points_num != <span class="number">1</span>) <span class="comment">// 分母不能为0</span></span><br><span class="line">                angle_i = start_angle0 + (end_angle0 - start_angle0) / (lidar_data_.points_num - <span class="number">1</span>) * i - ang_corr_i;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                angle_i = start_angle0 - ang_corr_i;</span><br><span class="line"></span><br><span class="line">            angle_i = <span class="number">180.0</span> - (angle_i + <span class="number">12.0</span>); <span class="comment">// 12度是雷达手册中写的固有偏差，180是和雷达安装朝向有关</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 角度限制在[0,360]度之间</span></span><br><span class="line">            angle_i = <span class="built_in">fmod</span>(angle_i, <span class="number">360.0</span>);                        <span class="comment">// 使用fmod函数计算角度对360的余数</span></span><br><span class="line">            angle_i = (angle_i &lt; <span class="number">0</span>) ? (angle_i + <span class="number">360.0</span>) : angle_i; <span class="comment">// 如果结果是负数，则加上360使其变为正数</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// printf(&quot;%.2f(%.2f)\n&quot;,distance_mm_i,angle_i);</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 考虑到角度修正之后填充，并且插值到800点</span></span><br><span class="line">            <span class="type">int</span> new_i = angle_i / <span class="number">360.0</span> * (points_size - <span class="number">1</span>) + <span class="number">0.5</span>; <span class="comment">// 索引最大不能到points_size，而是points_size-1</span></span><br><span class="line">            laser_scan.ranges[new_i] = distance_mm_i / <span class="number">1000.0</span>;     <span class="comment">// 填充到LaserScan消息中</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main.cpp</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;m1c1_mini.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 防止ROS_INFO中文乱码</span></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_CTYPE, <span class="string">&quot;zh_CN.utf8&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下位机控制节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;lidar_node&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通信串口</span></span><br><span class="line">    <span class="function">Uart <span class="title">lidar_uart</span><span class="params">(<span class="string">&quot;/dev/ttyS5&quot;</span>)</span></span>;</span><br><span class="line">    lidar_uart.<span class="built_in">Open</span>(<span class="number">115200</span>, <span class="number">8</span>, <span class="string">&#x27;N&#x27;</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下位机控制节点</span></span><br><span class="line">    <span class="function">Lidar <span class="title">lidar</span><span class="params">(lidar_uart)</span></span>;</span><br><span class="line">    lidar.<span class="built_in">Run</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>雷达消息话题名一般默认为：<code>/scan</code></p>
+</blockquote>
+<h2 id="3-6-雷达数据处理"><a href="#3-6-雷达数据处理" class="headerlink" title="3.6 雷达数据处理"></a>3.6 雷达数据处理</h2><p>创建一个新的软件包<code>lidar_handle_pkg</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lidar_handle_pkg roscpp rospy sensor_msgs</span><br><span class="line">Created file lidar_handle_pkg/package.xml</span><br><span class="line">Created file lidar_handle_pkg/CMakeLists.txt</span><br><span class="line">Created folder lidar_handle_pkg/include/lidar_handle_pkg</span><br><span class="line">Created folder lidar_handle_pkg/src</span><br><span class="line">Successfully created files <span class="keyword">in</span> /home/haozi/work/develop/TspCarWs/src/lidar_handle_pkg. Please adjust the values <span class="keyword">in</span> package.xml.</span><br></pre></td></tr></table></figure>
+
+
+
+<p>暂时只创建一个main文件，测试接收到的激光雷达发送的数据，并判断前方障碍物的距离。</p>
+<p>main.cpp</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sensor_msgs/LaserScan.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LidarCallback</span><span class="params">(<span class="type">const</span> sensor_msgs::LaserScan msg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">float</span> fMidDist = msg.ranges[<span class="number">180</span>];</span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;前方距离：ranges[180] = %f 米&quot;</span>, fMidDist);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 防止ROS_INFO中文乱码</span></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_CTYPE, <span class="string">&quot;zh_CN.utf8&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下位机控制节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;lidar_handle_node&quot;</span>);</span><br><span class="line"></span><br><span class="line">    ros::NodeHandle nh_;                                                     <span class="comment">// 节点管理工具</span></span><br><span class="line">    ros::Subscriber lidar_sub_ = nh_.<span class="built_in">subscribe</span>(<span class="string">&quot;/scan&quot;</span>, <span class="number">10</span>, &amp;LidarCallback); <span class="comment">// 订阅雷达数据</span></span><br><span class="line"></span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>添加避障逻辑方法，判断当障碍物距离过近时，发送速度消息，控制小车避开。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sensor_msgs/LaserScan.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;geometry_msgs/Twist.h&gt;</span> <span class="comment">// 速度消息</span></span></span><br><span class="line"></span><br><span class="line">ros::Publisher vel_pub;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">LidarCallback</span><span class="params">(<span class="type">const</span> sensor_msgs::LaserScan msg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">float</span> fMidDist = msg.ranges[<span class="number">180</span>];</span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;前方距离：ranges[180] = %f 米&quot;</span>, fMidDist);</span><br><span class="line"></span><br><span class="line">    geometry_msgs::Twist vel_cmd;</span><br><span class="line">    <span class="keyword">if</span> (fMidDist &lt; <span class="number">1.5</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        vel_cmd.angular.z = <span class="number">0.5</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        vel_cmd.linear.x = <span class="number">0.05</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    vel_pub.<span class="built_in">publish</span>(vel_cmd);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 防止ROS_INFO中文乱码</span></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_CTYPE, <span class="string">&quot;zh_CN.utf8&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下位机控制节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;lidar_handle_node&quot;</span>);</span><br><span class="line"></span><br><span class="line">    ros::NodeHandle nh_;                                                     <span class="comment">// 节点管理工具</span></span><br><span class="line">    ros::Subscriber lidar_sub_ = nh_.<span class="built_in">subscribe</span>(<span class="string">&quot;/scan&quot;</span>, <span class="number">10</span>, &amp;LidarCallback); <span class="comment">// 订阅雷达数据</span></span><br><span class="line"></span><br><span class="line">    vel_pub = nh_.<span class="built_in">advertise</span>&lt;geometry_msgs::Twist&gt;(<span class="string">&quot;/cmd_vel&quot;</span>, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-7-栅格地图"><a href="#3-7-栅格地图" class="headerlink" title="3.7 栅格地图"></a>3.7 栅格地图</h2><p>创建一个软件包<code>map_pkg</code>，用来发布地图数据。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg map_pkg roscpp rospy nav_msgs</span><br><span class="line">Created file map_pkg/package.xml</span><br><span class="line">Created file map_pkg/CMakeLists.txt</span><br><span class="line">Created folder map_pkg/include/map_pkg</span><br><span class="line">Created folder map_pkg/src</span><br><span class="line">Successfully created files <span class="keyword">in</span> /home/haozi/work/develop/TspCarWs/src/map_pkg. Please adjust the values <span class="keyword">in</span> package.xml.</span><br></pre></td></tr></table></figure>
+
+
+
+<p>只创建一个main文件，发布一个固定的地图。</p>
+<p>main.cpp</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;nav_msgs/OccupancyGrid.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 防止ROS_INFO中文乱码</span></span><br><span class="line">    <span class="built_in">setlocale</span>(LC_CTYPE, <span class="string">&quot;zh_CN.utf8&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下位机控制节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;map_pub_node&quot;</span>);</span><br><span class="line"></span><br><span class="line">    ros::NodeHandle nh_;                                                            <span class="comment">// 节点管理工具</span></span><br><span class="line">    ros::Publisher map_pub_ = nh_.<span class="built_in">advertise</span>&lt;nav_msgs::OccupancyGrid&gt;(<span class="string">&quot;/map&quot;</span>, <span class="number">10</span>); <span class="comment">// 发布地图数据</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 每秒一次</span></span><br><span class="line">    <span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        nav_msgs::OccupancyGrid msg;</span><br><span class="line"></span><br><span class="line">        msg.header.frame_id = <span class="string">&quot;map&quot;</span>;</span><br><span class="line">        msg.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line"></span><br><span class="line">        msg.info.origin.position.x = <span class="number">0</span>;</span><br><span class="line">        msg.info.origin.position.y = <span class="number">0</span>;</span><br><span class="line">        msg.info.resolution = <span class="number">1.0</span>; <span class="comment">// 栅格分辨率（每个格子1米）</span></span><br><span class="line">        msg.info.width = <span class="number">4</span>;        <span class="comment">// 地图宽度（格子数）</span></span><br><span class="line">        msg.info.height = <span class="number">2</span>;       <span class="comment">// 地图高度（格子数）</span></span><br><span class="line"></span><br><span class="line">        msg.data.<span class="built_in">resize</span>(<span class="number">4</span> * <span class="number">2</span>); <span class="comment">// 地图数据</span></span><br><span class="line">        msg.data[<span class="number">0</span>] = <span class="number">100</span>;</span><br><span class="line">        msg.data[<span class="number">1</span>] = <span class="number">100</span>;</span><br><span class="line">        msg.data[<span class="number">2</span>] = <span class="number">0</span>;</span><br><span class="line">        msg.data[<span class="number">3</span>] = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">        map_pub_.<span class="built_in">publish</span>(msg);</span><br><span class="line">        r.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>将软件包运行起来。</p>
+<p>然后启动rviz工具，查看发布的栅格地图。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs$ rviz</span><br></pre></td></tr></table></figure>
+
+<p>启动rviz之后，添加一个地图原点<code>Axes</code>，添加一个地图<code>map</code>，并将地图消息类型<code>Topic</code>修改为<code>/map</code>，就可以看到发布的测试消息了。</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/%E6%B5%8B%E8%AF%95%E6%A0%85%E6%A0%BC%E5%9C%B0%E5%9B%BE.jpg" alt="测试栅格地图"></p>
+<h2 id="3-8-SLAM"><a href="#3-8-SLAM" class="headerlink" title="3.8 SLAM"></a>3.8 SLAM</h2><p>地图创建流程为：</p>
+<ol>
+<li>激光雷达节点，发布雷达数据<code>/scan</code></li>
+<li>SLAM节点，接收雷达数据<code>/scan</code>，发送地图数据<code>/map</code></li>
+<li>其他节点，接收地图数据<code>/map</code></li>
+</ol>
+<p>也就是，SLAM节点接收雷达数据后，经过处理就可以得到地图数据了。</p>
+<p>其中SLAM节点有现成的软件包可以用，比如<code>Hector_Mapping</code></p>
+<h3 id="3-8-1-Hector-Mapping"><a href="#3-8-1-Hector-Mapping" class="headerlink" title="3.8.1 Hector_Mapping"></a>3.8.1 Hector_Mapping</h3><p>安装软件包</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs$ <span class="built_in">sudo</span> apt install ros-noetic-hector-mapping</span><br></pre></td></tr></table></figure>
+
+<p>运行Hector_Mapping节点</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs$ rosrun hector_mapping hector_mapping</span><br></pre></td></tr></table></figure>
+
+<p>rviz查看建图数据</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~$ rosrun rviz rviz</span><br></pre></td></tr></table></figure>
+
+
+
+<p>创建一个新的软件包<code>slam_pkg</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg slam_pkg roscpp rospy std_msgs</span><br><span class="line">Created file slam_pkg/package.xml</span><br><span class="line">Created file slam_pkg/CMakeLists.txt</span><br><span class="line">Created folder slam_pkg/include/slam_pkg</span><br><span class="line">Created folder slam_pkg/src</span><br><span class="line">Successfully created files <span class="keyword">in</span> /home/haozi/work/develop/TspCarWs/src/slam_pkg. Please adjust the values <span class="keyword">in</span> package.xml.</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Haozi
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/" title="ros1学习笔记">http://example.com/2025/06/01/04. Linux应用/ros1/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/ROS/" rel="tag"># ROS</a>
+              <a href="/tags/ROS1/" rel="tag"># ROS1</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/" rel="prev" title="充电桩国标协议解析">
+                  <i class="fa fa-angle-left"></i> 充电桩国标协议解析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/29/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/" rel="next" title="博客搭建指南">
+                  博客搭建指南 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Haozi</span>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
-description: ''
+title: Blog
+subtitle: '攻城狮装备搭建日记'
+description: '身体和心灵总有一个在路上'
 keywords:
-author: John Doe
+author: Haozi
 language: zh-CN
 timezone: ''
 
@@ -40,7 +40,7 @@ external_link:
   exclude: ''
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
 relative_link: false
 future: true
 syntax_highlighter: highlight.js
@@ -80,7 +80,7 @@ meta_generator: true
 date_format: YYYY-MM-DD
 time_format: HH:mm:ss
 ## updated_option supports 'mtime', 'date', 'empty'
-updated_option: 'mtime'
+updated_option: 'empty' # 不显示更新时间
 
 # Pagination
 ## Set per_page to 0 to disable pagination

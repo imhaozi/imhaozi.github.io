@@ -19,43 +19,43 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="CanOpen协议">
+    <meta name="description" content="CanOpen协议，调试电机时绝大多数电机采用的通信协议都是CanOpen，这里对CanOpen协议做个简单的记录。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CanOpen">
-<meta property="og:url" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/index.html">
+<meta property="og:url" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="CanOpen协议">
+<meta property="og:description" content="CanOpen协议，调试电机时绝大多数电机采用的通信协议都是CanOpen，这里对CanOpen协议做个简单的记录。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E6%8E%A5%E7%BA%BF%E6%96%B9%E5%BC%8F.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E4%BF%A1%E5%8F%B7%E7%94%B5%E5%B9%B3.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E7%BB%93%E6%9E%84.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E6%A0%BC%E5%BC%8F.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/EDS%E6%96%87%E4%BB%B6%E7%A4%BA%E4%BE%8B.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%92%8CSDO%E7%9A%84%E9%A2%84%E5%AE%9A%E4%B9%89%E8%BF%9E%E6%8E%A5ID%E5%88%86%E9%85%8D.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/SDO%E9%80%9A%E8%AE%AF%E5%8E%9F%E5%88%99.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E5%BF%AB%E9%80%9FSDO%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8B%E8%BD%BD%E5%8D%8F%E8%AE%AE.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BC%A0%E5%8D%8F%E8%AE%AE.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BD%8D%E6%9C%BA%E6%8E%A5%E6%94%B6%E5%88%B0%E7%9A%84PDO.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E9%80%9A%E8%AE%AF%E5%8F%82%E6%95%B0.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%9C%A8%E5%AF%B9%E8%B1%A1%E5%AD%97%E5%85%B8%E7%9A%84%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E6%8A%A5%E6%96%87%E5%92%8C%E7%89%B9%E6%AE%8A%E5%8D%8F%E8%AE%AE%E6%8A%A5%E6%96%87.jpg">
-<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E7%AE%A1%E7%90%86%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2%E5%9B%BE.jpg">
-<meta property="article:published_time" content="2022-12-31T16:00:00.000Z">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E6%8E%A5%E7%BA%BF%E6%96%B9%E5%BC%8F.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E4%BF%A1%E5%8F%B7%E7%94%B5%E5%B9%B3.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E6%A0%BC%E5%BC%8F.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/EDS%E6%96%87%E4%BB%B6%E7%A4%BA%E4%BE%8B.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%92%8CSDO%E7%9A%84%E9%A2%84%E5%AE%9A%E4%B9%89%E8%BF%9E%E6%8E%A5ID%E5%88%86%E9%85%8D.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/SDO%E9%80%9A%E8%AE%AF%E5%8E%9F%E5%88%99.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E5%BF%AB%E9%80%9FSDO%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8B%E8%BD%BD%E5%8D%8F%E8%AE%AE.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BC%A0%E5%8D%8F%E8%AE%AE.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BD%8D%E6%9C%BA%E6%8E%A5%E6%94%B6%E5%88%B0%E7%9A%84PDO.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E9%80%9A%E8%AE%AF%E5%8F%82%E6%95%B0.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%9C%A8%E5%AF%B9%E8%B1%A1%E5%AD%97%E5%85%B8%E7%9A%84%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E6%8A%A5%E6%96%87%E5%92%8C%E7%89%B9%E6%AE%8A%E5%8D%8F%E8%AE%AE%E6%8A%A5%E6%96%87.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E7%AE%A1%E7%90%86%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2%E5%9B%BE.jpg">
+<meta property="article:published_time" content="2023-06-30T16:00:00.000Z">
 <meta property="article:author" content="Haozi">
 <meta property="article:tag" content="Can">
 <meta property="article:tag" content="CanOpen">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E6%8E%A5%E7%BA%BF%E6%96%B9%E5%BC%8F.jpg">
+<meta name="twitter:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E6%8E%A5%E7%BA%BF%E6%96%B9%E5%BC%8F.jpg">
 
 
-<link rel="canonical" href="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/">
+<link rel="canonical" href="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/","path":"2023/01/01/07. 通信协议/canopen/","title":"CanOpen"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/","path":"2023/07/01/07. 通信协议/canopen/","title":"CanOpen"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>CanOpen | Blog</title>
@@ -237,7 +237,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -251,7 +251,7 @@
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
       <meta itemprop="name" content="CanOpen | Blog">
-      <meta itemprop="description" content="CanOpen协议">
+      <meta itemprop="description" content="CanOpen协议，调试电机时绝大多数电机采用的通信协议都是CanOpen，这里对CanOpen协议做个简单的记录。">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -266,7 +266,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2023-01-01 00:00:00" itemprop="dateCreated datePublished" datetime="2023-01-01T00:00:00+08:00">2023-01-01</time>
+      <time title="创建时间：2023-07-01 00:00:00" itemprop="dateCreated datePublished" datetime="2023-07-01T00:00:00+08:00">2023-07-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -281,15 +281,14 @@
   
 </div>
 
-            <div class="post-description">CanOpen协议</div>
+            <div class="post-description">CanOpen协议，调试电机时绝大多数电机采用的通信协议都是CanOpen，这里对CanOpen协议做个简单的记录。</div>
         </div>
       </header>
 
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>该笔记以快速应用为目的，我们是写应用的不是写CAN协议的，因此，对于只需要知道概念即可的内容或者跟使用的时候没关系的内容只会简单提一下。</p>
-<h1 id="1-CAN协议"><a href="#1-CAN协议" class="headerlink" title="1. CAN协议"></a>1. CAN协议</h1><ul>
+    <div class="post-body" itemprop="articleBody"><h1 id="1-CAN协议"><a href="#1-CAN协议" class="headerlink" title="1. CAN协议"></a>1. CAN协议</h1><ul>
 <li>和串口、I2C、SPI、485、232等通讯协议一样，CAN也是种传送数据的方式。</li>
 </ul>
 <h2 id="1-1-物理接线"><a href="#1-1-物理接线" class="headerlink" title="1.1 物理接线"></a>1.1 物理接线</h2><ul>
@@ -297,7 +296,7 @@
 <li>每个通讯节点的<code>CAN_H</code>接在一起，<code>CAN_L</code>接在一起。</li>
 <li>两端接两个120欧的电阻。</li>
 </ul>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E6%8E%A5%E7%BA%BF%E6%96%B9%E5%BC%8F.jpg" alt="CAN接线方式"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E6%8E%A5%E7%BA%BF%E6%96%B9%E5%BC%8F.jpg" alt="CAN接线方式"></p>
 <h2 id="1-2-信号传输"><a href="#1-2-信号传输" class="headerlink" title="1.2 信号传输"></a>1.2 信号传输</h2><ul>
 <li>线上的电位采用差分信号进行判别，抗干扰能力强。</li>
 <li>电平判断<ul>
@@ -306,7 +305,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E4%BF%A1%E5%8F%B7%E7%94%B5%E5%B9%B3.jpg" alt="CAN信号电平"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E4%BF%A1%E5%8F%B7%E7%94%B5%E5%B9%B3.jpg" alt="CAN信号电平"></p>
 <blockquote>
 <p>CAN总线在电平传输上，具有仲裁判断逻辑，优先级为：显性（低电平）&gt;隐形（高电平）！</p>
 </blockquote>
@@ -322,10 +321,10 @@
 <p>主要掌握数据帧，遥控帧基本上已经不用了。其他的先知道即可。 </p>
 </blockquote>
 <p>对于数据帧和遥控帧，帧结构都由以下7个段组成。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E7%BB%93%E6%9E%84.jpg" alt="帧结构"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E7%BB%93%E6%9E%84.jpg" alt="帧结构"></p>
 <p>该结构有两种格式：<strong>标准格式</strong>和<strong>扩展格式</strong>。可以看出，两种格式的区别仅在于仲裁段和控制段不同。</p>
 <p>每个段都有自己的格式，用户需要关注的段为：<strong>仲裁段</strong>、<strong>数据段</strong>。更具体的说是，<strong>仲裁段的 ID</strong>和<strong>数据段</strong>。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E6%A0%BC%E5%BC%8F.jpg" alt="CAN帧格式"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E6%A0%BC%E5%BC%8F.jpg" alt="CAN帧格式"></p>
 <p>仲裁段有一套仲裁机制，当总线上的各个节点同时发送设备时，根据ID优先级判断哪个节点的信息有效。<strong>ID 越小，优先级越高</strong>。</p>
 <blockquote>
 <p>更具体的仲裁机制还需要根据不同的段做出不同的反应，比如退出竞争、产生错误等。这里就不详细说了，有兴趣的可以再去详细了解。</p>
@@ -370,7 +369,7 @@
 <p>对象字典就是一个有序的对象组，描述了对应 CANopen 节点的所有参数，包括通讯数据的存放位置也列入其索引，这个表变成可以传递形式就叫做<strong>EDS文件</strong>（电子数据文档 Electronic Data Sheet）。</p>
 <p>其中，每个对象采用一个 16 位的索引值来寻址，这个索引值通常被称为<strong>索引</strong>，其范围在<strong>0x0000</strong>到<strong>0xFFFF</strong>之间。为了避免数据大量时无索引可分配，所以在某些索引下也定义了一个8 位的索引值，这个索引值通常被称为<strong>子索引</strong>，其范围是<strong>0x00</strong>到<strong>0xFF</strong>之间。每个索引内具体的参数，最大用<strong>32</strong>位的变量来表示，四个字节。</p>
 <p>如下图是某遵循 CANopen 协议的电机的 EDS 文件。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/EDS%E6%96%87%E4%BB%B6%E7%A4%BA%E4%BE%8B.jpg" alt="EDS文件示例"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/EDS%E6%96%87%E4%BB%B6%E7%A4%BA%E4%BE%8B.jpg" alt="EDS文件示例"></p>
 <blockquote>
 <p>EDS 文件是每个节点都有的，采用字典的形式保存了该节点的参数等信息。其他节点可以通过索引等信息访问或者修改这些信息。</p>
 </blockquote>
@@ -405,7 +404,7 @@
 <p>另外，不同类别对象的索引，是有规定的，不是随便定的。</p>
 </blockquote>
 <h3 id="2-3-2-对象编号"><a href="#2-3-2-对象编号" class="headerlink" title="2.3.2 对象编号"></a>2.3.2 对象编号</h3><p>CANopen 预定义了强制性的缺省标识符（CAN-ID）分配表，该分配表是基于11 位CAN-ID 的标准帧格式。将其划分为<strong>4 位的功能码（Function-ID）<strong>和</strong>7 位的节点号（Node-ID）</strong>。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%92%8CSDO%E7%9A%84%E9%A2%84%E5%AE%9A%E4%B9%89%E8%BF%9E%E6%8E%A5ID%E5%88%86%E9%85%8D.jpg" alt="PDO和SDO的预定义连接ID分配"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%92%8CSDO%E7%9A%84%E9%A2%84%E5%AE%9A%E4%B9%89%E8%BF%9E%E6%8E%A5ID%E5%88%86%E9%85%8D.jpg" alt="PDO和SDO的预定义连接ID分配"></p>
 <p>从这张图中，要搞清楚一个概念。</p>
 <ul>
 <li><p>节点号：一个网络中的每个节点都有一个自己的编号，用 7bit 表示，即，一个网络中最多能有127个通讯节点（0不行）。</p>
@@ -425,13 +424,13 @@
 <li><p>接收方（服务器）：成功接收后，回应 CAN-ID 为<code>580h + Node-ID</code>的报文。这里的 Node-ID 也是是接收方（刚刚的发送方）的节点地址，数据长度均为8字节。</p>
 </li>
 </ul>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/SDO%E9%80%9A%E8%AE%AF%E5%8E%9F%E5%88%99.jpg" alt="SDO通讯原则"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/SDO%E9%80%9A%E8%AE%AF%E5%8E%9F%E5%88%99.jpg" alt="SDO通讯原则"></p>
 <p>如下图中的最后两行，为 CANopen 预定义报文的 SDO 报文中的 ID 分类。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg" alt="PDO与SDO的CAN-ID定义"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg" alt="PDO与SDO的CAN-ID定义"></p>
 <h3 id="3-1-2-数据设置"><a href="#3-1-2-数据设置" class="headerlink" title="3.1.2 数据设置"></a>3.1.2 数据设置</h3><p>在发送数据时分为两类，<code>快速SDO协议</code>、<code>普通SDO协议</code>。</p>
 <p><strong>快速SDO协议</strong>（常用）</p>
 <p>最常用最常见的 SDO 协议是快速 SDO，快速，就是1次来回就搞定。前提是读取和写入的值不能大于 32 位。如图所示，为快速 SDO 协议的示意图。命令中直接包含了要读写的索引、子索引、数据。可谓直接命中。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E5%BF%AB%E9%80%9FSDO%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg" alt="快速SDO示意图"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E5%BF%AB%E9%80%9FSDO%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg" alt="快速SDO示意图"></p>
 <p>通过快速 SDO，可以直接对 CANopen 节点的对象字典中的值进行读取和修改，所以在做参数配置之外，也经常作为关键性数据传输之用。比如 CANopen 控制机器人的电机转动角度时，就使用 SDO 来传输，保证可靠。</p>
 <hr>
 <p>举个例子，保利时电机将电机设置为转矩模式。</p>
@@ -450,16 +449,16 @@
 <p><strong>普通SDO协议</strong>（了解）</p>
 <p>当需要传输的值超过 32 位时，就不能使用快速 SDO 传输。必须使用普通 SDO 进行分帧传输。在应用中较少用到。<br>普通 SDO 协议难点在于分包逻辑与 CS 命令符的变化。依然难以记忆。<br>当然普通 SDO 的 CAN 帧 ID 与快速 SDO 相同，依然发送方（客户端）发送的报文CAN-ID为<code>600h + Node-ID</code>，接收方（服务器）成功接收后，回应CAN-ID为<code>580h + Node-ID</code>的报文。</p>
 <p><strong>下载协议download protocol</strong></p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8B%E8%BD%BD%E5%8D%8F%E8%AE%AE.jpg" alt="下载协议"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8B%E8%BD%BD%E5%8D%8F%E8%AE%AE.jpg" alt="下载协议"></p>
 <p><strong>上传协议upload protocol</strong></p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BC%A0%E5%8D%8F%E8%AE%AE.jpg" alt="上传协议"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BC%A0%E5%8D%8F%E8%AE%AE.jpg" alt="上传协议"></p>
 <h2 id="3-2-过程数据对象PDO"><a href="#3-2-过程数据对象PDO" class="headerlink" title="3.2 过程数据对象PDO"></a>3.2 过程数据对象PDO</h2><p>PDO 属于过程数据，用来传输实时数据，即单向传输，无需接收节点回应 CAN 报文来确认，属于“生产消费”模型 PDO。数据长度被限制为1~8 字节。最多只要1帧就可以把一条信息或者一个变量传递结束。</p>
 <p>但是PDO的收发不只是简单的设置ID和DATA的问题，这个相对来说有点麻烦。</p>
 <h3 id="3-2-1-ID设置"><a href="#3-2-1-ID设置" class="headerlink" title="3.2.1 ID设置"></a>3.2.1 ID设置</h3><ul>
 <li>发送方：根据自己属于哪一类对象 PDO 对象决定自己的 ID。比如，发送 CAN-ID 为<code>180h + Node-ID</code>的报文，其中 Node-ID 为发送方（自己）的节点地址，用于告诉是谁发送出去的。数据长度 1 - 8 字节。</li>
 </ul>
 <p>如下图中的前面 8 行，为 CANopen 预定义报文的 PDO 报文中的 ID 分类。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg" alt="PDO与SDO的CAN-ID定义"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg" alt="PDO与SDO的CAN-ID定义"></p>
 <p>当然，如果某个节点需要传递的资源特别多，则有出现例如 TPDO5 之类的数据对象，而它们的 CAN-ID 定义就需要打破预定义的规则，比如我们可以定义Node-ID为1的节点中 TPDO5 是 182h，这里的 PDO 的 COB-ID 中的低 7 位不再是表示 Node-ID。其实所有的 PDO 的 COB-ID 与 Node-ID 无必然规则上的联系。</p>
 <hr>
 <p>也举个例子，保利时电机驱动器接通后，会一直循环上报编码器位置。</p>
@@ -468,11 +467,11 @@
 <li>ID：<code>0x01 82</code>，其中0x2是驱动器自己的节点号。（0x01 80 可以对照到上图中的TPDO1）。</li>
 <li>DATA：<code>0x2F 60 60 00</code>，为编码器的读数。</li>
 </ul>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BD%8D%E6%9C%BA%E6%8E%A5%E6%94%B6%E5%88%B0%E7%9A%84PDO.jpg" alt="上位机接收到的PDO"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BD%8D%E6%9C%BA%E6%8E%A5%E6%94%B6%E5%88%B0%E7%9A%84PDO.jpg" alt="上位机接收到的PDO"></p>
 <p>这就是一个上位机接收PDO对象的案例。这里主要是为了看这个ID，数据先不用在意，等会看后面。</p>
 <hr>
 <h3 id="3-2-2-传输方式"><a href="#3-2-2-传输方式" class="headerlink" title="3.2.2 传输方式"></a>3.2.2 传输方式</h3><p>PDO的两种传输方式：同步传输和异步传输。如图所示，1、2为异步传输，3、4为同步传输。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F.jpg" alt="PDO的传输形式"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F.jpg" alt="PDO的传输形式"></p>
 <p>上面的例子中，就是用的第一种异步传输的方式。</p>
 <h3 id="3-2-3-数据设置"><a href="#3-2-3-数据设置" class="headerlink" title="3.2.3 数据设置"></a>3.2.3 数据设置</h3><p>PDO 的通信数据中，定义了该设备所使用的 COB-ID、传输类型、定时周期等。</p>
 <p>其中，RPDO通讯参数位于对象字典索引的 1400h to 15FFh，TPDO通讯参数位于对象字典索引的 1800h to 19FFh。</p>
@@ -480,7 +479,7 @@
 <p>前面说过，不同类别对象的索引，是有规定的，不是随便定的。这里就看到了。</p>
 </blockquote>
 <p>每条索引代表一个PDO的通信参数集，其中的子索引分别指向具体的各种参数。如表所示。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E9%80%9A%E8%AE%AF%E5%8F%82%E6%95%B0.jpg" alt="PDO的通讯参数"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E9%80%9A%E8%AE%AF%E5%8F%82%E6%95%B0.jpg" alt="PDO的通讯参数"></p>
 <ul>
 <li>Number of entries 参数条目数量：即本索引中有几条参数；</li>
 <li>COB-ID：即这个PDO发出或者接收的对应CAN帧ID；</li>
@@ -497,7 +496,7 @@
 <li>TPDO 通讯参数 1800h to 19FFh，映射参数 1A00h to 1BFFh，数据存放为 2000h 之后厂商自定义区域。</li>
 </ul>
 <p>有点懵逼哈，整个例子，看下图。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%9C%A8%E5%AF%B9%E8%B1%A1%E5%AD%97%E5%85%B8%E7%9A%84%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.jpg" alt="PDO在对象字典的映射关系"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%9C%A8%E5%AF%B9%E8%B1%A1%E5%AD%97%E5%85%B8%E7%9A%84%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.jpg" alt="PDO在对象字典的映射关系"></p>
 <p>解释一下这张图：</p>
 <ul>
 <li>第一个表：从 Index 索引可以看出这是个 TPDO 对象。子索引和对应的对象内容，定义了该对象的ID、发送类型等。</li>
@@ -551,7 +550,7 @@
 </ul>
 <p>NMT主机和NMT从机之间通讯的报文就称为<strong>NMT网络管理报文</strong>。管理报文负责层管理、网络管理和ID分配服务。例如，初始化、配置和网络管理（其中包括节点保护）。</p>
 <p>另外，为了<strong>协调各个节点的同步、心跳、时间、错误提示</strong>等通讯控制，CANopen还定义了一系列<strong>特殊协议</strong>（Special protocols）报文。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E6%8A%A5%E6%96%87%E5%92%8C%E7%89%B9%E6%AE%8A%E5%8D%8F%E8%AE%AE%E6%8A%A5%E6%96%87.jpg" alt="NMT报文和特殊协议报文"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E6%8A%A5%E6%96%87%E5%92%8C%E7%89%B9%E6%AE%8A%E5%8D%8F%E8%AE%AE%E6%8A%A5%E6%96%87.jpg" alt="NMT报文和特殊协议报文"></p>
 <p>上图中，绿色底纹的常用。</p>
 <p>每个<strong>CANopen从节点</strong>的 CANopen 协议栈中，必须具备 NMT 管理的相应代码。这是节点具备 CANopen 协议的最基本的要素。</p>
 <h2 id="4-2-NMT节点状态"><a href="#4-2-NMT节点状态" class="headerlink" title="4.2 NMT节点状态"></a>4.2 NMT节点状态</h2><p>NMT管理涉及到一个CANopen节点从上电开始的6钟状态，包括：</p>
@@ -564,7 +563,7 @@
 <li>停止状态（Stopped）：节点收到 NMT 主机发来的停止命令后，节点的 PDO 通信被停止，但 SDO 和 NMT 网络管理依然可以对节点进行操作；</li>
 </ol>
 <p>除了初始化状态，NMT 主机通过 NMT 命令可以让网络中任意一个的 CANopen 节点进行其他5种状态的切换。当然 CANopen 节点也可以程序自动完成这些状态的切换。</p>
-<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E7%AE%A1%E7%90%86%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2%E5%9B%BE.jpg" alt="NMT管理状态转换图"></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E7%AE%A1%E7%90%86%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2%E5%9B%BE.jpg" alt="NMT管理状态转换图"></p>
 <h2 id="4-3-NMT节点报文"><a href="#4-3-NMT节点报文" class="headerlink" title="4.3 NMT节点报文"></a>4.3 NMT节点报文</h2><ul>
 <li>节点上线报文：任何一个 CANopen 从站上线后，为了提示主站它已经加入网络（便于热插拔），或者避免与其他从站 Node-ID 冲突。这个从站必须发出<strong>节点上线报文（boot-up）</strong>，节点上线报文的<strong>ID为 700h + Node-ID</strong>，<strong>数据为1个字节0</strong>。生产者为 CANopen 从站。</li>
 </ul>
@@ -620,7 +619,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/" title="CanOpen">http://example.com/2023/01/01/07. 通信协议/canopen/</a>
+      <a href="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/" title="CanOpen">http://example.com/2023/07/01/07. 通信协议/canopen/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！

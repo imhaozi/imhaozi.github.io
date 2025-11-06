@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="RT-Thread Nano系统移植记录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rtthread_nano移植">
+<meta property="og:url" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/index.html">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="RT-Thread Nano系统移植记录">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/1.1.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/1.2.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/1.3.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/2.1.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/2.2.png">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/2.3.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/2.4.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/2.5.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/4.1.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/4.2.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/4.3.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/4.4.jpg">
+<meta property="og:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/4.5.jpg">
+<meta property="article:published_time" content="2020-10-01T02:01:00.000Z">
+<meta property="article:author" content="Haozi">
+<meta property="article:tag" content="RTOS">
+<meta property="article:tag" content="RT-Thread">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/1.1.jpg">
+
+
+<link rel="canonical" href="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/","path":"2020/10/01/03. RTOS/rtthread_nano/","title":"rtthread_nano移植"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>rtthread_nano移植 | Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">攻城狮装备搭建日记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E5%B7%A5%E7%A8%8B%E7%89%88%E6%9C%AC%E5%8F%8A%E7%A7%BB%E6%A4%8D"><span class="nav-text">第一部分：工程版本及移植</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%BD%BF%E7%94%A8-Keil-MDK-%E7%A7%BB%E6%A4%8D"><span class="nav-text">1. 使用 Keil MDK 移植</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Nano-Pack-%E5%AE%89%E8%A3%85"><span class="nav-text">1.1 Nano Pack 安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%B8%80%EF%BC%9A%E6%89%8B%E5%8A%A8%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85"><span class="nav-text">方式一：手动下载安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%BC%8F%E4%BA%8C%EF%BC%9A%E5%9C%A8Keil%E4%B8%AD%E5%AE%89%E8%A3%85"><span class="nav-text">方式二：在Keil中安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Nano-%E7%89%88%E6%9C%AC%E7%A7%BB%E6%A4%8D"><span class="nav-text">1.2 Nano 版本移植</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E9%80%82%E9%85%8D%E5%B7%A5%E4%BD%9C"><span class="nav-text">1.3 适配工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-%E4%B8%AD%E6%96%AD%E4%B8%8E%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-text">1.3.1 中断与异常处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-%E7%B3%BB%E7%BB%9F%E6%97%B6%E9%92%9F%E9%85%8D%E7%BD%AE"><span class="nav-text">1.3.2 系统时钟配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-3-%E5%86%85%E5%AD%98%E5%A0%86%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-text">1.3.3 内存堆初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-LED%E9%97%AA%E7%83%81"><span class="nav-text">1.4 LED闪烁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-%E8%A3%81%E5%89%AA%E5%86%85%E6%A0%B8"><span class="nav-text">1.5 裁剪内核</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8-CubeMX-%E7%A7%BB%E6%A4%8D"><span class="nav-text">2. 使用 CubeMX 移植</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Nano-Pack-%E5%AE%89%E8%A3%85"><span class="nav-text">2.1 Nano Pack 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Nano-%E7%89%88%E6%9C%AC%E7%A7%BB%E6%A4%8D"><span class="nav-text">2.2 Nano 版本移植</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E9%80%82%E9%85%8D%E5%B7%A5%E4%BD%9C"><span class="nav-text">2.3 适配工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-%E4%B8%AD%E6%96%AD%E4%B8%8E%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-text">2.3.1 中断与异常处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-%E7%B3%BB%E7%BB%9F%E6%97%B6%E9%92%9F%E9%85%8D%E7%BD%AE"><span class="nav-text">2.3.2 系统时钟配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-%E5%86%85%E5%AD%98%E5%A0%86%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-text">2.3.3 内存堆初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-LED%E9%97%AA%E7%83%81"><span class="nav-text">2.4 LED闪烁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-%E8%A3%81%E5%89%AA%E5%86%85%E6%A0%B8"><span class="nav-text">2.5 裁剪内核</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E4%BD%BF%E7%94%A8-RT-Thread-Studio-%E5%88%9B%E5%BB%BA"><span class="nav-text">3. 使用 RT-Thread Studio 创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E7%A7%BB%E6%A4%8D-FinSH"><span class="nav-text">4. 移植 FinSH</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E6%89%93%E5%8D%B0%E5%8A%9F%E8%83%BD"><span class="nav-text">4.1 打印功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E7%A7%BB%E6%A4%8D-FinSH-%E7%BB%84%E4%BB%B6"><span class="nav-text">4.2 移植 FinSH 组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E6%9B%B4%E6%94%B9%E4%B8%AD%E6%96%AD%E6%96%B9%E5%BC%8F"><span class="nav-text">4.3 更改中断方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%86%85%E6%A0%B8%E9%85%8D%E7%BD%AE%E5%8F%8A%E8%A3%81%E5%89%AA"><span class="nav-text">5. 内核配置及裁剪</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Haozi</p>
+  <div class="site-description" itemprop="description">身体和心灵总有一个在路上</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/imhaozi" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;imhaozi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/330622220" title="BiliBili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;330622220" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>BiliBili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="rtthread_nano移植 | Blog">
+      <meta itemprop="description" content="RT-Thread Nano系统移植记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          rtthread_nano移植
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-10-01 10:01:00" itemprop="dateCreated datePublished" datetime="2020-10-01T10:01:00+08:00">2020-10-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/RTOS/" itemprop="url" rel="index"><span itemprop="name">RTOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">RT-Thread Nano系统移植记录</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>使用的开发板：RTT&amp;正点原子的潘多拉loT Board开发板。主控：STM32L475VET6</p>
+<p>软件：CubeMX 6.7.0、Keil 5.38、Nano 3.1.5</p>
+<h1 id="第一部分：工程版本及移植"><a href="#第一部分：工程版本及移植" class="headerlink" title="第一部分：工程版本及移植"></a>第一部分：工程版本及移植</h1><p>移植的方式有好多种（任选一种）</p>
+<ol>
+<li>基于 Keil MDK 的移植；（最常用的工具）</li>
+<li>基于 CubeMX 的移植；（最常用的工具）</li>
+<li>基于官方软件 RT-Thread Studio；（自动创建工程，比较方便）</li>
+</ol>
+<h1 id="1-使用-Keil-MDK-移植"><a href="#1-使用-Keil-MDK-移植" class="headerlink" title="1. 使用 Keil MDK 移植"></a>1. 使用 Keil MDK 移植</h1><p>一共需要两步：</p>
+<ol>
+<li>创建一份裸机代码；</li>
+<li>在 Keil 软件中安装 RT-Thread Nano Pack；</li>
+<li>在源工程中添加 RT-Thread Nano 源代码；</li>
+<li>适配工作，主要从 中断、时钟、内存这几个方面进行适配，实现移植；</li>
+<li>添加LED闪烁例程进行验证；</li>
+<li>裁剪内核，通过配置文件 rtconfig.h 实现对系统的裁剪。</li>
+</ol>
+<blockquote>
+<p>裸机代码获取：</p>
+<ol>
+<li><p>这里可以直接使用 CubeMX 生成一份，配置上时钟、调试接口、LED的IO口之后，直接点击生成即可。下面的案例就是使用这种方式生成的。</p>
+</li>
+<li><p>也可以按照正点原子的教程，从固件包里面新建一个。</p>
+<p>   这两种方法在工程目录上有一点点差距，内容差不多，移植的时候找到对应的地方就可以了。</p>
+</li>
+</ol>
+</blockquote>
+<h2 id="1-1-Nano-Pack-安装"><a href="#1-1-Nano-Pack-安装" class="headerlink" title="1.1 Nano Pack 安装"></a>1.1 Nano Pack 安装</h2><p>RT-Thread Master 的源码可以从<a target="_blank" rel="noopener" href="https://github.com/RT-Thread/rt-thread%E4%B8%8B%E8%BD%BD%E3%80%82">https://github.com/RT-Thread/rt-thread下载。</a></p>
+<p>Nano就是从里面扣出来的，去掉了一些组件和各种开发板的BSP，保留了OS的核心功能，但足够我们使用。</p>
+<h3 id="方式一：手动下载安装"><a href="#方式一：手动下载安装" class="headerlink" title="方式一：手动下载安装"></a>方式一：手动下载安装</h3><p>RT-Thread 官方将抠出来的 Nano 作为一个Package放在了KEIL网站：<a target="_blank" rel="noopener" href="http://www.keil.com/dd2/pack/%EF%BC%8C%E6%89%93%E5%BC%80%E8%BF%99%E6%9D%A1%E8%BF%9E%E6%8E%A5%EF%BC%8C%E7%84%B6%E5%90%8E%E6%8B%89%E5%88%B0%E4%B8%8B%E9%9D%A2%E6%89%BE%E5%88%B0RealThread%E5%8D%B3%E5%8F%AF%E4%B8%8B%E8%BD%BD%E3%80%82">http://www.keil.com/dd2/pack/，打开这条连接，然后拉到下面找到RealThread即可下载。</a></p>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/1.1.jpg" alt="1.1.1"></p>
+<p>下载完成之后，直接双击安装即可，路径会自动选择Keil的安装路径。</p>
+<p>安装完成之后，在：<u>E:\Keil5 MDK\PACK\RealThread\RT-Thread\3.1.5</u> 路径(Keil的安装路径)下，即可看到下载的源码。</p>
+<h3 id="方式二：在Keil中安装"><a href="#方式二：在Keil中安装" class="headerlink" title="方式二：在Keil中安装"></a>方式二：在Keil中安装</h3><ol>
+<li>打开Keil，点击包安装图标，点击右侧的 Pack，展开 Generic，可以找到 RealThread::RT-Thread；</li>
+<li>点击 Action 栏对应的 Install ，就可以在线安装 Nano Pack 了。</li>
+<li>另外，如果需要安装其他版本，则需要展开 RealThread::RT-Thread，进行选择。</li>
+<li>图中 Remove 代表已经安装了。</li>
+</ol>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/1.2.jpg" alt="1.1.2"></p>
+<h2 id="1-2-Nano-版本移植"><a href="#1-2-Nano-版本移植" class="headerlink" title="1.2 Nano 版本移植"></a>1.2 Nano 版本移植</h2><p>在 Manage Rum-Time Environment 里 “Software Component” 栏找到 RTOS，Variant 栏选择 RT-Thread，然后勾选 kernel，点击 “OK” 就添加 RT-Thread 内核到工程了。</p>
+<p>然后在左侧工程栏就可以看到相关代码了。</p>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/1.3.jpg" alt="1.1.3"></p>
+<p>其中的文件包含：</p>
+<p><strong>Cortex-M 芯片内核移植代码</strong></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">context<span class="emphasis">_rvds.s</span></span><br><span class="line"><span class="emphasis">cpuport.c</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Kernel 文件</strong></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">clock.c</span><br><span class="line">components.c</span><br><span class="line">device.c</span><br><span class="line">idle.c</span><br><span class="line">ipc.c</span><br><span class="line">irq.c</span><br><span class="line">kservice.c</span><br><span class="line">mem.c</span><br><span class="line">mempool.c</span><br><span class="line">object.c</span><br><span class="line">scheduler.c</span><br><span class="line">thread.c</span><br><span class="line">timer.c</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置文件</strong></p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">board.c</span><br><span class="line">rtconfig.h</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>如果不想使用CMSIS添加源码，也可以直接把下载的源码复制到工程中，对照着上面的文件名添加进去即可。注意可能同一个文件所处的位置略微有些差异，其余的部分都是一样的。</p>
+<p>在工程文件夹的 Middlewares 文件夹中创建一个 RT-Thread 文件夹。</p>
+<ul>
+<li>Middlewares&#x2F;RT-Thread<ul>
+<li>bsp<ul>
+<li>_template<ul>
+<li>board.c</li>
+<li>rtconfig.h</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>components<ul>
+<li>device（都要保留，后续可能用到）<ul>
+<li>device.c</li>
+</ul>
+</li>
+<li>finsh（都要保留，第四章用到）<ul>
+<li>文件都保留</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>include（都要保留）</li>
+<li>libcpu<ul>
+<li>arm<ul>
+<li>cortex-m4<ul>
+<li>context_rvds.S</li>
+<li>cpuport.c</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>src（都要保留）</li>
+</ul>
+</li>
+</ul>
+<p>剩下的没提到的都删掉。</p>
+<p>然后在 Keil MDK 内添加文件和头文件即可。后续学习内核的时候，这里用的就是这种方式移植的内核（因为与RTT无关的冗余文件少）。</p>
+</blockquote>
+<h2 id="1-3-适配工作"><a href="#1-3-适配工作" class="headerlink" title="1.3 适配工作"></a>1.3 适配工作</h2><h3 id="1-3-1-中断与异常处理"><a href="#1-3-1-中断与异常处理" class="headerlink" title="1.3.1 中断与异常处理"></a>1.3.1 中断与异常处理</h3><blockquote>
+<p>RT-Thread 会接管异常处理函数 <code>HardFault_Handler()</code> 和悬挂处理函数 <code>PendSV_Handler()</code>，这两个函数已由 RT-Thread 实现，所以需要删除工程里中断服务例程文件中的这两个函数，避免在编译时产生重复定义。如果此时对工程进行编译，没有出现函数重复定义的错误，则不用做修改。</p>
+</blockquote>
+<p>在<code>stm32l4xx_it.c</code>文件中找到上述两个函数，直接注释掉即可（也可以在使用CubeMX生成代码的时候，直接不生成这部分中断代码）。</p>
+<h3 id="1-3-2-系统时钟配置"><a href="#1-3-2-系统时钟配置" class="headerlink" title="1.3.2 系统时钟配置"></a>1.3.2 系统时钟配置</h3><blockquote>
+<p>在 board.c 中实现 <code>系统时钟配置</code>（为 MCU、外设提供工作时钟）与 <code>os tick </code> 的配置 （为操作系统提供心跳 &#x2F; 节拍）。</p>
+</blockquote>
+<p>在<code>board.c</code>文件中修改如下函数，以完成系统初始化和 OS Tick 的配置。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;main.h&quot;</span></span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">void</span> <span class="title function_">SystemClock_Config</span><span class="params">(<span class="type">void</span>)</span>; <span class="comment">// 此函数默认是在main.c中，此处声明一下</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* cortex-m 架构使用 SysTick_Handler() */</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">SysTick_Handler</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  rt_interrupt_enter(); <span class="comment">/* 进入中断时必须调用 */</span></span><br><span class="line"></span><br><span class="line">  rt_tick_increase();  <span class="comment">/* RT-Thread 系统时钟计数 */</span></span><br><span class="line"></span><br><span class="line">  rt_interrupt_leave(); <span class="comment">/* 退出中断时必须调用 */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This function will initial your board.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">rt_hw_board_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/* </span></span><br><span class="line"><span class="comment">     * TODO 1: OS Tick Configuration</span></span><br><span class="line"><span class="comment">     * Enable the hardware timer and call the rt_os_tick_callback function</span></span><br><span class="line"><span class="comment">     * periodically with the frequency RT_TICK_PER_SECOND. </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">	  <span class="comment">/* 1、系统、时钟初始化 */</span></span><br><span class="line">	  HAL_Init(); <span class="comment">// 初始化 HAL 库</span></span><br><span class="line">	  SystemClock_Config(); <span class="comment">// 配置系统时钟</span></span><br><span class="line">	  SystemCoreClockUpdate(); <span class="comment">// 对系统时钟进行更新</span></span><br><span class="line">	</span><br><span class="line">	  <span class="comment">/* 2、OS Tick 频率配置，RT_TICK_PER_SECOND = 1000 表示 1ms 触发一次中断 */</span></span><br><span class="line">	  SysTick_Config(SystemCoreClock / RT_TICK_PER_SECOND);</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">    <span class="comment">/* Call components board initial (use INIT_BOARD_EXPORT()) */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> RT_USING_COMPONENTS_INIT</span></span><br><span class="line">    rt_components_board_init();</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(RT_USING_USER_MAIN) &amp;&amp; defined(RT_USING_HEAP)</span></span><br><span class="line">    rt_system_heap_init(rt_heap_begin_get(), rt_heap_end_get());</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另外，<code>SysTick_Handler()</code>函数在裸机工程中应该也有，也需要去<code>stm32l4xx_it.c</code>文件中注释掉。</p>
+<h3 id="1-3-3-内存堆初始化"><a href="#1-3-3-内存堆初始化" class="headerlink" title="1.3.3 内存堆初始化"></a>1.3.3 内存堆初始化</h3><blockquote>
+<p>系统内存堆的初始化在 board.c 中的 rt_hw_board_init() 函数中完成</p>
+<p>内存堆功能是否使用取决于宏 RT_USING_HEAP 是否开启（位于<code>rtconfig.h</code>中）</p>
+<p>开启系统 heap 将可以使用动态内存功能，如使用 rt_malloc、rt_free 以及各种系统动态创建对象的 API。</p>
+<p>若需要使用系统内存堆功能，则打开 RT_USING_HEAP 宏定义即可，此时内存堆初始化函数 rt_system_heap_init() 将被调用。</p>
+</blockquote>
+<p>如果需要使用动态创建线程等对象，则需要配置。</p>
+<h2 id="1-4-LED闪烁"><a href="#1-4-LED闪烁" class="headerlink" title="1.4 LED闪烁"></a>1.4 LED闪烁</h2><p>在<code>main.c</code>中添加如下代码（注意：LED引脚初始化的代码在源代码中已经配置过了）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span>	<span class="comment">// 线程相关</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  MX_GPIO_Init();</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">  &#123;</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);</span><br><span class="line">	  rt_thread_mdelay(<span class="number">500</span>);</span><br><span class="line">	  </span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);</span><br><span class="line">	  rt_thread_mdelay(<span class="number">500</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意</p>
+<ol>
+<li>这里使用的延时函数是由RTT提供的，此函数引起系统调度，切换到其他线程运行。</li>
+<li>这里的main函数中不再执行初始化动作，RTT系统启动时已经做好了。</li>
+</ol>
+<p>至此，将工程编译并下载，即可看到LED闪烁了。</p>
+<h2 id="1-5-裁剪内核"><a href="#1-5-裁剪内核" class="headerlink" title="1.5 裁剪内核"></a>1.5 裁剪内核</h2><p>如果对内核的部分功能用不着，可以对其进行裁剪。</p>
+<p>裁剪是通过<code>rtconfig.h</code>文件进行配置的。具体参照[内核裁剪](#5. 内核配置及裁剪)</p>
+<p>先保持默认的，能用就行，后面分析阶段再说。</p>
+<h1 id="2-使用-CubeMX-移植"><a href="#2-使用-CubeMX-移植" class="headerlink" title="2. 使用 CubeMX 移植"></a>2. 使用 CubeMX 移植</h1><p>其实和使用 Keil MDK 移植的步骤基本一样，只是添加源代码的过程不一样。</p>
+<ol>
+<li>在 CubeMX 软件中安装 RT-Thread Nano pack 安装包；</li>
+<li>在 CubeMX 配置界面添加 RT-Thread Nano 源码，然后生成工程；</li>
+<li>适配工作，主要从 中断、时钟、内存这几个方面进行适配，实现移植；</li>
+<li>添加LED闪烁例程进行验证；</li>
+<li>裁剪，通过配置文件 rtconfig.h 实现对系统的裁剪。</li>
+</ol>
+<h2 id="2-1-Nano-Pack-安装"><a href="#2-1-Nano-Pack-安装" class="headerlink" title="2.1 Nano Pack 安装"></a>2.1 Nano Pack 安装</h2><ol>
+<li>在 CubeMX 中选择完芯片后，点击 Software Packs -&gt; Manage Software Packs；</li>
+<li>在弹出的界面下方，点击 From Url 后，弹出新的界面；</li>
+<li>在弹出的界面下方。点击 New；</li>
+<li>在弹出的输入框中输入：<a target="_blank" rel="noopener" href="https://www.rt-thread.org/download/cube/RealThread.RT-Thread.pdsc">https://www.rt-thread.org/download/cube/RealThread.RT-Thread.pdsc</a></li>
+<li>然后点击 Check，等待检查通过后安装即可。</li>
+</ol>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/2.1.jpg" alt="1.2.1"></p>
+<h2 id="2-2-Nano-版本移植"><a href="#2-2-Nano-版本移植" class="headerlink" title="2.2 Nano 版本移植"></a>2.2 Nano 版本移植</h2><p>点击 <code>Softwares Packages</code>-&gt;<code>Select Components</code>，进入组件配置界面，选择 <code>RealThread</code>， 然后根据需求选择 RT-Thread 组件，然后点击 OK 按钮。</p>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/2.2.png" alt="1.2.2"></p>
+<p>然后在左侧栏对组件和参数进行配置。</p>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/2.3.jpg" alt="1.2.3"></p>
+<blockquote>
+<p>RT-Thread Nano 软件包中包含 kernel, shell 和 device 三个部分，仅选择 kernel 表示只使用 RT-Thread 内核，工程中会添加内核代码；选择 kernel 与 shell 表示在使用 RT-Thread Nano 的基础上使用 FinSH Shell 组件，工程中会添加内核代码与 FinSH 组件的代码，FinSH 的移植详见 <a target="_blank" rel="noopener" href="https://www.rt-thread.org/document/site/#/rt-thread-version/rt-thread-nano/finsh-port/an0045-finsh-port">《在 RT-Thread Nano 上添加控制台与 FinSH》</a>。再选择 device 表示使用 rt-thread 的 device 框架，用户基于此框架编写外设驱动并注册后，就可以使用 device 统一接口操作外设。</p>
+</blockquote>
+<p>剩下的按照需要的功能进行配置即可（记得把串口加上，否则后面<code>board.c</code>中的串口初始化会报错，如果用不到串口可以不用配置，把其中串口初始化报错的部分注释掉就行，后面还会有用）。</p>
+<h2 id="2-3-适配工作"><a href="#2-3-适配工作" class="headerlink" title="2.3 适配工作"></a>2.3 适配工作</h2><h3 id="2-3-1-中断与异常处理"><a href="#2-3-1-中断与异常处理" class="headerlink" title="2.3.1 中断与异常处理"></a>2.3.1 中断与异常处理</h3><p>RT-Thread 操作系统重定义 <code>HardFault_Handler</code>、<code>PendSV_Handler</code>、<code>SysTick_Handler</code> 中断函数，为了避免重复定义的问题，在生成工程之前，需要在中断配置中，代码生成的选项中，取消选择三个中断函数（对应注释选项是 <code>Hard fault interrupt</code>, <code>Pendable request</code>, <code>Time base :System tick timer</code>），最后点击生成代码，具体操作如下图 所示：</p>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/2.4.jpg" alt="1.2.4"></p>
+<blockquote>
+<p>和使用 Keil MDK 不同的是，这里直接不让生成就好了，而不是生成了重新注释。</p>
+<p>当然，使用 Keil MDK 创建源工程的时候，也可以不生成，就不用再注释了。</p>
+</blockquote>
+<h3 id="2-3-2-系统时钟配置"><a href="#2-3-2-系统时钟配置" class="headerlink" title="2.3.2 系统时钟配置"></a>2.3.2 系统时钟配置</h3><p>使用 CubeMX的话，生成的代码其实已经配置好了。</p>
+<p>可以对比 1.3.2 小节的代码看一看。</p>
+<h3 id="2-3-3-内存堆初始化"><a href="#2-3-3-内存堆初始化" class="headerlink" title="2.3.3 内存堆初始化"></a>2.3.3 内存堆初始化</h3><p>同 1.3.3 小节。</p>
+<blockquote>
+<p>这里注意，生成的工程目录中有个：RT-Thread 文件夹。里面只有一个<code>rtconfig.h</code>文件。</p>
+<p>但是生成的工程中，没有包含这个文件夹，所以会发现根本找不到配置文件。</p>
+<p>因此需要在工程中对其进行添加，并添加头文件路径（如果有就算了），如下图所示。</p>
+</blockquote>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/2.5.jpg" alt="1.2.5"></p>
+<h2 id="2-4-LED闪烁"><a href="#2-4-LED闪烁" class="headerlink" title="2.4 LED闪烁"></a>2.4 LED闪烁</h2><p>在<code>main.c</code>文件的while中添加如下代码（注意：LED引脚初始化的代码在源代码中已经配置过了）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_RESET);</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_RESET);</span><br><span class="line">	  rt_thread_mdelay(<span class="number">500</span>);</span><br><span class="line">	  </span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_7, GPIO_PIN_SET);</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);</span><br><span class="line">	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);</span><br><span class="line">	  rt_thread_mdelay(<span class="number">500</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>main函数中的<code>HAL_Init()</code>、<code>SystemClock_Config();</code>在我们配置系统时钟（2.3.2小节）时已经初始化过了，因此在main函数中其实不用初始化了，可以选择注释掉，但是每次生成工程都还要重新注释。</p>
+</blockquote>
+<p>注意</p>
+<ol>
+<li>这里使用的延时函数是由RTT提供的，此函数引起系统调度，切换到其他线程运行。</li>
+<li>这里的main函数中不再执行初始化动作，RTT系统启动时已经做好了。</li>
+</ol>
+<p>至此，将工程编译并下载，即可看到LED闪烁了。</p>
+<h2 id="2-5-裁剪内核"><a href="#2-5-裁剪内核" class="headerlink" title="2.5 裁剪内核"></a>2.5 裁剪内核</h2><p>如果对内核的部分功能用不着，可以对其进行裁剪。</p>
+<p>裁剪是通过<code>rtconfig.h</code>文件进行配置的。具体参照[内核裁剪](#5. 内核配置及裁剪)</p>
+<p>先保持默认的，能用就行，后面分析阶段再说。</p>
+<h1 id="3-使用-RT-Thread-Studio-创建"><a href="#3-使用-RT-Thread-Studio-创建" class="headerlink" title="3. 使用 RT-Thread Studio 创建"></a>3. 使用 RT-Thread Studio 创建</h1><p>直接创建 nano 工程即可。</p>
+<h1 id="4-移植-FinSH"><a href="#4-移植-FinSH" class="headerlink" title="4. 移植 FinSH"></a>4. 移植 FinSH</h1><p>这里移植 FinSH 主要有两种目的。</p>
+<ol>
+<li>基础功能：实现打印，用来向控制台对接的终端输出打印信息。</li>
+<li>移植 FinSH 组件：命令输入，用以在控制台输入命令调试系统。</li>
+</ol>
+<p>如果只需要第一个功能，则只需要实现两个函数，串口初始化和系统输出函数，即可完成 UART 控制台打印功能。</p>
+<p>如果还需要第二个功能，则在上述基础上还需要添加 FinSH 组件源码，并再对接一个系统输入函数即可实现。</p>
+<h2 id="4-1-打印功能"><a href="#4-1-打印功能" class="headerlink" title="4.1 打印功能"></a>4.1 打印功能</h2><p>如果使用的是 CubeMX 移植的代码，其实已经在<code>board.c</code>中默认配置好了（2.2小节的最后一段话有提到），如下图所示。</p>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/4.1.jpg" alt="4.1"></p>
+<blockquote>
+<p>只需要确认这里使用的串口是不是自己实际对应的串口即可。</p>
+</blockquote>
+<p>而如果使用的是 Keil 配置的 Nano，则如下图所示给预留了位置。</p>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/4.2.jpg" alt="4.1"></p>
+<p>把上面的抄过来就好了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> RT_USING_CONSOLE</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> UART_HandleTypeDef UartHandle;</span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">uart_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/* <span class="doctag">TODO:</span> Please modify the UART port number according to your needs */</span></span><br><span class="line">    UartHandle.Instance = USART1;</span><br><span class="line">    UartHandle.Init.BaudRate = <span class="number">115200</span>;</span><br><span class="line">    UartHandle.Init.WordLength = UART_WORDLENGTH_8B;</span><br><span class="line">    UartHandle.Init.StopBits = UART_STOPBITS_1;</span><br><span class="line">    UartHandle.Init.Parity = UART_PARITY_NONE;</span><br><span class="line">    UartHandle.Init.Mode = UART_MODE_TX_RX;</span><br><span class="line">    UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;</span><br><span class="line">    UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (HAL_UART_Init(&amp;UartHandle) != HAL_OK)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">INIT_BOARD_EXPORT(uart_init);</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">rt_hw_console_output</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *str)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">rt_size_t</span> i = <span class="number">0</span>, size = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> a = <span class="string">&#x27;\r&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    __HAL_UNLOCK(&amp;UartHandle);</span><br><span class="line"></span><br><span class="line">    size = rt_strlen(str);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; size; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (*(str + i) == <span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            HAL_UART_Transmit(&amp;UartHandle, (<span class="type">uint8_t</span> *)&amp;a, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        HAL_UART_Transmit(&amp;UartHandle, (<span class="type">uint8_t</span> *)(str + i), <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>初始化函数<code>uart_init()</code>的执行，是利用的<code>INIT_BOARD_EXPORT(uart_init);</code>语句。</p>
+<p>可以查看官网对自动初始化机制的介绍。</p>
+</blockquote>
+<p>然后，在main函数中添加使用到打印函数<code>rt_kprintf()</code>的语句。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这里放到了 mian 函数中的 while 之前</span></span><br><span class="line"><span class="type">rt_uint32_t</span> count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (count = <span class="number">0</span>; count &lt; <span class="number">10</span> ; count++)</span><br><span class="line">&#123;</span><br><span class="line">    rt_kprintf(<span class="string">&quot;count: %d\n&quot;</span>, count);</span><br><span class="line">    rt_thread_mdelay(<span class="number">500</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译并下载至开发板，打开串口调试工具并复位开发板，即可看到串口输出。</p>
+<h2 id="4-2-移植-FinSH-组件"><a href="#4-2-移植-FinSH-组件" class="headerlink" title="4.2 移植 FinSH 组件"></a>4.2 移植 FinSH 组件</h2><p>如果需要移植 FinSH 组件，在完成打印功能之后，还需要：</p>
+<ol>
+<li>在工程中添加 FinSH 源码。</li>
+<li>实现函数对接。</li>
+</ol>
+<p>添加 FinSH 源码的方式和 添加 Nano 的方式一样，只需要把 shell 也勾选上即可。</p>
+<p>如果使用 CubeMX 添加 FinSH 源码，重新生成工程后，会在工程目录多出如下几个文件。</p>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/4.3.jpg" alt="4.3"></p>
+<p>然后，在<code>rtconfig.h</code>中打开**#include “finsh_config.h”**。</p>
+<blockquote>
+<p>注意：在<code>finsh_port.c</code>文件中，#error Please uncomment the line &lt;#include “finsh_config.h”&gt; in the rtconfig.h  这一行需要注释掉。</p>
+</blockquote>
+<p>而在<code>board.c</code>中可以看到，相关函数已经默认写好了。</p>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/4.4.jpg" alt="4.4"></p>
+<p><strong>但是，这里的 DR 会报错，因为有些芯片这个寄存器的名字为DR，有的为RDR。这里将 DR 改为 RDR 即可。</strong></p>
+<p>而如果使用的是 Keil MDK 添加的源码。则会在工程目录多出几个文件。</p>
+<p>同样的，添加之后，需要在<code>rtconfig.h</code>文件中打开**#include “finsh_config.h”**。</p>
+<p>然后<code>finsh_port.c</code>文件中可以看到上面的接口，也是一样的，用这种方式的话，把上面的抄过来就好了。</p>
+<p>这个是 RT-Thread 官网给的示例，直接抄上面的也行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> RT_USING_FINSH</span></span><br><span class="line"><span class="type">char</span> <span class="title function_">rt_hw_console_getchar</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> ch = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (__HAL_UART_GET_FLAG(&amp;UartHandle, UART_FLAG_RXNE) != RESET)</span><br><span class="line">    &#123;</span><br><span class="line">        ch = UartHandle.Instance-&gt;RDR &amp; <span class="number">0xff</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(__HAL_UART_GET_FLAG(&amp;UartHandle, UART_FLAG_ORE) != RESET)</span><br><span class="line">        &#123;</span><br><span class="line">            __HAL_UART_CLEAR_OREFLAG(&amp;UartHandle);</span><br><span class="line">        &#125;</span><br><span class="line">        rt_thread_mdelay(<span class="number">10</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ch;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>可以发现，其实两种方法做的事情是一样的，最后除了<code>rt_hw_console_getchar</code>函数的位置不同，其他的基本都一样。</p>
+<p>然后就可以测试了。使用串口助手。</p>
+<ol>
+<li>不勾选发送新行，输入h，点击发送</li>
+<li>不勾选发送新行，输入e，点击发送</li>
+<li>不勾选发送新行，输入l，点击发送</li>
+<li>不勾选发送新行，输入p，点击发送</li>
+<li>什么也不输，勾选发送新行，点击发送。</li>
+</ol>
+<p><img src="/2020/10/01/03.%20RTOS/rtthread_nano/4.5.jpg" alt="4.5"></p>
+<p>显然，这种查询的方式很沙雕。</p>
+<h2 id="4-3-更改中断方式"><a href="#4-3-更改中断方式" class="headerlink" title="4.3 更改中断方式"></a>4.3 更改中断方式</h2><p>这种查询的方式显然很不对，因此进一步将其更改为中断方式。</p>
+<p>官网有所有需要添加的代码，按照自己的习惯放到某个位置就好。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 第一部分：ringbuffer 实现部分 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> rt_ringbuffer_space_len(rb) ((rb)-&gt;buffer_size - rt_ringbuffer_data_len(rb))</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rt_ringbuffer</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">rt_uint8_t</span> *buffer_ptr;</span><br><span class="line"></span><br><span class="line">    <span class="type">rt_uint16_t</span> read_mirror : <span class="number">1</span>;</span><br><span class="line">    <span class="type">rt_uint16_t</span> read_index : <span class="number">15</span>;</span><br><span class="line">    <span class="type">rt_uint16_t</span> write_mirror : <span class="number">1</span>;</span><br><span class="line">    <span class="type">rt_uint16_t</span> write_index : <span class="number">15</span>;</span><br><span class="line"></span><br><span class="line">    <span class="type">rt_int16_t</span> buffer_size;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">rt_ringbuffer_state</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    RT_RINGBUFFER_EMPTY,</span><br><span class="line">    RT_RINGBUFFER_FULL,</span><br><span class="line">    <span class="comment">/* half full is neither full nor empty */</span></span><br><span class="line">    RT_RINGBUFFER_HALFFULL,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">rt_inline <span class="keyword">enum</span> rt_ringbuffer_state <span class="title function_">rt_ringbuffer_status</span><span class="params">(<span class="keyword">struct</span> rt_ringbuffer *rb)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (rb-&gt;read_index == rb-&gt;write_index)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (rb-&gt;read_mirror == rb-&gt;write_mirror)</span><br><span class="line">            <span class="keyword">return</span> RT_RINGBUFFER_EMPTY;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> RT_RINGBUFFER_FULL;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> RT_RINGBUFFER_HALFFULL;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * get the size of data in rb</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">rt_size_t</span> <span class="title function_">rt_ringbuffer_data_len</span><span class="params">(<span class="keyword">struct</span> rt_ringbuffer *rb)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">switch</span> (rt_ringbuffer_status(rb))</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> RT_RINGBUFFER_EMPTY:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">case</span> RT_RINGBUFFER_FULL:</span><br><span class="line">        <span class="keyword">return</span> rb-&gt;buffer_size;</span><br><span class="line">    <span class="keyword">case</span> RT_RINGBUFFER_HALFFULL:</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">if</span> (rb-&gt;write_index &gt; rb-&gt;read_index)</span><br><span class="line">            <span class="keyword">return</span> rb-&gt;write_index - rb-&gt;read_index;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> rb-&gt;buffer_size - (rb-&gt;read_index - rb-&gt;write_index);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">rt_ringbuffer_init</span><span class="params">(<span class="keyword">struct</span> rt_ringbuffer *rb,</span></span><br><span class="line"><span class="params">                        <span class="type">rt_uint8_t</span>           *pool,</span></span><br><span class="line"><span class="params">                        <span class="type">rt_int16_t</span>            size)</span></span><br><span class="line">&#123;</span><br><span class="line">    RT_ASSERT(rb != RT_NULL);</span><br><span class="line">    RT_ASSERT(size &gt; <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* initialize read and write index */</span></span><br><span class="line">    rb-&gt;read_mirror = rb-&gt;read_index = <span class="number">0</span>;</span><br><span class="line">    rb-&gt;write_mirror = rb-&gt;write_index = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* set buffer pool and size */</span></span><br><span class="line">    rb-&gt;buffer_ptr = pool;</span><br><span class="line">    rb-&gt;buffer_size = RT_ALIGN_DOWN(size, RT_ALIGN_SIZE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * put a character into ring buffer</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">rt_size_t</span> <span class="title function_">rt_ringbuffer_putchar</span><span class="params">(<span class="keyword">struct</span> rt_ringbuffer *rb, <span class="type">const</span> <span class="type">rt_uint8_t</span> ch)</span></span><br><span class="line">&#123;</span><br><span class="line">    RT_ASSERT(rb != RT_NULL);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* whether has enough space */</span></span><br><span class="line">    <span class="keyword">if</span> (!rt_ringbuffer_space_len(rb))</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    rb-&gt;buffer_ptr[rb-&gt;write_index] = ch;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* flip mirror */</span></span><br><span class="line">    <span class="keyword">if</span> (rb-&gt;write_index == rb-&gt;buffer_size<span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        rb-&gt;write_mirror = ~rb-&gt;write_mirror;</span><br><span class="line">        rb-&gt;write_index = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        rb-&gt;write_index++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * get a character from a ringbuffer</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">rt_size_t</span> <span class="title function_">rt_ringbuffer_getchar</span><span class="params">(<span class="keyword">struct</span> rt_ringbuffer *rb, <span class="type">rt_uint8_t</span> *ch)</span></span><br><span class="line">&#123;</span><br><span class="line">    RT_ASSERT(rb != RT_NULL);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* ringbuffer is empty */</span></span><br><span class="line">    <span class="keyword">if</span> (!rt_ringbuffer_data_len(rb))</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* put character */</span></span><br><span class="line">    *ch = rb-&gt;buffer_ptr[rb-&gt;read_index];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (rb-&gt;read_index == rb-&gt;buffer_size<span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        rb-&gt;read_mirror = ~rb-&gt;read_mirror;</span><br><span class="line">        rb-&gt;read_index = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        rb-&gt;read_index++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 第二部分：finsh 移植对接部分 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> UART_RX_BUF_LEN 16</span></span><br><span class="line"><span class="type">rt_uint8_t</span> uart_rx_buf[UART_RX_BUF_LEN] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rt_ringbuffer</span>  <span class="title">uart_rxcb</span>;</span>         <span class="comment">/* 定义一个 ringbuffer cb */</span></span><br><span class="line"><span class="type">static</span> UART_HandleTypeDef UartHandle;</span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">rt_semaphore</span> <span class="title">shell_rx_sem</span>;</span> <span class="comment">/* 定义一个静态信号量 */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 初始化串口，中断方式 */</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">uart_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/* 初始化串口接收 ringbuffer  */</span></span><br><span class="line">    rt_ringbuffer_init(&amp;uart_rxcb, uart_rx_buf, UART_RX_BUF_LEN);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 初始化串口接收数据的信号量 */</span></span><br><span class="line">    rt_sem_init(&amp;(shell_rx_sem), <span class="string">&quot;shell_rx&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 初始化串口参数，如波特率、停止位等等（cubemx生成的） */</span></span><br><span class="line">    UartHandle.Instance = USART1;</span><br><span class="line">    UartHandle.Init.BaudRate   = <span class="number">115200</span>;</span><br><span class="line">    UartHandle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;</span><br><span class="line">    UartHandle.Init.Mode       = UART_MODE_TX_RX;</span><br><span class="line">    UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;</span><br><span class="line">    UartHandle.Init.WordLength = UART_WORDLENGTH_8B;</span><br><span class="line">    UartHandle.Init.StopBits   = UART_STOPBITS_1;</span><br><span class="line">    UartHandle.Init.Parity     = UART_PARITY_NONE;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 初始化串口引脚等 */</span></span><br><span class="line">    <span class="keyword">if</span> (HAL_UART_Init(&amp;UartHandle) != HAL_OK)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 中断配置 */</span></span><br><span class="line">	HAL_NVIC_SetPriority(USART1_IRQn, <span class="number">1</span>, <span class="number">1</span>);			<span class="comment">// 设置优先级</span></span><br><span class="line">	HAL_NVIC_EnableIRQ(USART1_IRQn);					<span class="comment">// 开启中断</span></span><br><span class="line">	__HAL_UART_ENABLE_IT(&amp;UartHandle, UART_IT_RXNE);	<span class="comment">// 使能中断</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">INIT_BOARD_EXPORT(uart_init);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 移植控制台，实现控制台输出, 对接 rt_hw_console_output */</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">rt_hw_console_output</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *str)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">rt_size_t</span> i = <span class="number">0</span>, size = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> a = <span class="string">&#x27;\r&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    __HAL_UNLOCK(&amp;UartHandle);</span><br><span class="line"></span><br><span class="line">    size = rt_strlen(str);</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; size; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (*(str + i) == <span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            HAL_UART_Transmit(&amp;UartHandle, (<span class="type">uint8_t</span> *)&amp;a, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        HAL_UART_Transmit(&amp;UartHandle, (<span class="type">uint8_t</span> *)(str + i), <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 移植 FinSH，实现命令行交互, 需要添加 FinSH 源码，然后再对接 rt_hw_console_getchar */</span></span><br><span class="line"><span class="comment">/* 中断方式 */</span></span><br><span class="line"><span class="type">char</span> <span class="title function_">rt_hw_console_getchar</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">char</span> ch = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 从 ringbuffer 中拿出数据 */</span></span><br><span class="line">    <span class="keyword">while</span> (rt_ringbuffer_getchar(&amp;uart_rxcb, (<span class="type">rt_uint8_t</span> *)&amp;ch) != <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_sem_take(&amp;shell_rx_sem, RT_WAITING_FOREVER);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ch;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* uart 中断 */</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">USART1_IRQHandler</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> ch = <span class="number">-1</span>;</span><br><span class="line">    <span class="comment">/* enter interrupt */</span></span><br><span class="line">    rt_interrupt_enter();          <span class="comment">// 在中断中一定要调用这对函数，进入中断</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((__HAL_UART_GET_FLAG(&amp;(UartHandle), UART_FLAG_RXNE) != RESET) &amp;&amp;</span><br><span class="line">        (__HAL_UART_GET_IT_SOURCE(&amp;(UartHandle), UART_IT_RXNE) != RESET))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            ch = <span class="number">-1</span>;</span><br><span class="line">            <span class="keyword">if</span> (__HAL_UART_GET_FLAG(&amp;(UartHandle), UART_FLAG_RXNE) != RESET)</span><br><span class="line">            &#123;</span><br><span class="line">                ch =  UartHandle.Instance-&gt;RDR &amp; <span class="number">0xff</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (ch == <span class="number">-1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">/* 读取到数据，将数据存入 ringbuffer */</span></span><br><span class="line">            rt_ringbuffer_putchar(&amp;uart_rxcb, ch);</span><br><span class="line">        &#125;</span><br><span class="line">        rt_sem_release(&amp;shell_rx_sem);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* leave interrupt */</span></span><br><span class="line">    rt_interrupt_leave();    <span class="comment">// 在中断中一定要调用这对函数，离开中断</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之后，再次测试时，直接输入 help 并发送即可有同样的效果。</p>
+<blockquote>
+<p>CubeMX 生成的中断处理函数中的回调函数可以屏蔽掉。</p>
+</blockquote>
+<h1 id="5-内核配置及裁剪"><a href="#5-内核配置及裁剪" class="headerlink" title="5. 内核配置及裁剪"></a>5. 内核配置及裁剪</h1><p><code>rtconfig.c</code>文件内容如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* RT-Thread config file */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> __RTTHREAD_CFG_H__</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __RTTHREAD_CFG_H__</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* ********************** 基础部分 *************************/</span></span><br><span class="line"><span class="comment">/* 设置系统最大优先级，可设置范围 8 到 256，默认值 32 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_THREAD_PRIORITY_MAX 32</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 设置 RT-Thread 操作系统节拍，表示多少 tick 每秒 */</span></span><br><span class="line"><span class="comment">/* 时钟节拍率越快，系统的额外开销就越大。常用值为 100 或 1000。 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_TICK_PER_SECOND 1000</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 字节对齐时设定对齐的字节个数，默认 4，常使用 ALIGN(RT_ALIGN_SIZE) 进行字节对齐 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_ALIGN_SIZE 4</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 设置对象名称的最大长度，默认 8 个字符，一般无需修改 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_NAME_MAX 8</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 设置使用组件自动初始化功能，默认需要使用，开启该宏则可以使用自动初始化功能 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_USING_COMPONENTS_INIT</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 开启 RT_USING_USER_MAIN 宏，则打开 user_main 功能，默认需要开启，这样才能调用 RT-Thread 的启动代码 */</span></span><br><span class="line"><span class="comment">/* main 线程的栈大小可修改 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_USING_USER_MAIN</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_MAIN_THREAD_STACK_SIZE 1024</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* ********************** 内核调试部分 *************************/</span></span><br><span class="line"><span class="comment">/* 定义 RT_DEBUG 宏则开启 debug 模式。若开启系统调试，则在实现打印之后可以打印系统 LOG 日志。请在代码开发与调试过程中打开该项，帮助调试定位问题，在代码发布时关闭该项 */</span></span><br><span class="line"><span class="comment">//#define RT_DEBUG					// 关闭 debug</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_DEBUG_INIT 0				<span class="comment">// 启用组件初始化调试配置，设置为 1 则会打印自动初始化的函数名称</span></span></span><br><span class="line"><span class="comment">//#define RT_USING_OVERFLOW_CHECK	// 关闭栈溢出检查</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* ********************** 钩子函数部分 *************************/</span></span><br><span class="line"><span class="comment">/* 设置是否使用钩子函数，默认关闭 */</span></span><br><span class="line"><span class="comment">//#define RT_USING_HOOK			// 是否 开启系统钩子功能</span></span><br><span class="line"><span class="comment">//#define RT_USING_IDLE_HOOK	// 是否 开启空闲线程钩子功能</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* ********************** 软件定时器部分 *************************/</span></span><br><span class="line"><span class="comment">/* 设置是否启用软件定时器，以及相关参数的配置，默认关闭 */</span></span><br><span class="line"><span class="comment">//#define RT_USING_TIMER_SOFT			// 是否 开启软件定时器功能</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_TIMER_THREAD_PRIO 4			<span class="comment">// 设置软件定时器线程的优先级，默认为 4</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_TIMER_THREAD_STACK_SIZE 512	<span class="comment">// 设置软件定时器线程的栈大小，默认为 512 字节</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* ********************** IPC 部分 *************************/</span></span><br><span class="line"><span class="comment">/* 系统支持的 IPC 有：信号量、互斥量、事件集、邮箱、消息队列。通过定义相应的宏打开或关闭该 IPC 的使用 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_USING_SEMAPHORE		<span class="comment">// 设置是否使用 信号量，默认打开</span></span></span><br><span class="line"><span class="comment">//#define RT_USING_MUTEX		// 设置是否使用 互斥量</span></span><br><span class="line"><span class="comment">//#define RT_USING_EVENT		// 设置是否使用 事件集</span></span><br><span class="line"><span class="comment">//#define RT_USING_MAILBOX		// 设置是否使用  邮箱</span></span><br><span class="line"><span class="comment">//#define RT_USING_MESSAGEQUEUE	// 设置是否使用 消息队列</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* ********************** 内存部分 *************************/</span></span><br><span class="line"><span class="comment">/* RT-Thread 内存管理包含：内存池、内存堆、小内存算法。通过开启相应的宏定义使用相应的功能 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_USING_HEAP			<span class="comment">// 是否使用 内存堆</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_USING_SMALL_MEM		<span class="comment">// 是否使用 小内存管理</span></span></span><br><span class="line"><span class="comment">//#define RT_USING_TINY_SIZE	// 是否使用 小体积的算法，牵扯到 rt_memset、rt_memcpy 所产生的体积</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* ********************** FinSH 部分 *************************/</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_USING_CONSOLE			<span class="comment">// 开启控制台功能，失能该宏则关闭控制台，不能实现打印</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_CONSOLEBUF_SIZE 128		<span class="comment">// 控制台缓冲大小（1-1024）</span></span></span><br><span class="line"><span class="comment">/* 当系统加入 FinSH 组件源码后，需要在 rtconfig.h 中开启以下项。参考 finsh_config.h 中内容。若未加入 FinSH 组件源码，请勿开启此项。 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;finsh_config.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* ********************** device 部分 *************************/</span></span><br><span class="line"><span class="comment">/* 当系统中加入 device 框架源码时，则需要在 rtconfig.h 中开启以下项。若未加入 device 源码，请勿开启此项 */</span></span><br><span class="line"><span class="comment">//#define RT_USING_DEVICE</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p><code>finsh_config.h</code>内容如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* FinSH config file */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> __MSH_CFG_H__</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __MSH_CFG_H__</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 打开 FinSH 组件 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RT_USING_FINSH</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 使用 MSH 模式 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FINSH_USING_MSH</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FINSH_USING_MSH_ONLY</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* tshell 线程的优先级与线程栈大小 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FINSH_THREAD_PRIORITY       21		<span class="comment">// 请检查系统最大优先级的值，该值必须在系统支持的优先级范围之内</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FINSH_THREAD_STACK_SIZE     1024</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 使用符号表，使用命令描述 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FINSH_USING_SYMTAB</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> FINSH_USING_DESCRIPTION</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Haozi
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2020/10/01/03.%20RTOS/rtthread_nano/" title="rtthread_nano移植">http://example.com/2020/10/01/03. RTOS/rtthread_nano/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/RTOS/" rel="tag"># RTOS</a>
+              <a href="/tags/RT-Thread/" rel="tag"># RT-Thread</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/09/01/03.%20RTOS/rtthread_standard/" rel="prev" title="rtthread使用">
+                  <i class="fa fa-angle-left"></i> rtthread使用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/10/01/03.%20RTOS/freertos/" rel="next" title="freertos移植">
+                  freertos移植 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Haozi</span>
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://lib.baomitu.com/canvas-nest.js/1.0.1/canvas-nest.js"></script>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

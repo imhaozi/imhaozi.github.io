@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"language":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":-1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="qt学习笔记">
+<meta property="og:url" content="http://example.com/2025/01/01/06.%20%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/qt/index.html">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-01-01T02:00:00.000Z">
+<meta property="article:author" content="Haozi">
+<meta property="article:tag" content="QT">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2025/01/01/06.%20%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/qt/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2025/01/01/06.%20%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/qt/","path":"2025/01/01/06. 上位机开发/qt/","title":"qt学习笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>qt学习笔记 | Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/7.2.0/pangu.umd.js" integrity="sha256-JnmRRnJK7DC6RQJbAJb6AXOM9OmWzS6z8eYultk/48Y=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">攻城狮装备搭建日记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E5%B8%83%E5%B1%80%E7%AE%A1%E7%90%86%E5%99%A8%EF%BC%88layouts%EF%BC%89"><span class="nav-text">1. 布局管理器（layouts）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Vertical-Layout"><span class="nav-text">1.1. Vertical Layout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Horizontal-Layout"><span class="nav-text">1.2. Horizontal Layout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-Grid-Layout"><span class="nav-text">1.3. Grid Layout</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-Form-Layout"><span class="nav-text">1.4. Form Layout</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%8C%89%E9%92%AE%EF%BC%88Buttons%EF%BC%89"><span class="nav-text">2. 按钮（Buttons）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Push-Button"><span class="nav-text">2.1. Push Button</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Tool-Button"><span class="nav-text">2.2. Tool Button</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Radio-Button"><span class="nav-text">2.3. Radio Button</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-Check-Box"><span class="nav-text">2.4. Check Box</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-Command-Link-Button"><span class="nav-text">2.5. Command Link Button</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-Dialog-Button-Box"><span class="nav-text">2.6. Dialog Button Box</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E9%A1%B9%E7%9B%AE%E8%A7%86%E5%9B%BE%E7%BB%84%E4%BB%B6%EF%BC%88Item-Views%EF%BC%89"><span class="nav-text">3. 项目视图组件（Item Views）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-List-View"><span class="nav-text">3.1. List View</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Tree-View"><span class="nav-text">3.2. Tree View</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-Table-View"><span class="nav-text">3.3. Table View</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-Column-View"><span class="nav-text">3.4. Column View</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-Undo-View"><span class="nav-text">3.5. Undo View</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%98%BE%E7%A4%BA%E5%92%8C%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE%E7%9A%84%E6%8E%A7%E4%BB%B6%EF%BC%88Item-Widgets%EF%BC%89"><span class="nav-text">4. 显示和管理数据的控件（Item Widgets）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-List-Widget"><span class="nav-text">4.1. List Widget</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-Tree-Widget"><span class="nav-text">4.2. Tree Widget</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-Table-Widget"><span class="nav-text">4.3. Table Widget</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%AE%B9%E5%99%A8%E7%BB%84%E4%BB%B6%EF%BC%88Containers%EF%BC%89"><span class="nav-text">5. 容器组件（Containers）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-Group-Box"><span class="nav-text">5.1. Group Box</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-Scroll-Area"><span class="nav-text">5.2. Scroll Area</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-Tab-Widget"><span class="nav-text">5.3. Tab Widget</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-Stacked-Widget"><span class="nav-text">5.4. Stacked Widget</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5-Widget"><span class="nav-text">5.5. Widget</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E8%BE%93%E5%85%A5%E6%8E%A7%E4%BB%B6%EF%BC%88Intput-Widgets%EF%BC%89"><span class="nav-text">6. 输入控件（Intput Widgets）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-Line-Edit"><span class="nav-text">6.1. Line Edit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-Text-Edit"><span class="nav-text">6.2. Text Edit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-PlainText-Edit"><span class="nav-text">6.3. PlainText Edit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-4-Spin-Box"><span class="nav-text">6.4. Spin Box</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-5-Double-Spin-Box"><span class="nav-text">6.5. Double Spin Box</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-6-Date-Edit"><span class="nav-text">6.6. Date Edit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-7-Time-Edit"><span class="nav-text">6.7. Time Edit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-8-DateTime-Edit"><span class="nav-text">6.8. DateTime Edit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-9-Combo-Box"><span class="nav-text">6.9. Combo Box</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-10-Slider"><span class="nav-text">6.10. Slider</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-11-Dial"><span class="nav-text">6.11. Dial</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E6%98%BE%E7%A4%BA%E6%8E%A7%E4%BB%B6%EF%BC%88Display-Widgets%EF%BC%89"><span class="nav-text">7.显示控件（Display Widgets）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-Label"><span class="nav-text">7.1. Label</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-2-Text-Browser"><span class="nav-text">7.2. Text Browser</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-3-Calendar-Widget"><span class="nav-text">7.3. Calendar Widget</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-4-LCD-Number"><span class="nav-text">7.4. LCD Number</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Haozi</p>
+  <div class="site-description" itemprop="description">身体和心灵总有一个在路上</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://gitee.com/imhaozi" title="Gitee → https:&#x2F;&#x2F;gitee.com&#x2F;imhaozi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>Gitee</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/330622220" title="BiliBili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;330622220" rel="noopener me" target="_blank"><i class="fab fa-bilibili fa-fw"></i>BiliBili</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/01/01/06.%20%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/qt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haozi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Blog">
+      <meta itemprop="description" content="身体和心灵总有一个在路上">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="qt学习笔记 | Blog">
+      <meta itemprop="description" content="。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          qt学习笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-01-01 10:00:00" itemprop="dateCreated datePublished" datetime="2025-01-01T10:00:00+08:00">2025-01-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/" itemprop="url" rel="index"><span itemprop="name">上位机开发</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="1-布局管理器（layouts）"><a href="#1-布局管理器（layouts）" class="headerlink" title="1. 布局管理器（layouts）"></a>1. 布局管理器（layouts）</h1><p><strong>用于管理控件在窗口中的排列和布局，直接需要对齐的空间直接拖入对应的区域即可，属性中可选择左右对齐或居中</strong></p>
+<h2 id="1-1-Vertical-Layout"><a href="#1-1-Vertical-Layout" class="headerlink" title="1.1. Vertical Layout"></a>1.1. Vertical Layout</h2><ul>
+<li><p>作用：将子控件垂直排列。</p>
+</li>
+<li><p>使用场景：适用于需要将控件按列排列的场景，如表单输入、垂直按钮组等。</p>
+</li>
+</ul>
+<h2 id="1-2-Horizontal-Layout"><a href="#1-2-Horizontal-Layout" class="headerlink" title="1.2. Horizontal Layout"></a>1.2. Horizontal Layout</h2><ul>
+<li>作用：将子控件水平排列。</li>
+<li>使用场景：适用于需要将控件按行排列的场景，如工具栏、按钮行等。</li>
+</ul>
+<h2 id="1-3-Grid-Layout"><a href="#1-3-Grid-Layout" class="headerlink" title="1.3. Grid Layout"></a>1.3. Grid Layout</h2><ul>
+<li>作用：将子控件按网格排列。</li>
+<li>使用场景：适用于需要将控件按行列排列的场景，如表单布局、计算器键盘布局等。</li>
+</ul>
+<h2 id="1-4-Form-Layout"><a href="#1-4-Form-Layout" class="headerlink" title="1.4. Form Layout"></a>1.4. Form Layout</h2><ul>
+<li>作用：将子控件按表单布局排列，每行通常包含一个标签和一个输入控件。</li>
+<li>使用场景：适用于需要创建表单的场景，如用户注册界面、设置对话框等。</li>
+</ul>
+<h1 id="2-按钮（Buttons）"><a href="#2-按钮（Buttons）" class="headerlink" title="2. 按钮（Buttons）"></a>2. 按钮（Buttons）</h1><h2 id="2-1-Push-Button"><a href="#2-1-Push-Button" class="headerlink" title="2.1. Push Button"></a>2.1. Push Button</h2><ul>
+<li>功能：通用的可点击按钮，用户可以通过点击按钮触发特定操作。</li>
+<li>使用场景：适用于所有需要触发操作的场景，如提交表单、启动某个功能等。</li>
+</ul>
+<h2 id="2-2-Tool-Button"><a href="#2-2-Tool-Button" class="headerlink" title="2.2. Tool Button"></a>2.2. Tool Button</h2><ul>
+<li>功能：类似于 QPushButton，但设计用于工具栏和工具栏按钮，通常带有图标和文本。</li>
+<li>使用场景：适用于工具栏中的按钮或需要图标的按钮，如文本编辑器中的格式化工具栏按钮。</li>
+</ul>
+<h2 id="2-3-Radio-Button"><a href="#2-3-Radio-Button" class="headerlink" title="2.3. Radio Button"></a>2.3. Radio Button</h2><ul>
+<li>功能：单选按钮，用户可以在一组选项中选择一个。</li>
+<li>使用场景：适用于需要用户在一组选项中选择一个的场景，如表单中的性别选择。</li>
+</ul>
+<h2 id="2-4-Check-Box"><a href="#2-4-Check-Box" class="headerlink" title="2.4. Check Box"></a>2.4. Check Box</h2><ul>
+<li>功能：用于表示二选一的状态（选中或未选中）。</li>
+<li>使用场景：适用于需要用户选择是或否的场景，如同意条款、选择偏好设置。</li>
+</ul>
+<h2 id="2-5-Command-Link-Button"><a href="#2-5-Command-Link-Button" class="headerlink" title="2.5. Command Link Button"></a>2.5. Command Link Button</h2><ul>
+<li>功能：扩展了 QPushButton，提供了更丰富的界面元素，包括图标、大文本和描述文本。</li>
+<li>使用场景：适用于需要更多信息来描述按钮功能的场景，如安装向导中的步骤按钮。</li>
+</ul>
+<h2 id="2-6-Dialog-Button-Box"><a href="#2-6-Dialog-Button-Box" class="headerlink" title="2.6. Dialog Button Box"></a>2.6. Dialog Button Box</h2><ul>
+<li>功能：标准对话框按钮的容器，提供了常用按钮（如 OK、Cancel）的一致布局和行为。</li>
+<li>使用场景：适用于需要标准对话框按钮的场景，如确认对话框、设置对话框等。</li>
+</ul>
+<h1 id="3-项目视图组件（Item-Views）"><a href="#3-项目视图组件（Item-Views）" class="headerlink" title="3. 项目视图组件（Item Views）"></a>3. 项目视图组件（Item Views）</h1><h2 id="3-1-List-View"><a href="#3-1-List-View" class="headerlink" title="3.1. List View"></a>3.1. List View</h2><ul>
+<li>功能：用于显示简单的列表，列表中的每一项可以包含文本、图标或自定义小部件。</li>
+<li>使用场景：适用于需要显示简单列表的场景，如文件列表、联系人列表等。</li>
+</ul>
+<h2 id="3-2-Tree-View"><a href="#3-2-Tree-View" class="headerlink" title="3.2. Tree View"></a>3.2. Tree View</h2><ul>
+<li>功能：用于显示树状结构的数据，支持多列数据。</li>
+<li>使用场景：适用于需要显示层次结构的场景，如文件系统视图、组织结构图等。</li>
+</ul>
+<h2 id="3-3-Table-View"><a href="#3-3-Table-View" class="headerlink" title="3.3. Table View"></a>3.3. Table View</h2><ul>
+<li>功能：用于显示表格数据，每个单元格可以包含文本、图标或自定义小部件。</li>
+<li>使用场景：适用于需要显示二维网格数据的场景，如电子表格、数据库表等。</li>
+</ul>
+<h2 id="3-4-Column-View"><a href="#3-4-Column-View" class="headerlink" title="3.4. Column View"></a>3.4. Column View</h2><ul>
+<li>功能：用于显示分级数据，类似于 macOS Finder 中的列视图。</li>
+<li>使用场景：适用于需要分级显示数据的场景，如文件系统浏览器。</li>
+</ul>
+<h2 id="3-5-Undo-View"><a href="#3-5-Undo-View" class="headerlink" title="3.5. Undo View"></a>3.5. Undo View</h2><ul>
+<li>功能：QUndoView 显示撤销和重做堆栈中的命令列表，用户可以通过点击视图中的条目来执行撤销或重做操作。</li>
+<li>使用场景：适用于需要提供撤销和重做功能的应用程序，如文本编辑器、绘图应用等。</li>
+</ul>
+<h1 id="4-显示和管理数据的控件（Item-Widgets）"><a href="#4-显示和管理数据的控件（Item-Widgets）" class="headerlink" title="4. 显示和管理数据的控件（Item Widgets）"></a>4. 显示和管理数据的控件（Item Widgets）</h1><h2 id="4-1-List-Widget"><a href="#4-1-List-Widget" class="headerlink" title="4.1. List Widget"></a>4.1. List Widget</h2><ul>
+<li>功能：用于显示一组项目（项），每个项目可以包含文本和图标。</li>
+<li>使用场景：适用于需要显示简单列表的场景，如文件列表、联系人列表等。</li>
+</ul>
+<h2 id="4-2-Tree-Widget"><a href="#4-2-Tree-Widget" class="headerlink" title="4.2. Tree Widget"></a>4.2. Tree Widget</h2><ul>
+<li>功能：用于显示层次结构的项目（项），每个项目可以包含子项目。</li>
+<li>使用场景：适用于需要显示树状结构的场景，如文件系统视图、组织结构图等。</li>
+</ul>
+<h2 id="4-3-Table-Widget"><a href="#4-3-Table-Widget" class="headerlink" title="4.3. Table Widget"></a>4.3. Table Widget</h2><ul>
+<li>功能：用于显示表格数据，每个项目可以包含文本和图标。</li>
+<li>使用场景：适用于需要显示网格状数据的场景，如电子表格、数据库表等。</li>
+</ul>
+<p>参数&#x2F;属性</p>
+<ul>
+<li>currentTabText：修改显示的标签名</li>
+<li>currentTabName：修改控件名</li>
+<li>font：修改字体大小</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置选项卡的形状 默认圆形Rounde 三角形Triangular</span></span><br><span class="line">ui-&gt;tabWidget-&gt;<span class="built_in">setTabShape</span>(QTabWidget::Triangular);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 设置字体颜色</span></span><br><span class="line">ui-&gt;tabWidget-&gt;<span class="built_in">tabBar</span>()-&gt;<span class="built_in">setTabTextColor</span>(<span class="number">0</span>,<span class="built_in">QColor</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">255</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="5-容器组件（Containers）"><a href="#5-容器组件（Containers）" class="headerlink" title="5. 容器组件（Containers）"></a>5. 容器组件（Containers）</h1><h2 id="5-1-Group-Box"><a href="#5-1-Group-Box" class="headerlink" title="5.1. Group Box"></a>5.1. Group Box</h2><ul>
+<li>功能：QGroupBox 是一个分组框，可以包含多个控件，并带有标题。</li>
+<li>使用场景：适用于需要对控件进行逻辑分组的场景，如表单中的分节。</li>
+</ul>
+<h2 id="5-2-Scroll-Area"><a href="#5-2-Scroll-Area" class="headerlink" title="5.2. Scroll Area"></a>5.2. Scroll Area</h2><ul>
+<li>功能：QScrollArea 是一个滚动区域，可以包含一个大于其显示区域的控件，并提供滚动条。</li>
+<li>使用场景：适用于需要显示超过可见区域内容的场景，如图片查看器、长表单。</li>
+</ul>
+<h2 id="5-3-Tab-Widget"><a href="#5-3-Tab-Widget" class="headerlink" title="5.3. Tab Widget"></a>5.3. Tab Widget</h2><ul>
+<li>功能：QTabWidget 是一个选项卡容器，可以包含多个选项卡，每个选项卡包含一个子控件。</li>
+<li>使用场景：适用于需要分多个页面显示内容的场景，如设置界面。</li>
+</ul>
+<h2 id="5-4-Stacked-Widget"><a href="#5-4-Stacked-Widget" class="headerlink" title="5.4. Stacked Widget"></a>5.4. Stacked Widget</h2><ul>
+<li>功能：QStackedWidget 是一个堆叠容器，可以在多个子控件之间切换。</li>
+<li>使用场景：适用于需要在不同视图之间切换的场景，如向导对话框。</li>
+</ul>
+<h2 id="5-5-Widget"><a href="#5-5-Widget" class="headerlink" title="5.5. Widget"></a>5.5. Widget</h2><ul>
+<li>功能：QWidget 是所有用户界面对象的基类，它可以作为一个简单的容器，包含和管理子控件。</li>
+<li>使用场景：适用于任何需要基本容器的场景，通常作为窗口或对话框的基础。</li>
+</ul>
+<h1 id="6-输入控件（Intput-Widgets）"><a href="#6-输入控件（Intput-Widgets）" class="headerlink" title="6. 输入控件（Intput Widgets）"></a>6. 输入控件（Intput Widgets）</h1><h2 id="6-1-Line-Edit"><a href="#6-1-Line-Edit" class="headerlink" title="6.1. Line Edit"></a>6.1. Line Edit</h2><ul>
+<li>功能：用于单行文本输入。</li>
+<li>使用场景：适用于获取单行文本输入的场景，如用户名、密码、搜索框。</li>
+</ul>
+<h2 id="6-2-Text-Edit"><a href="#6-2-Text-Edit" class="headerlink" title="6.2. Text Edit"></a>6.2. Text Edit</h2><ul>
+<li>功能：用于多行文本输入，可以包含富文本。</li>
+<li>使用场景：适用于获取多行文本输入的场景，如备注、文章编辑器。</li>
+</ul>
+<h2 id="6-3-PlainText-Edit"><a href="#6-3-PlainText-Edit" class="headerlink" title="6.3. PlainText Edit"></a>6.3. PlainText Edit</h2><ul>
+<li>功能：用于多行纯文本输入，不支持富文本。</li>
+<li>使用场景：适用于获取多行纯文本输入的场景，如代码编辑器、日志查看器。</li>
+</ul>
+<h2 id="6-4-Spin-Box"><a href="#6-4-Spin-Box" class="headerlink" title="6.4. Spin Box"></a>6.4. Spin Box</h2><ul>
+<li>功能：用于输入整数，可以通过箭头按钮增加或减少值。</li>
+<li>使用场景：适用于需要输入整数的场景，如数量、年龄。</li>
+</ul>
+<h2 id="6-5-Double-Spin-Box"><a href="#6-5-Double-Spin-Box" class="headerlink" title="6.5. Double Spin Box"></a>6.5. Double Spin Box</h2><ul>
+<li>功能：用于输入浮点数，可以通过箭头按钮增加或减少值。</li>
+<li>使用场景：适用于需要输入浮点数的场景，如价格、权重。</li>
+</ul>
+<h2 id="6-6-Date-Edit"><a href="#6-6-Date-Edit" class="headerlink" title="6.6. Date Edit"></a>6.6. Date Edit</h2><ul>
+<li>功能：用于输入日期，可以通过日历选择器选择日期。</li>
+<li>使用场景：适用于需要输入日期的场景，如生日、预约日期。</li>
+</ul>
+<h2 id="6-7-Time-Edit"><a href="#6-7-Time-Edit" class="headerlink" title="6.7. Time Edit"></a>6.7. Time Edit</h2><ul>
+<li>功能：用于输入时间。</li>
+<li>使用场景：适用于需要输入时间的场景，如会议时间、闹钟时间。</li>
+</ul>
+<h2 id="6-8-DateTime-Edit"><a href="#6-8-DateTime-Edit" class="headerlink" title="6.8. DateTime Edit"></a>6.8. DateTime Edit</h2><ul>
+<li>功能：用于输入日期和时间。</li>
+<li>使用场景：适用于需要同时输入日期和时间的场景，如事件时间戳。</li>
+</ul>
+<h2 id="6-9-Combo-Box"><a href="#6-9-Combo-Box" class="headerlink" title="6.9. Combo Box"></a>6.9. Combo Box</h2><ul>
+<li>功能：用于显示下拉列表，用户可以从中选择一项。</li>
+<li>使用场景：适用于需要用户从预定义选项中选择的场景，如选择国家、选择颜色。</li>
+</ul>
+<h2 id="6-10-Slider"><a href="#6-10-Slider" class="headerlink" title="6.10. Slider"></a>6.10. Slider</h2><ul>
+<li>功能：用于显示和选择范围值，可以是水平或垂直滑动条。</li>
+<li>使用场景：适用于需要显示和选择范围值的场景，如亮度调节、音量调节。</li>
+</ul>
+<h2 id="6-11-Dial"><a href="#6-11-Dial" class="headerlink" title="6.11. Dial"></a>6.11. Dial</h2><ul>
+<li>功能：用于显示和选择范围值，类似于旋钮。</li>
+<li>使用场景：适用于需要显示和选择范围值的场景，如音量控制、速度控制。</li>
+</ul>
+<h1 id="7-显示控件（Display-Widgets）"><a href="#7-显示控件（Display-Widgets）" class="headerlink" title="7.显示控件（Display Widgets）"></a>7.显示控件（Display Widgets）</h1><h2 id="7-1-Label"><a href="#7-1-Label" class="headerlink" title="7.1. Label"></a>7.1. Label</h2><ul>
+<li>功能：用于显示文本或图像。</li>
+<li>使用场景：适用于需要显示静态文本、图像或其他内容的场景，如标签、标题。</li>
+</ul>
+<h2 id="7-2-Text-Browser"><a href="#7-2-Text-Browser" class="headerlink" title="7.2. Text Browser"></a>7.2. Text Browser</h2><ul>
+<li>功能：用于显示富文本，支持超链接和 HTML。</li>
+<li>使用场景：适用于需要显示复杂富文本内容的场景，如帮助文档、显示网页内容。</li>
+</ul>
+<h2 id="7-3-Calendar-Widget"><a href="#7-3-Calendar-Widget" class="headerlink" title="7.3. Calendar Widget"></a>7.3. Calendar Widget</h2><ul>
+<li>功能：用于显示日历，可以选择日期。</li>
+<li>使用场景：适用于需要显示和选择日期的场景，如日期选择器。</li>
+</ul>
+<h2 id="7-4-LCD-Number"><a href="#7-4-LCD-Number" class="headerlink" title="7.4. LCD Number"></a>7.4. LCD Number</h2><ul>
+<li>功能：用于显示数字，类似于 LCD 显示屏。</li>
+<li>使用场景：适用于需要显示数值的场景，如计时器、计数器。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Haozi
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2025/01/01/06.%20%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91/qt/" title="qt学习笔记">http://example.com/2025/01/01/06. 上位机开发/qt/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/QT/" rel="tag"># QT</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/01/01/04.%20Linux%E5%BA%94%E7%94%A8/ros2/" rel="prev" title="ros2学习笔记">
+                  <i class="fa fa-angle-left"></i> ros2学习笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/" rel="next" title="充电桩国标协议解析">
+                  充电桩国标协议解析 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Haozi</span>
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://lib.baomitu.com/canvas-nest.js/1.0.1/canvas-nest.js"></script>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

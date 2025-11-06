@@ -2331,6 +2331,74 @@ finsh_config.h内容如下
       </tags>
   </entry>
   <entry>
+    <title>linux中gdb调试方法</title>
+    <url>/2025/09/22/04.%20Linux%E5%BA%94%E7%94%A8/gdb/</url>
+    <content><![CDATA[1. 环境准备首先准备一份gdb的源码，目前最新的版本已经到了16.3版本了。
+GNU 为所有项目提供了统一的源码获取页面。
+
+主站点： https://ftp.gnu.org/gnu/gdb/
+镜像站点列表： https://www.gnu.org/prep/ftp.html
+
+这里选择一个比较老点的版本，9.2，在我们的主机（虚拟机）上下载源码，或者下载后传过来也行。
+wget https://ftp.gnu.org/gnu/gdb/gdb-9.2.tar.xz
+
+解压
+tar -vxf gdb-9.2.tar.xz
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>Linux应用</category>
+      </categories>
+      <tags>
+        <tag>gdb</tag>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>rtthread使用</title>
     <url>/2020/09/01/03.%20RTOS/rtthread_standard/</url>
     <content><![CDATA[
@@ -2571,19 +2639,274 @@ static rt_err_t stm32_hw_pwm_init(struct stm32_pwm *device)&#123;    rt_err_t re
       </tags>
   </entry>
   <entry>
-    <title>linux中gdb调试方法</title>
-    <url>/2025/09/22/04.%20Linux%E5%BA%94%E7%94%A8/gdb/</url>
-    <content><![CDATA[1. 环境准备首先准备一份gdb的源码，目前最新的版本已经到了16.3版本了。
-GNU 为所有项目提供了统一的源码获取页面。
+    <title>ros1学习笔记</title>
+    <url>/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/</url>
+    <content><![CDATA[1. 环境准备
+ubuntu环境
+这里使用的ubuntu 20.04.3
+镜像名称：ubuntu-20.04.6-desktop-amd64.iso（文件大小：4.05G）
+下载地址：http://mirrors.ustc.edu.cn/ubuntu-releases/
 
-主站点： https://ftp.gnu.org/gnu/gdb/
-镜像站点列表： https://www.gnu.org/prep/ftp.html
 
-这里选择一个比较老点的版本，9.2，在我们的主机（虚拟机）上下载源码，或者下载后传过来也行。
-wget https://ftp.gnu.org/gnu/gdb/gdb-9.2.tar.xz
+ros1环境
+这里使用的是Noetic版本。
+安装方式：小鱼一键安装
 
-解压
-tar -vxf gdb-9.2.tar.xz
+
+
+wget http://fishros.com/install -O fishros &amp;&amp; bash fishros
+
+
+
+2. 创建项目以下创建一个示例工程，也基于此工程完成本项目，后续的所有项目创建都是这个流程。
+步骤一：创建工程
+
+创建一个工作空间文件夹（就是一个工程文件夹）
+工作空间中可以有多个软件包
+软件包中又可以又多个节点
+
+
+
+比如这里想创建一个基于泰山派的小车项目，就可以创建下面的文件目录
+
+TspCarWs
+src：存放代码，源代码、功能包等
+
+
+
+创建一个TspCarWs目录作为本项目的工作空间。
+haozi@haozi:~/work/develop$ mkdir TspCarWshaozi@haozi:~/work/develop$ cd TspCarWs/haozi@haozi:~/work/develop/TspCarWs$ mkdir src
+
+
+
+步骤二：创建软件包
+本项目采用上下位机的架构进行设计，上下位机通过通信进行交互和控制，首先实现一个用于控制下位机运动的软件包lower_ctrl_pkg。
+切换到工作空间的src目录下，执行如下指令：
+catkin_create_pkg 包名 &lt;依赖项1&gt; &lt;依赖项2&gt; ...
+
+如下：
+haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lower_ctrl_pkg rospy roscpp std_msgsCreated file lower_ctrl_pkg/package.xmlCreated file lower_ctrl_pkg/CMakeLists.txtCreated folder lower_ctrl_pkg/include/lower_ctrl_pkgCreated folder lower_ctrl_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/lower_ctrl_pkg. Please adjust the values in package.xml.
+
+执行完成后，在src目录下就会多出一个新的目录catkin_create_pkg，该目录就是一个包了，包里面又包含了多个文件。
+haozi@haozi:~/work/develop/TspCarWs/src$ lslower_ctrl_pkghaozi@haozi:~/work/develop/TspCarWs/src$ cd lower_ctrl_pkg/haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg$ lsCMakeLists.txt  include  package.xml  src
+
+
+
+步骤三：添加代码
+在软件包的src目录下创建代码文件main.cpp
+#include &lt;ros/ros.h&gt;int main(int argc, char *argv[])&#123;    printf(&quot;lower_ctrl_node running~ \n&quot;);        // 后面的是节点名称    ros::init(argc, argv, &quot;lower_ctrl_node&quot;);    while(ros::ok())    &#123;        printf(&quot;lower_ctrl_node running~ \n&quot;);        sleep(1);    &#125;    return 0;&#125;
+
+在CMakeLists.txt文件中，build部分，找到对应的注释的位置，添加如下两条（没注释掉的是添加的，注释掉的是原有的）。
+## Declare a C++ executable## With catkin_make all packages are built within a single CMake context## The recommended prefix ensures that target names across packages don&#x27;t collide# add_executable($&#123;PROJECT_NAME&#125;_node src/lower_ctrl_pkg_node.cpp)add_executable(lower_ctrl_node src/main.cpp)## Specify libraries to link a library or executable target against# target_link_libraries($&#123;PROJECT_NAME&#125;_node#   $&#123;catkin_LIBRARIES&#125;# )target_link_libraries(lower_ctrl_node  $&#123;catkin_LIBRARIES&#125;)
+
+其中
+add_executable：表示需要编译可执行文件
+target_link_libraries：表示需要链接ros库
+步骤四：编译代码
+在工作空间目录（tsp_car_ws）下执行编译命令
+haozi@haozi:~/work/develop/TspCarWs$ pwd/home/haozi/work/develop/TspCarWshaozi@haozi:~/work/develop/TspCarWs$ catkin_makeBase path: /home/haozi/work/develop/TspCarWsSource space: /home/haozi/work/develop/TspCarWs/srcBuild space: /home/haozi/work/develop/TspCarWs/buildDevel space: /home/haozi/work/develop/TspCarWs/develInstall space: /home/haozi/work/develop/TspCarWs/install######## Running command: &quot;make cmake_check_build_system&quot; in &quot;/home/haozi/work/develop/TspCarWs/build&quot;############ Running command: &quot;make -j4 -l4&quot; in &quot;/home/haozi/work/develop/TspCarWs/build&quot;####[100%] Built target lower_ctrl_node
+
+编译完成后，工作空间下就会多出来两个文件夹，build、devel
+haozi@haozi:~/work/develop/TspCarWs$ lsbuild  devel  src
+
+
+build：编译文件
+devel：执行文件，执行前需要在这里添加源
+
+步骤五：执行
+启动一个新的终端，启动ros
+roscore
+
+添加代码源（注意相对目录或者绝对目录）
+haozi@haozi:~/work/develop/TspCarWs$ source devel/setup.bash
+
+执行代码
+# rosrun：执行# lower_ctrl_pkg：报名# lower_ctrl_node：节点名roslaunch launch_pkg all.launch tfhaozi@haozi:~/work/develop/TspCarWs$ rosrun lower_ctrl_pkg lower_ctrl_nodelower_ctrl_node running~
+
+到这里，创建一个ros软件包，并执行的流程就完成了。
+3. 小车开发3.1 速度订阅为了结构化实现功能，我们不会把所有逻辑都放到一个文件中，会按照功能进行划分一下。
+还是在lower_ctrl_pkg软件包下。
+haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ pwd/home/haozi/work/develop/TspCarWs/src/lower_ctrl_pkg/srchaozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ lslower_ctrl.cpp  lower_ctrl.h  main.cpp  uart.cpp  uart.h
+
+功能如下：
+
+main.c：启动功能
+uart.x：提供和下位机通信的接口
+lower_ctrl.x：逻辑写在这里
+
+main.cpp
+#include &lt;ros/ros.h&gt;#include &quot;lower_ctrl.h&quot;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    printf(&quot;lower_ctrl_node running~ \n&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;lower_ctrl_node&quot;);    // 通信串口    Uart lower_uart(&quot;/dev/ttyS3&quot;);    lower_uart.Open(115200, 8, &#x27;N&#x27;, 1);    // 下位机控制节点    LowerCtrl lower_ctrl(lower_uart);    lower_ctrl.Run();    return 0;&#125;
+
+uart.cpp
+#include &quot;uart.h&quot;#include &lt;fcntl.h&gt;   // 用于 open() 函数和文件控制选项#include &lt;termios.h&gt; // 用于终端I/O接口 (tcgetattr, tcsetattr等)#include &lt;unistd.h&gt;  // 用于 close(), read(), write() 等系统调用#include &lt;stdio.h&gt;   // 用于 printf(), perror()#include &lt;strings.h&gt; // 用于 bzero()Uart::Uart(const char *name)&#123;    fd_ = 0;    name_ = name;&#125;Uart::~Uart()&#123;    Close();&#125;// 波特率，数据位，是否奇偶校验位，停止位int Uart::Open(int buad, int nBits, char nEvent, int nStop)&#123;    fd_ = open(name_, O_RDWR | O_NOCTTY);    if (fd_ &lt;= 0)    &#123;        printf(&quot;open %s failed, not exist or need to chmod!&quot;, name_);        return -1;    &#125;    struct termios newtio, oldtio;    if (tcgetattr(fd_, &amp;oldtio) != 0)    &#123;        perror(&quot;SetupSerial 1&quot;);        return -2;    &#125;    bzero(&amp;newtio, sizeof(newtio));    newtio.c_cflag |= CLOCAL | CREAD;    newtio.c_cflag &amp;= ~CSIZE;    switch (nBits)    &#123;    case 7:        newtio.c_cflag |= CS7;        break;    case 8:        newtio.c_cflag |= CS8;        break;    &#125;    switch (nEvent)    &#123;    case &#x27;O&#x27;:        newtio.c_cflag |= PARENB;        newtio.c_cflag |= PARODD;        newtio.c_iflag |= (INPCK | ISTRIP);        break;    case &#x27;E&#x27;:        newtio.c_iflag |= (INPCK | ISTRIP);        newtio.c_cflag |= PARENB;        newtio.c_cflag &amp;= ~PARODD;        break;    case &#x27;N&#x27;:        newtio.c_cflag &amp;= ~PARENB;        break;    &#125;    switch (buad)    &#123;    case 2400:        cfsetispeed(&amp;newtio, B2400);        cfsetospeed(&amp;newtio, B2400);        break;    case 4800:        cfsetispeed(&amp;newtio, B4800);        cfsetospeed(&amp;newtio, B4800);        break;    case 9600:        cfsetispeed(&amp;newtio, B9600);        cfsetospeed(&amp;newtio, B9600);        break;    case 115200:        cfsetispeed(&amp;newtio, B115200);        cfsetospeed(&amp;newtio, B115200);        break;    case 460800:        cfsetispeed(&amp;newtio, B460800);        cfsetospeed(&amp;newtio, B460800);        break;    default:        cfsetispeed(&amp;newtio, B9600);        cfsetospeed(&amp;newtio, B9600);        break;    &#125;    if (nStop == 1)        newtio.c_cflag &amp;= ~CSTOPB;    else if (nStop == 2)        newtio.c_cflag |= CSTOPB;    newtio.c_cc[VTIME] = 10; // 等待时间，0表示永远等待，单位是十分之一秒，10就是1秒    newtio.c_cc[VMIN] = 0;   // 最小接收字节个数    tcflush(fd_, TCIFLUSH);    if ((tcsetattr(fd_, TCSANOW, &amp;newtio)) != 0)    &#123;        perror(&quot;com set error&quot;);        return -3;    &#125;    printf(&quot;vtime=%d vmin=%d\n&quot;, newtio.c_cc[VTIME], newtio.c_cc[VMIN]);    return 0;&#125;int Uart::Close()&#123;    if (fd_ &gt; 0)        close(fd_);    return 0;&#125;int Uart::Write(uint8_t *data, int len)&#123;    if (fd_ &lt;= 0)    &#123;        // printf(&quot;send_data fd_ error!&quot;);        return -1;    &#125;    int cnt = write(fd_, data, len);    return cnt;&#125;int Uart::Read(uint8_t *data, int len)&#123;    // 阻塞接收，超时时间1秒（在Open函数中）    int cnt = read(fd_, data, len);    return cnt;&#125;
+
+uart.h
+#pragma once#include &lt;stdint.h&gt;class Uart&#123;public:    // 串口号    Uart(const char *name);    ~Uart();    // 波特率，数据位，是否奇偶校验位，停止位    int Open(int buad, int nBits, char nEvent, int nStop);    int Close();    // 读写    int Write(uint8_t *data, int len);    int Read(uint8_t *data, int len);private:    const char *name_;    int fd_;&#125;;
+
+然后在lower_ctrl.x中实现速度订阅功能
+lower_ctrl.h
+#pragma once#include &lt;ros/ros.h&gt;#include &lt;std_msgs/String.h&gt;     // 标准消息#include &lt;geometry_msgs/Twist.h&gt; // 速度消息#include &quot;uart.h&quot;class LowerCtrl&#123;public:    LowerCtrl(Uart &amp;uart);    ~LowerCtrl();    ros::NodeHandle nh_; // 节点管理工具    ros::Subscriber tar_speed_sub_;                                 // 订阅目标速度    void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &amp;msg); // 收到目标速度的响应    void Run();private:    Uart &amp;uart_;&#125;;
+
+lower_ctrl.cpp
+#include &quot;lower_ctrl.h&quot;LowerCtrl::LowerCtrl(Uart &amp;uart) : uart_(uart)&#123;    tar_speed_sub_ = nh_.subscribe(&quot;/cmd_vel&quot;, 10, &amp;LowerCtrl::CmdVelCallback, this); // 订阅目标速度&#125;LowerCtrl::~LowerCtrl()&#123;&#125;// 速度指令订阅回调函数void LowerCtrl::CmdVelCallback(const geometry_msgs::Twist::ConstPtr &amp;msg)&#123;    ROS_INFO(&quot;tar linear = %f(m/s), angular = %f(rad/s) ~ \n&quot;, msg-&gt;linear.x, msg-&gt;angular.z);&#125;void LowerCtrl::Run()&#123;    int ret;    // 20ms执行一次    ros::Rate loop_rate(50);    while (ros::ok())    &#123;        ros::spinOnce();        // 延时（约等于 sleep）        loop_rate.sleep();    &#125;&#125;
+
+这样的写法在CMakeLists.txt中也要修改，将新增的几个文件也添加上。
+add_executable(lower_ctrl_node   src/uart.cpp    src/lower_ctrl.cpp   src/main.cpp )
+
+
+
+3.2 速度发布另起一个软件包用来发布速度
+haozi@haozi:~/work/develop/TspCarWs$ cd src/haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg move_ctrl_pkg rospy roscpp std_msgsCreated file move_ctrl_pkg/package.xmlCreated file move_ctrl_pkg/CMakeLists.txtCreated folder move_ctrl_pkg/include/move_ctrl_pkgCreated folder move_ctrl_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/move_ctrl_pkg. Please adjust the values in package.xml.
+
+软件包中创建main.cpp，代码如下，其余操作流程同上
+#include &lt;ros/ros.h&gt;#include &lt;std_msgs/String.h&gt;#include &lt;geometry_msgs/Twist.h&gt; // 速度消息int main(int argc, char *argv[])&#123;    printf(&quot;move_ctrl_node running~ \n&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;move_ctrl_node&quot;);    // 节点管理工具    ros::NodeHandle nh;    // 创建一个发布者，话题名称为cmd_vel, 队列长度为10    ros::Publisher cmd_vel_pub = nh.advertise&lt;geometry_msgs::Twist&gt;(&quot;/cmd_vel&quot;, 10);    // 创建一个频率控制对象,每秒循环10次    ros::Rate loop_rate(10);    while (ros::ok())    &#123;        geometry_msgs::Twist vel_cmd;        vel_cmd.linear.x = 0.1;        vel_cmd.linear.y = 0.0;        vel_cmd.linear.z = 0.0;        vel_cmd.angular.x = 0.0;        vel_cmd.angular.y = 0.0;        vel_cmd.angular.z = 0.0;        cmd_vel_pub.publish(vel_cmd);   // 发布        // 延时（约等于 sleep）        loop_rate.sleep();    &#125;    return 0;&#125;
+
+
+
+3.3 查看消息将两个软件包中的两个节点都运行起来
+
+rostopic list：查看当前存在的话题
+rostopic echo 话题名：查看当前话题发布的消息
+rqt_graph：查看话题之间的关系（需要图像显示）
+
+haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ rostopic list/cmd_vel/rosout/rosout_agghaozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ rostopic echo /cmd_vellinear:   x: 0.1  y: 0.0  z: 0.0angular:   x: 0.0  y: 0.0  z: 0.0---
+
+
+
+3.4 Launch启动当软件包和节点多了之后，一个个启动节点需要很多很多命令，因此需要一个能同时启动多个节点的工具。
+
+重新创建一个软件包，launch_pkg
+在软件包中创建一个launch文件夹
+文件夹中创建一个all.launch文件
+
+结果如下
+haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg launch_pkg rospy roscpp std_msgshaozi@haozi:~/work/develop/TspCarWs/src$ cd launch_pkg/haozi@haozi:~/work/develop/TspCarWs/src/launch_pkg$ mkdir launchhaozi@haozi:~/work/develop/TspCarWs/src/launch_pkg$ cd launch/haozi@haozi:~/work/develop/TspCarWs/src/launch_pkg/launch$ lsall.launch
+
+文件中的内容如下，每一条都表示需要启动这个包中的一个节点。
+&lt;launch&gt;    &lt;node pkg=&quot;lower_ctrl_pkg&quot; type=&quot;lower_ctrl_node&quot; name=&quot;lower_ctrl_node&quot;/&gt;    &lt;node pkg=&quot;move_ctrl_pkg&quot; type=&quot;move_ctrl_node&quot; name=&quot;move_ctrl_node&quot; output=&quot;screen&quot;/&gt;&lt;/launch&gt;
+
+
+output&#x3D;”screen”：表示将信息输出到屏幕。
+
+完成后编译工作空间，编译完成后，使用如下命令即可直接启动所有软件包。
+roslaunch &lt;包名&gt; &lt;launch文件名&gt;
+
+结果如下
+haozi@haozi:~/work/develop/ros1/tsp_car_ws$ roslaunch launch_pkg all.launch ... logging to /home/haozi/.ros/log/82134f94-36e0-11f0-bea8-1303c288b02a/roslaunch-haozi-15144.logChecking log directory for disk usage. This may take a while.Press Ctrl-C to interruptDone checking log file disk usage. Usage is &lt;1GB.started roslaunch server http://haozi:42535/SUMMARY========PARAMETERS * /rosdistro: noetic * /rosversion: 1.17.3NODES  /    lower_ctrl_node (lower_ctrl_pkg/lower_ctrl_node)    move_ctrl_node (move_ctrl_pkg/move_ctrl_node)auto-starting new masterprocess[master]: started with pid [15155]ROS_MASTER_URI=http://localhost:11311setting /run_id to 82134f94-36e0-11f0-bea8-1303c288b02aprocess[rosout-1]: started with pid [15165]started core service [/rosout]process[lower_ctrl_node-2]: started with pid [15168]process[move_ctrl_node-3]: started with pid [15173]
+
+
+
+
+实际上，这个launch文件，放在任意一个软件包里都可以，但是为了代码结构清晰，就创建了一个空的软件包来干这件事了。
+
+3.5 雷达数据发送激光雷达数据格式
+
+sensor_msgs::LaserScan
+header
+frame_id：坐标系基准
+stamp：本次扫描中接收到第一束反射信号的时间
+
+
+angle_min：扫描的其实角度，弧度
+angle_max：扫描的终止角度，弧度
+angle_increment：相邻两次测距的旋转夹角，弧度
+time_increment：相邻两次测距的时间差，秒
+scan_time：两次扫描的起始时间差，秒
+range_min：有效测距范围的最小距离，米
+range_max：有效测距范围的最大距离，米
+ranges[]：本次扫描的所有测距值，米
+intensities[]：所有测距值返回的信号强度
+
+
+
+创建雷达数据软件包，用于发送激光雷达数据
+haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lidar_pkg roscpp rospy sensor_msgsCreated file lidar_pkg/package.xmlCreated file lidar_pkg/CMakeLists.txtCreated folder lidar_pkg/include/lidar_pkgCreated folder lidar_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/lidar_pkg. Please adjust the values in package.xml.
+
+并在软件包中创建五个文件
+haozi@haozi:~/work/develop/TspCarWs/src/lidar_pkg/src$ lsm1c1_mini.cpp  m1c1_mini.h  main.cpp  uart.cpp  uart.h
+
+其中uart.x参考前面速度订阅的串口操作接口，内容相同。
+雷达消息接口如下：
+m1c1_mini.h
+#pragma once#include &lt;ros/ros.h&gt;#include &lt;std_msgs/Bool.h&gt;	 // 标准消息#include &lt;std_msgs/String.h&gt; // 标准消息#include &quot;uart.h&quot;/* 雷达消息结构 */#define PKG_LEN_MIN 12#define PKG_LEN_MAX 60#define POINT_NUM_MAX_IN_A_PKG 25 // 一包最多25个点#pragma pack(1)typedef struct&#123;	uint8_t head1;		  // 数据头1 0xAA	uint8_t head2;		  // 数据头2 0x55	uint8_t points_type;  // 点云类型1--每圈起始点;0--非一圈起始点	uint8_t points_num;	  // 点云个数 结构体总长度 = 10 + points_num * 2	uint16_t start_angle; // 起始角度	uint16_t end_angle;	  // 结束角度	uint16_t check_code;  // 校验	uint16_t data[POINT_NUM_MAX_IN_A_PKG];&#125; LidarData;#pragma pack()class Lidar&#123;public:	Lidar(Uart &amp;uart);	~Lidar();	int ReadData(std::string &amp;lidar_data);	ros::NodeHandle nh_;	   // 节点管理工具	ros::Publisher lidar_pub_; // 发布雷达数据	void Run();private:	Uart &amp;uart_;	LidarData lidar_data_;&#125;;
+
+m1c1_mini.cpp
+#include &quot;m1c1_mini.h&quot;#include &lt;sensor_msgs/LaserScan.h&gt;Lidar::Lidar(Uart &amp;uart) : uart_(uart)&#123;    lidar_pub_ = nh_.advertise&lt;sensor_msgs::LaserScan&gt;(&quot;/scan&quot;, 10); // 发布雷达数据&#125;Lidar::~Lidar()&#123;&#125;int Lidar::ReadData(std::string &amp;lidar_data)&#123;    int recv_cnt = 0;    // 先清空雷达数据    lidar_data.clear();    // 先寻找数据头，0xAA 0x55    uint8_t buffer[100] = &#123;0&#125;;    for (int c = 0; c &lt; 100; c++) // 最多尝试100次寻找AA 55开头    &#123;        // 阻塞接收，超时时间1s        recv_cnt = uart_.Read(&amp;buffer[1], 1);        if (recv_cnt != 1)            return -1;        // 逐个字节依次插入lidar_data        lidar_data.append((char *)(&amp;buffer[1]), 1);        // 已经找到数据头了        if (buffer[0] == 0xAA &amp;&amp; buffer[1] == 0x55)            break;        buffer[0] = buffer[1];        // 长度过长则返回        if (lidar_data.size() &gt;= 100)        &#123;            printf(&quot;lidar_data100: &quot;);            for (int i = 0; i &lt; lidar_data.size(); i++)                printf(&quot;%02x &quot;, (unsigned char)lidar_data.data()[i]);            printf(&quot;\n&quot;);            return -2;        &#125;    &#125;    // 删除数据头前面的部分，有可能是错误的数据，也有可能是上一包的部分    // 只保留末尾两个字母AA 55作为数据头    if (lidar_data.size() &gt; 2)        lidar_data = lidar_data.substr(lidar_data.size() - 2);    // 再读取两个字节 点云类型 和 点云点数(1~25)    recv_cnt = uart_.Read(&amp;buffer[0], 2);    if (recv_cnt &lt; 2)        return -1;    // 把读到的数据添加到消息    lidar_data.append((char *)(&amp;buffer[0]), 2);    // 判断点云类型 只能是0或1    if ((lidar_data.data()[2] != 0) &amp;&amp; (lidar_data.data()[2] != 1))        return -4;    // 点云点数只会在1~25之间    if (lidar_data.data()[3] &gt; 25 || lidar_data.data()[3] &lt; 1)    &#123;        for (int i = 0; i &lt; lidar_data.size(); i++)            printf(&quot;%02x &quot;, (unsigned char)lidar_data.data()[i]);        printf(&quot;\n&quot;);        return -5;    &#125;    // 判断本包数据中 数据部分的长度    int data_len = 10 + lidar_data.data()[3] * 2 - lidar_data.size();    // 计算出的长度过长或过短，则返回错误    if (data_len &gt; 100 || data_len &lt; 5)        return -6;    // 读取数据部分    recv_cnt = uart_.Read(&amp;buffer[0], data_len);    if (recv_cnt &lt; data_len)    &#123;        // printf(&quot;read_len=%d &lt; need_read_len=%d !\n&quot;,read_len,need_read_len);        return -1;    &#125;    lidar_data.append((char *)(&amp;buffer[0]), data_len);    // 如果长度不正确    if (lidar_data.size() != 10 + lidar_data.data()[3] * 2)    &#123;        printf(&quot;read len %ld != points num %d *2+10 error!\n&quot;, lidar_data.size(), lidar_data.data()[3]);        for (int i = 0; i &lt; lidar_data.size(); i++)            printf(&quot;%02x &quot;, (unsigned char)lidar_data.data()[i]);        printf(&quot;\n&quot;);        return -7;    &#125;    return 0;&#125;void Lidar::Run()&#123;    int ret = 0;    int start_cnt = 0;    /* 创建雷达数据 */    float laser_min_range = 0.1; // 雷达最小量程    float laser_max_range = 8.0; // 雷达最大量程    int points_size = 800;       // 修正和插值到800点(本身390个点左右)    sensor_msgs::LaserScan laser_scan;    laser_scan.header.frame_id = &quot;laser_link&quot;;    laser_scan.angle_min = 0;    laser_scan.angle_max = 2 * M_PI;    laser_scan.angle_increment = (laser_scan.angle_max - laser_scan.angle_min) / points_size;    laser_scan.range_min = laser_min_range;    laser_scan.range_max = laser_max_range;    laser_scan.ranges.resize(points_size);    std::fill(laser_scan.ranges.begin(), laser_scan.ranges.end(), std::numeric_limits&lt;float&gt;::infinity()); // 全部填充为无限远    laser_scan.intensities.resize(points_size, 127);                                                       // 假设强度值为127    std::string lidar_str_data;    while (ros::ok())    &#123;        ros::spinOnce();        // 读取雷达数据        ret = ReadData(lidar_str_data);        if (ret &lt; 0) // 报错，则重新读取        &#123;            if (ret != -1) // 雷达断电后会返回-1                ROS_WARN(&quot;read_lidar_data ret=%d&quot;, ret);            continue;        &#125;        // 校验数据长度        if (lidar_str_data.size() &lt; PKG_LEN_MIN || lidar_str_data.size() &gt; PKG_LEN_MAX)        &#123;            ROS_WARN(&quot;lidar_str_data size %ld error!&quot;, lidar_str_data.size());            continue;        &#125;        // 拷贝进数据包结构体        memcpy(&amp;lidar_data_, lidar_str_data.data(), lidar_str_data.size());        // 每圈起始点，发布上一圈的数据        if (lidar_data_.points_type == 1)        &#123;            if (start_cnt &lt; 10) // 前10圈数据丢弃            &#123;                start_cnt++;                continue;            &#125;            laser_scan.header.stamp = ros::Time::now();            // 发布Lidat Scan消息            lidar_pub_.publish(laser_scan);            ROS_INFO_ONCE(&quot;Published LaserScan OK&quot;);            // 必须给每个点刷入无效数据，防止下一圈产生重影, 全部填充为无限远            std::fill(laser_scan.ranges.begin(), laser_scan.ranges.end(), std::numeric_limits&lt;float&gt;::infinity());        &#125;        // 开始解析数据包结构体中的数据        float start_angle0 = (lidar_data_.start_angle &gt;&gt; 1) / 64.0;        float end_angle0 = (lidar_data_.end_angle &gt;&gt; 1) / 64.0;        // float start_angle = start_angle0-ang_corr_1;        // float end_angle = end_angle0-ang_corr_n;        float ang_corr_i, distance_mm_i, angle_i;        for (int i = 0; i &lt; lidar_data_.points_num; i++)        &#123;            // 解析距离：单位mm            distance_mm_i = lidar_data_.data[i] &gt;&gt; 2;            // 根据距离来求修正角度            ang_corr_i = (distance_mm_i == 0) ? 0 : atan(19.16 * (distance_mm_i - 90.15) / (90.15 * distance_mm_i)) * 180.0 / M_PI;            if (lidar_data_.points_num != 1) // 分母不能为0                angle_i = start_angle0 + (end_angle0 - start_angle0) / (lidar_data_.points_num - 1) * i - ang_corr_i;            else                angle_i = start_angle0 - ang_corr_i;            angle_i = 180.0 - (angle_i + 12.0); // 12度是雷达手册中写的固有偏差，180是和雷达安装朝向有关            // 角度限制在[0,360]度之间            angle_i = fmod(angle_i, 360.0);                        // 使用fmod函数计算角度对360的余数            angle_i = (angle_i &lt; 0) ? (angle_i + 360.0) : angle_i; // 如果结果是负数，则加上360使其变为正数            // printf(&quot;%.2f(%.2f)\n&quot;,distance_mm_i,angle_i);            // 考虑到角度修正之后填充，并且插值到800点            int new_i = angle_i / 360.0 * (points_size - 1) + 0.5; // 索引最大不能到points_size，而是points_size-1            laser_scan.ranges[new_i] = distance_mm_i / 1000.0;     // 填充到LaserScan消息中        &#125;    &#125;&#125;
+
+main.cpp
+#include &lt;ros/ros.h&gt;#include &quot;m1c1_mini.h&quot;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;lidar_node&quot;);    // 通信串口    Uart lidar_uart(&quot;/dev/ttyS5&quot;);    lidar_uart.Open(115200, 8, &#x27;N&#x27;, 1);    // 下位机控制节点    Lidar lidar(lidar_uart);    lidar.Run();    return 0;&#125;
+
+
+
+
+雷达消息话题名一般默认为：/scan
+
+3.6 雷达数据处理创建一个新的软件包lidar_handle_pkg
+haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lidar_handle_pkg roscpp rospy sensor_msgsCreated file lidar_handle_pkg/package.xmlCreated file lidar_handle_pkg/CMakeLists.txtCreated folder lidar_handle_pkg/include/lidar_handle_pkgCreated folder lidar_handle_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/lidar_handle_pkg. Please adjust the values in package.xml.
+
+
+
+暂时只创建一个main文件，测试接收到的激光雷达发送的数据，并判断前方障碍物的距离。
+main.cpp
+#include &lt;ros/ros.h&gt;#include &lt;sensor_msgs/LaserScan.h&gt;void LidarCallback(const sensor_msgs::LaserScan msg)&#123;    float fMidDist = msg.ranges[180];    ROS_INFO(&quot;前方距离：ranges[180] = %f 米&quot;, fMidDist);&#125;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;lidar_handle_node&quot;);    ros::NodeHandle nh_;                                                     // 节点管理工具    ros::Subscriber lidar_sub_ = nh_.subscribe(&quot;/scan&quot;, 10, &amp;LidarCallback); // 订阅雷达数据    ros::spin();    return 0;&#125;
+
+
+
+添加避障逻辑方法，判断当障碍物距离过近时，发送速度消息，控制小车避开。
+#include &lt;ros/ros.h&gt;#include &lt;sensor_msgs/LaserScan.h&gt;#include &lt;geometry_msgs/Twist.h&gt; // 速度消息ros::Publisher vel_pub;void LidarCallback(const sensor_msgs::LaserScan msg)&#123;    float fMidDist = msg.ranges[180];    ROS_INFO(&quot;前方距离：ranges[180] = %f 米&quot;, fMidDist);    geometry_msgs::Twist vel_cmd;    if (fMidDist &lt; 1.5)    &#123;        vel_cmd.angular.z = 0.5;    &#125;    else    &#123;        vel_cmd.linear.x = 0.05;    &#125;    vel_pub.publish(vel_cmd);&#125;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;lidar_handle_node&quot;);    ros::NodeHandle nh_;                                                     // 节点管理工具    ros::Subscriber lidar_sub_ = nh_.subscribe(&quot;/scan&quot;, 10, &amp;LidarCallback); // 订阅雷达数据    vel_pub = nh_.advertise&lt;geometry_msgs::Twist&gt;(&quot;/cmd_vel&quot;, 10);    ros::spin();    return 0;&#125;
+
+
+
+3.7 栅格地图创建一个软件包map_pkg，用来发布地图数据。
+haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg map_pkg roscpp rospy nav_msgsCreated file map_pkg/package.xmlCreated file map_pkg/CMakeLists.txtCreated folder map_pkg/include/map_pkgCreated folder map_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/map_pkg. Please adjust the values in package.xml.
+
+
+
+只创建一个main文件，发布一个固定的地图。
+main.cpp
+#include &lt;ros/ros.h&gt;#include &lt;nav_msgs/OccupancyGrid.h&gt;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;map_pub_node&quot;);    ros::NodeHandle nh_;                                                            // 节点管理工具    ros::Publisher map_pub_ = nh_.advertise&lt;nav_msgs::OccupancyGrid&gt;(&quot;/map&quot;, 10); // 发布地图数据    // 每秒一次    ros::Rate r(1);    while (ros::ok())    &#123;        nav_msgs::OccupancyGrid msg;        msg.header.frame_id = &quot;map&quot;;        msg.header.stamp = ros::Time::now();        msg.info.origin.position.x = 0;        msg.info.origin.position.y = 0;        msg.info.resolution = 1.0; // 栅格分辨率（每个格子1米）        msg.info.width = 4;        // 地图宽度（格子数）        msg.info.height = 2;       // 地图高度（格子数）        msg.data.resize(4 * 2); // 地图数据        msg.data[0] = 100;        msg.data[1] = 100;        msg.data[2] = 0;        msg.data[3] = -1;        map_pub_.publish(msg);        r.sleep();    &#125;    return 0;&#125;
+
+
+
+将软件包运行起来。
+然后启动rviz工具，查看发布的栅格地图。
+haozi@haozi:~/work/develop/TspCarWs$ rviz
+
+启动rviz之后，添加一个地图原点Axes，添加一个地图map，并将地图消息类型Topic修改为/map，就可以看到发布的测试消息了。
+
+3.8 SLAM地图创建流程为：
+
+激光雷达节点，发布雷达数据/scan
+SLAM节点，接收雷达数据/scan，发送地图数据/map
+其他节点，接收地图数据/map
+
+也就是，SLAM节点接收雷达数据后，经过处理就可以得到地图数据了。
+其中SLAM节点有现成的软件包可以用，比如Hector_Mapping
+3.8.1 Hector_Mapping安装软件包
+haozi@haozi:~/work/develop/TspCarWs$ sudo apt install ros-noetic-hector-mapping
+
+运行Hector_Mapping节点
+haozi@haozi:~/work/develop/TspCarWs$ rosrun hector_mapping hector_mapping
+
+rviz查看建图数据
+haozi@haozi:~$ rosrun rviz rviz
+
+
+
+创建一个新的软件包slam_pkg
+haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg slam_pkg roscpp rospy std_msgsCreated file slam_pkg/package.xmlCreated file slam_pkg/CMakeLists.txtCreated folder slam_pkg/include/slam_pkgCreated folder slam_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/slam_pkg. Please adjust the values in package.xml.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2634,8 +2957,8 @@ tar -vxf gdb-9.2.tar.xz
         <category>Linux应用</category>
       </categories>
       <tags>
-        <tag>gdb</tag>
-        <tag>Linux</tag>
+        <tag>ROS</tag>
+        <tag>ROS1</tag>
       </tags>
   </entry>
   <entry>
@@ -3110,329 +3433,6 @@ ros2 pkg create --build-type &lt;build-type&gt;&lt;package_name&gt;#创建功能
       <tags>
         <tag>ROS</tag>
         <tag>ROS2</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>ros1学习笔记</title>
-    <url>/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/ros1/</url>
-    <content><![CDATA[1. 环境准备
-ubuntu环境
-这里使用的ubuntu 20.04.3
-镜像名称：ubuntu-20.04.6-desktop-amd64.iso（文件大小：4.05G）
-下载地址：http://mirrors.ustc.edu.cn/ubuntu-releases/
-
-
-ros1环境
-这里使用的是Noetic版本。
-安装方式：小鱼一键安装
-
-
-
-wget http://fishros.com/install -O fishros &amp;&amp; bash fishros
-
-
-
-2. 创建项目以下创建一个示例工程，也基于此工程完成本项目，后续的所有项目创建都是这个流程。
-步骤一：创建工程
-
-创建一个工作空间文件夹（就是一个工程文件夹）
-工作空间中可以有多个软件包
-软件包中又可以又多个节点
-
-
-
-比如这里想创建一个基于泰山派的小车项目，就可以创建下面的文件目录
-
-TspCarWs
-src：存放代码，源代码、功能包等
-
-
-
-创建一个TspCarWs目录作为本项目的工作空间。
-haozi@haozi:~/work/develop$ mkdir TspCarWshaozi@haozi:~/work/develop$ cd TspCarWs/haozi@haozi:~/work/develop/TspCarWs$ mkdir src
-
-
-
-步骤二：创建软件包
-本项目采用上下位机的架构进行设计，上下位机通过通信进行交互和控制，首先实现一个用于控制下位机运动的软件包lower_ctrl_pkg。
-切换到工作空间的src目录下，执行如下指令：
-catkin_create_pkg 包名 &lt;依赖项1&gt; &lt;依赖项2&gt; ...
-
-如下：
-haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lower_ctrl_pkg rospy roscpp std_msgsCreated file lower_ctrl_pkg/package.xmlCreated file lower_ctrl_pkg/CMakeLists.txtCreated folder lower_ctrl_pkg/include/lower_ctrl_pkgCreated folder lower_ctrl_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/lower_ctrl_pkg. Please adjust the values in package.xml.
-
-执行完成后，在src目录下就会多出一个新的目录catkin_create_pkg，该目录就是一个包了，包里面又包含了多个文件。
-haozi@haozi:~/work/develop/TspCarWs/src$ lslower_ctrl_pkghaozi@haozi:~/work/develop/TspCarWs/src$ cd lower_ctrl_pkg/haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg$ lsCMakeLists.txt  include  package.xml  src
-
-
-
-步骤三：添加代码
-在软件包的src目录下创建代码文件main.cpp
-#include &lt;ros/ros.h&gt;int main(int argc, char *argv[])&#123;    printf(&quot;lower_ctrl_node running~ \n&quot;);        // 后面的是节点名称    ros::init(argc, argv, &quot;lower_ctrl_node&quot;);    while(ros::ok())    &#123;        printf(&quot;lower_ctrl_node running~ \n&quot;);        sleep(1);    &#125;    return 0;&#125;
-
-在CMakeLists.txt文件中，build部分，找到对应的注释的位置，添加如下两条（没注释掉的是添加的，注释掉的是原有的）。
-## Declare a C++ executable## With catkin_make all packages are built within a single CMake context## The recommended prefix ensures that target names across packages don&#x27;t collide# add_executable($&#123;PROJECT_NAME&#125;_node src/lower_ctrl_pkg_node.cpp)add_executable(lower_ctrl_node src/main.cpp)## Specify libraries to link a library or executable target against# target_link_libraries($&#123;PROJECT_NAME&#125;_node#   $&#123;catkin_LIBRARIES&#125;# )target_link_libraries(lower_ctrl_node  $&#123;catkin_LIBRARIES&#125;)
-
-其中
-add_executable：表示需要编译可执行文件
-target_link_libraries：表示需要链接ros库
-步骤四：编译代码
-在工作空间目录（tsp_car_ws）下执行编译命令
-haozi@haozi:~/work/develop/TspCarWs$ pwd/home/haozi/work/develop/TspCarWshaozi@haozi:~/work/develop/TspCarWs$ catkin_makeBase path: /home/haozi/work/develop/TspCarWsSource space: /home/haozi/work/develop/TspCarWs/srcBuild space: /home/haozi/work/develop/TspCarWs/buildDevel space: /home/haozi/work/develop/TspCarWs/develInstall space: /home/haozi/work/develop/TspCarWs/install######## Running command: &quot;make cmake_check_build_system&quot; in &quot;/home/haozi/work/develop/TspCarWs/build&quot;############ Running command: &quot;make -j4 -l4&quot; in &quot;/home/haozi/work/develop/TspCarWs/build&quot;####[100%] Built target lower_ctrl_node
-
-编译完成后，工作空间下就会多出来两个文件夹，build、devel
-haozi@haozi:~/work/develop/TspCarWs$ lsbuild  devel  src
-
-
-build：编译文件
-devel：执行文件，执行前需要在这里添加源
-
-步骤五：执行
-启动一个新的终端，启动ros
-roscore
-
-添加代码源（注意相对目录或者绝对目录）
-haozi@haozi:~/work/develop/TspCarWs$ source devel/setup.bash
-
-执行代码
-# rosrun：执行# lower_ctrl_pkg：报名# lower_ctrl_node：节点名roslaunch launch_pkg all.launch tfhaozi@haozi:~/work/develop/TspCarWs$ rosrun lower_ctrl_pkg lower_ctrl_nodelower_ctrl_node running~
-
-到这里，创建一个ros软件包，并执行的流程就完成了。
-3. 小车开发3.1 速度订阅为了结构化实现功能，我们不会把所有逻辑都放到一个文件中，会按照功能进行划分一下。
-还是在lower_ctrl_pkg软件包下。
-haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ pwd/home/haozi/work/develop/TspCarWs/src/lower_ctrl_pkg/srchaozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ lslower_ctrl.cpp  lower_ctrl.h  main.cpp  uart.cpp  uart.h
-
-功能如下：
-
-main.c：启动功能
-uart.x：提供和下位机通信的接口
-lower_ctrl.x：逻辑写在这里
-
-main.cpp
-#include &lt;ros/ros.h&gt;#include &quot;lower_ctrl.h&quot;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    printf(&quot;lower_ctrl_node running~ \n&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;lower_ctrl_node&quot;);    // 通信串口    Uart lower_uart(&quot;/dev/ttyS3&quot;);    lower_uart.Open(115200, 8, &#x27;N&#x27;, 1);    // 下位机控制节点    LowerCtrl lower_ctrl(lower_uart);    lower_ctrl.Run();    return 0;&#125;
-
-uart.cpp
-#include &quot;uart.h&quot;#include &lt;fcntl.h&gt;   // 用于 open() 函数和文件控制选项#include &lt;termios.h&gt; // 用于终端I/O接口 (tcgetattr, tcsetattr等)#include &lt;unistd.h&gt;  // 用于 close(), read(), write() 等系统调用#include &lt;stdio.h&gt;   // 用于 printf(), perror()#include &lt;strings.h&gt; // 用于 bzero()Uart::Uart(const char *name)&#123;    fd_ = 0;    name_ = name;&#125;Uart::~Uart()&#123;    Close();&#125;// 波特率，数据位，是否奇偶校验位，停止位int Uart::Open(int buad, int nBits, char nEvent, int nStop)&#123;    fd_ = open(name_, O_RDWR | O_NOCTTY);    if (fd_ &lt;= 0)    &#123;        printf(&quot;open %s failed, not exist or need to chmod!&quot;, name_);        return -1;    &#125;    struct termios newtio, oldtio;    if (tcgetattr(fd_, &amp;oldtio) != 0)    &#123;        perror(&quot;SetupSerial 1&quot;);        return -2;    &#125;    bzero(&amp;newtio, sizeof(newtio));    newtio.c_cflag |= CLOCAL | CREAD;    newtio.c_cflag &amp;= ~CSIZE;    switch (nBits)    &#123;    case 7:        newtio.c_cflag |= CS7;        break;    case 8:        newtio.c_cflag |= CS8;        break;    &#125;    switch (nEvent)    &#123;    case &#x27;O&#x27;:        newtio.c_cflag |= PARENB;        newtio.c_cflag |= PARODD;        newtio.c_iflag |= (INPCK | ISTRIP);        break;    case &#x27;E&#x27;:        newtio.c_iflag |= (INPCK | ISTRIP);        newtio.c_cflag |= PARENB;        newtio.c_cflag &amp;= ~PARODD;        break;    case &#x27;N&#x27;:        newtio.c_cflag &amp;= ~PARENB;        break;    &#125;    switch (buad)    &#123;    case 2400:        cfsetispeed(&amp;newtio, B2400);        cfsetospeed(&amp;newtio, B2400);        break;    case 4800:        cfsetispeed(&amp;newtio, B4800);        cfsetospeed(&amp;newtio, B4800);        break;    case 9600:        cfsetispeed(&amp;newtio, B9600);        cfsetospeed(&amp;newtio, B9600);        break;    case 115200:        cfsetispeed(&amp;newtio, B115200);        cfsetospeed(&amp;newtio, B115200);        break;    case 460800:        cfsetispeed(&amp;newtio, B460800);        cfsetospeed(&amp;newtio, B460800);        break;    default:        cfsetispeed(&amp;newtio, B9600);        cfsetospeed(&amp;newtio, B9600);        break;    &#125;    if (nStop == 1)        newtio.c_cflag &amp;= ~CSTOPB;    else if (nStop == 2)        newtio.c_cflag |= CSTOPB;    newtio.c_cc[VTIME] = 10; // 等待时间，0表示永远等待，单位是十分之一秒，10就是1秒    newtio.c_cc[VMIN] = 0;   // 最小接收字节个数    tcflush(fd_, TCIFLUSH);    if ((tcsetattr(fd_, TCSANOW, &amp;newtio)) != 0)    &#123;        perror(&quot;com set error&quot;);        return -3;    &#125;    printf(&quot;vtime=%d vmin=%d\n&quot;, newtio.c_cc[VTIME], newtio.c_cc[VMIN]);    return 0;&#125;int Uart::Close()&#123;    if (fd_ &gt; 0)        close(fd_);    return 0;&#125;int Uart::Write(uint8_t *data, int len)&#123;    if (fd_ &lt;= 0)    &#123;        // printf(&quot;send_data fd_ error!&quot;);        return -1;    &#125;    int cnt = write(fd_, data, len);    return cnt;&#125;int Uart::Read(uint8_t *data, int len)&#123;    // 阻塞接收，超时时间1秒（在Open函数中）    int cnt = read(fd_, data, len);    return cnt;&#125;
-
-uart.h
-#pragma once#include &lt;stdint.h&gt;class Uart&#123;public:    // 串口号    Uart(const char *name);    ~Uart();    // 波特率，数据位，是否奇偶校验位，停止位    int Open(int buad, int nBits, char nEvent, int nStop);    int Close();    // 读写    int Write(uint8_t *data, int len);    int Read(uint8_t *data, int len);private:    const char *name_;    int fd_;&#125;;
-
-然后在lower_ctrl.x中实现速度订阅功能
-lower_ctrl.h
-#pragma once#include &lt;ros/ros.h&gt;#include &lt;std_msgs/String.h&gt;     // 标准消息#include &lt;geometry_msgs/Twist.h&gt; // 速度消息#include &quot;uart.h&quot;class LowerCtrl&#123;public:    LowerCtrl(Uart &amp;uart);    ~LowerCtrl();    ros::NodeHandle nh_; // 节点管理工具    ros::Subscriber tar_speed_sub_;                                 // 订阅目标速度    void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &amp;msg); // 收到目标速度的响应    void Run();private:    Uart &amp;uart_;&#125;;
-
-lower_ctrl.cpp
-#include &quot;lower_ctrl.h&quot;LowerCtrl::LowerCtrl(Uart &amp;uart) : uart_(uart)&#123;    tar_speed_sub_ = nh_.subscribe(&quot;/cmd_vel&quot;, 10, &amp;LowerCtrl::CmdVelCallback, this); // 订阅目标速度&#125;LowerCtrl::~LowerCtrl()&#123;&#125;// 速度指令订阅回调函数void LowerCtrl::CmdVelCallback(const geometry_msgs::Twist::ConstPtr &amp;msg)&#123;    ROS_INFO(&quot;tar linear = %f(m/s), angular = %f(rad/s) ~ \n&quot;, msg-&gt;linear.x, msg-&gt;angular.z);&#125;void LowerCtrl::Run()&#123;    int ret;    // 20ms执行一次    ros::Rate loop_rate(50);    while (ros::ok())    &#123;        ros::spinOnce();        // 延时（约等于 sleep）        loop_rate.sleep();    &#125;&#125;
-
-这样的写法在CMakeLists.txt中也要修改，将新增的几个文件也添加上。
-add_executable(lower_ctrl_node   src/uart.cpp    src/lower_ctrl.cpp   src/main.cpp )
-
-
-
-3.2 速度发布另起一个软件包用来发布速度
-haozi@haozi:~/work/develop/TspCarWs$ cd src/haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg move_ctrl_pkg rospy roscpp std_msgsCreated file move_ctrl_pkg/package.xmlCreated file move_ctrl_pkg/CMakeLists.txtCreated folder move_ctrl_pkg/include/move_ctrl_pkgCreated folder move_ctrl_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/move_ctrl_pkg. Please adjust the values in package.xml.
-
-软件包中创建main.cpp，代码如下，其余操作流程同上
-#include &lt;ros/ros.h&gt;#include &lt;std_msgs/String.h&gt;#include &lt;geometry_msgs/Twist.h&gt; // 速度消息int main(int argc, char *argv[])&#123;    printf(&quot;move_ctrl_node running~ \n&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;move_ctrl_node&quot;);    // 节点管理工具    ros::NodeHandle nh;    // 创建一个发布者，话题名称为cmd_vel, 队列长度为10    ros::Publisher cmd_vel_pub = nh.advertise&lt;geometry_msgs::Twist&gt;(&quot;/cmd_vel&quot;, 10);    // 创建一个频率控制对象,每秒循环10次    ros::Rate loop_rate(10);    while (ros::ok())    &#123;        geometry_msgs::Twist vel_cmd;        vel_cmd.linear.x = 0.1;        vel_cmd.linear.y = 0.0;        vel_cmd.linear.z = 0.0;        vel_cmd.angular.x = 0.0;        vel_cmd.angular.y = 0.0;        vel_cmd.angular.z = 0.0;        cmd_vel_pub.publish(vel_cmd);   // 发布        // 延时（约等于 sleep）        loop_rate.sleep();    &#125;    return 0;&#125;
-
-
-
-3.3 查看消息将两个软件包中的两个节点都运行起来
-
-rostopic list：查看当前存在的话题
-rostopic echo 话题名：查看当前话题发布的消息
-rqt_graph：查看话题之间的关系（需要图像显示）
-
-haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ rostopic list/cmd_vel/rosout/rosout_agghaozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg/src$ rostopic echo /cmd_vellinear:   x: 0.1  y: 0.0  z: 0.0angular:   x: 0.0  y: 0.0  z: 0.0---
-
-
-
-3.4 Launch启动当软件包和节点多了之后，一个个启动节点需要很多很多命令，因此需要一个能同时启动多个节点的工具。
-
-重新创建一个软件包，launch_pkg
-在软件包中创建一个launch文件夹
-文件夹中创建一个all.launch文件
-
-结果如下
-haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg launch_pkg rospy roscpp std_msgshaozi@haozi:~/work/develop/TspCarWs/src$ cd launch_pkg/haozi@haozi:~/work/develop/TspCarWs/src/launch_pkg$ mkdir launchhaozi@haozi:~/work/develop/TspCarWs/src/launch_pkg$ cd launch/haozi@haozi:~/work/develop/TspCarWs/src/launch_pkg/launch$ lsall.launch
-
-文件中的内容如下，每一条都表示需要启动这个包中的一个节点。
-&lt;launch&gt;    &lt;node pkg=&quot;lower_ctrl_pkg&quot; type=&quot;lower_ctrl_node&quot; name=&quot;lower_ctrl_node&quot;/&gt;    &lt;node pkg=&quot;move_ctrl_pkg&quot; type=&quot;move_ctrl_node&quot; name=&quot;move_ctrl_node&quot; output=&quot;screen&quot;/&gt;&lt;/launch&gt;
-
-
-output&#x3D;”screen”：表示将信息输出到屏幕。
-
-完成后编译工作空间，编译完成后，使用如下命令即可直接启动所有软件包。
-roslaunch &lt;包名&gt; &lt;launch文件名&gt;
-
-结果如下
-haozi@haozi:~/work/develop/ros1/tsp_car_ws$ roslaunch launch_pkg all.launch ... logging to /home/haozi/.ros/log/82134f94-36e0-11f0-bea8-1303c288b02a/roslaunch-haozi-15144.logChecking log directory for disk usage. This may take a while.Press Ctrl-C to interruptDone checking log file disk usage. Usage is &lt;1GB.started roslaunch server http://haozi:42535/SUMMARY========PARAMETERS * /rosdistro: noetic * /rosversion: 1.17.3NODES  /    lower_ctrl_node (lower_ctrl_pkg/lower_ctrl_node)    move_ctrl_node (move_ctrl_pkg/move_ctrl_node)auto-starting new masterprocess[master]: started with pid [15155]ROS_MASTER_URI=http://localhost:11311setting /run_id to 82134f94-36e0-11f0-bea8-1303c288b02aprocess[rosout-1]: started with pid [15165]started core service [/rosout]process[lower_ctrl_node-2]: started with pid [15168]process[move_ctrl_node-3]: started with pid [15173]
-
-
-
-
-实际上，这个launch文件，放在任意一个软件包里都可以，但是为了代码结构清晰，就创建了一个空的软件包来干这件事了。
-
-3.5 雷达数据发送激光雷达数据格式
-
-sensor_msgs::LaserScan
-header
-frame_id：坐标系基准
-stamp：本次扫描中接收到第一束反射信号的时间
-
-
-angle_min：扫描的其实角度，弧度
-angle_max：扫描的终止角度，弧度
-angle_increment：相邻两次测距的旋转夹角，弧度
-time_increment：相邻两次测距的时间差，秒
-scan_time：两次扫描的起始时间差，秒
-range_min：有效测距范围的最小距离，米
-range_max：有效测距范围的最大距离，米
-ranges[]：本次扫描的所有测距值，米
-intensities[]：所有测距值返回的信号强度
-
-
-
-创建雷达数据软件包，用于发送激光雷达数据
-haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lidar_pkg roscpp rospy sensor_msgsCreated file lidar_pkg/package.xmlCreated file lidar_pkg/CMakeLists.txtCreated folder lidar_pkg/include/lidar_pkgCreated folder lidar_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/lidar_pkg. Please adjust the values in package.xml.
-
-并在软件包中创建五个文件
-haozi@haozi:~/work/develop/TspCarWs/src/lidar_pkg/src$ lsm1c1_mini.cpp  m1c1_mini.h  main.cpp  uart.cpp  uart.h
-
-其中uart.x参考前面速度订阅的串口操作接口，内容相同。
-雷达消息接口如下：
-m1c1_mini.h
-#pragma once#include &lt;ros/ros.h&gt;#include &lt;std_msgs/Bool.h&gt;	 // 标准消息#include &lt;std_msgs/String.h&gt; // 标准消息#include &quot;uart.h&quot;/* 雷达消息结构 */#define PKG_LEN_MIN 12#define PKG_LEN_MAX 60#define POINT_NUM_MAX_IN_A_PKG 25 // 一包最多25个点#pragma pack(1)typedef struct&#123;	uint8_t head1;		  // 数据头1 0xAA	uint8_t head2;		  // 数据头2 0x55	uint8_t points_type;  // 点云类型1--每圈起始点;0--非一圈起始点	uint8_t points_num;	  // 点云个数 结构体总长度 = 10 + points_num * 2	uint16_t start_angle; // 起始角度	uint16_t end_angle;	  // 结束角度	uint16_t check_code;  // 校验	uint16_t data[POINT_NUM_MAX_IN_A_PKG];&#125; LidarData;#pragma pack()class Lidar&#123;public:	Lidar(Uart &amp;uart);	~Lidar();	int ReadData(std::string &amp;lidar_data);	ros::NodeHandle nh_;	   // 节点管理工具	ros::Publisher lidar_pub_; // 发布雷达数据	void Run();private:	Uart &amp;uart_;	LidarData lidar_data_;&#125;;
-
-m1c1_mini.cpp
-#include &quot;m1c1_mini.h&quot;#include &lt;sensor_msgs/LaserScan.h&gt;Lidar::Lidar(Uart &amp;uart) : uart_(uart)&#123;    lidar_pub_ = nh_.advertise&lt;sensor_msgs::LaserScan&gt;(&quot;/scan&quot;, 10); // 发布雷达数据&#125;Lidar::~Lidar()&#123;&#125;int Lidar::ReadData(std::string &amp;lidar_data)&#123;    int recv_cnt = 0;    // 先清空雷达数据    lidar_data.clear();    // 先寻找数据头，0xAA 0x55    uint8_t buffer[100] = &#123;0&#125;;    for (int c = 0; c &lt; 100; c++) // 最多尝试100次寻找AA 55开头    &#123;        // 阻塞接收，超时时间1s        recv_cnt = uart_.Read(&amp;buffer[1], 1);        if (recv_cnt != 1)            return -1;        // 逐个字节依次插入lidar_data        lidar_data.append((char *)(&amp;buffer[1]), 1);        // 已经找到数据头了        if (buffer[0] == 0xAA &amp;&amp; buffer[1] == 0x55)            break;        buffer[0] = buffer[1];        // 长度过长则返回        if (lidar_data.size() &gt;= 100)        &#123;            printf(&quot;lidar_data100: &quot;);            for (int i = 0; i &lt; lidar_data.size(); i++)                printf(&quot;%02x &quot;, (unsigned char)lidar_data.data()[i]);            printf(&quot;\n&quot;);            return -2;        &#125;    &#125;    // 删除数据头前面的部分，有可能是错误的数据，也有可能是上一包的部分    // 只保留末尾两个字母AA 55作为数据头    if (lidar_data.size() &gt; 2)        lidar_data = lidar_data.substr(lidar_data.size() - 2);    // 再读取两个字节 点云类型 和 点云点数(1~25)    recv_cnt = uart_.Read(&amp;buffer[0], 2);    if (recv_cnt &lt; 2)        return -1;    // 把读到的数据添加到消息    lidar_data.append((char *)(&amp;buffer[0]), 2);    // 判断点云类型 只能是0或1    if ((lidar_data.data()[2] != 0) &amp;&amp; (lidar_data.data()[2] != 1))        return -4;    // 点云点数只会在1~25之间    if (lidar_data.data()[3] &gt; 25 || lidar_data.data()[3] &lt; 1)    &#123;        for (int i = 0; i &lt; lidar_data.size(); i++)            printf(&quot;%02x &quot;, (unsigned char)lidar_data.data()[i]);        printf(&quot;\n&quot;);        return -5;    &#125;    // 判断本包数据中 数据部分的长度    int data_len = 10 + lidar_data.data()[3] * 2 - lidar_data.size();    // 计算出的长度过长或过短，则返回错误    if (data_len &gt; 100 || data_len &lt; 5)        return -6;    // 读取数据部分    recv_cnt = uart_.Read(&amp;buffer[0], data_len);    if (recv_cnt &lt; data_len)    &#123;        // printf(&quot;read_len=%d &lt; need_read_len=%d !\n&quot;,read_len,need_read_len);        return -1;    &#125;    lidar_data.append((char *)(&amp;buffer[0]), data_len);    // 如果长度不正确    if (lidar_data.size() != 10 + lidar_data.data()[3] * 2)    &#123;        printf(&quot;read len %ld != points num %d *2+10 error!\n&quot;, lidar_data.size(), lidar_data.data()[3]);        for (int i = 0; i &lt; lidar_data.size(); i++)            printf(&quot;%02x &quot;, (unsigned char)lidar_data.data()[i]);        printf(&quot;\n&quot;);        return -7;    &#125;    return 0;&#125;void Lidar::Run()&#123;    int ret = 0;    int start_cnt = 0;    /* 创建雷达数据 */    float laser_min_range = 0.1; // 雷达最小量程    float laser_max_range = 8.0; // 雷达最大量程    int points_size = 800;       // 修正和插值到800点(本身390个点左右)    sensor_msgs::LaserScan laser_scan;    laser_scan.header.frame_id = &quot;laser_link&quot;;    laser_scan.angle_min = 0;    laser_scan.angle_max = 2 * M_PI;    laser_scan.angle_increment = (laser_scan.angle_max - laser_scan.angle_min) / points_size;    laser_scan.range_min = laser_min_range;    laser_scan.range_max = laser_max_range;    laser_scan.ranges.resize(points_size);    std::fill(laser_scan.ranges.begin(), laser_scan.ranges.end(), std::numeric_limits&lt;float&gt;::infinity()); // 全部填充为无限远    laser_scan.intensities.resize(points_size, 127);                                                       // 假设强度值为127    std::string lidar_str_data;    while (ros::ok())    &#123;        ros::spinOnce();        // 读取雷达数据        ret = ReadData(lidar_str_data);        if (ret &lt; 0) // 报错，则重新读取        &#123;            if (ret != -1) // 雷达断电后会返回-1                ROS_WARN(&quot;read_lidar_data ret=%d&quot;, ret);            continue;        &#125;        // 校验数据长度        if (lidar_str_data.size() &lt; PKG_LEN_MIN || lidar_str_data.size() &gt; PKG_LEN_MAX)        &#123;            ROS_WARN(&quot;lidar_str_data size %ld error!&quot;, lidar_str_data.size());            continue;        &#125;        // 拷贝进数据包结构体        memcpy(&amp;lidar_data_, lidar_str_data.data(), lidar_str_data.size());        // 每圈起始点，发布上一圈的数据        if (lidar_data_.points_type == 1)        &#123;            if (start_cnt &lt; 10) // 前10圈数据丢弃            &#123;                start_cnt++;                continue;            &#125;            laser_scan.header.stamp = ros::Time::now();            // 发布Lidat Scan消息            lidar_pub_.publish(laser_scan);            ROS_INFO_ONCE(&quot;Published LaserScan OK&quot;);            // 必须给每个点刷入无效数据，防止下一圈产生重影, 全部填充为无限远            std::fill(laser_scan.ranges.begin(), laser_scan.ranges.end(), std::numeric_limits&lt;float&gt;::infinity());        &#125;        // 开始解析数据包结构体中的数据        float start_angle0 = (lidar_data_.start_angle &gt;&gt; 1) / 64.0;        float end_angle0 = (lidar_data_.end_angle &gt;&gt; 1) / 64.0;        // float start_angle = start_angle0-ang_corr_1;        // float end_angle = end_angle0-ang_corr_n;        float ang_corr_i, distance_mm_i, angle_i;        for (int i = 0; i &lt; lidar_data_.points_num; i++)        &#123;            // 解析距离：单位mm            distance_mm_i = lidar_data_.data[i] &gt;&gt; 2;            // 根据距离来求修正角度            ang_corr_i = (distance_mm_i == 0) ? 0 : atan(19.16 * (distance_mm_i - 90.15) / (90.15 * distance_mm_i)) * 180.0 / M_PI;            if (lidar_data_.points_num != 1) // 分母不能为0                angle_i = start_angle0 + (end_angle0 - start_angle0) / (lidar_data_.points_num - 1) * i - ang_corr_i;            else                angle_i = start_angle0 - ang_corr_i;            angle_i = 180.0 - (angle_i + 12.0); // 12度是雷达手册中写的固有偏差，180是和雷达安装朝向有关            // 角度限制在[0,360]度之间            angle_i = fmod(angle_i, 360.0);                        // 使用fmod函数计算角度对360的余数            angle_i = (angle_i &lt; 0) ? (angle_i + 360.0) : angle_i; // 如果结果是负数，则加上360使其变为正数            // printf(&quot;%.2f(%.2f)\n&quot;,distance_mm_i,angle_i);            // 考虑到角度修正之后填充，并且插值到800点            int new_i = angle_i / 360.0 * (points_size - 1) + 0.5; // 索引最大不能到points_size，而是points_size-1            laser_scan.ranges[new_i] = distance_mm_i / 1000.0;     // 填充到LaserScan消息中        &#125;    &#125;&#125;
-
-main.cpp
-#include &lt;ros/ros.h&gt;#include &quot;m1c1_mini.h&quot;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;lidar_node&quot;);    // 通信串口    Uart lidar_uart(&quot;/dev/ttyS5&quot;);    lidar_uart.Open(115200, 8, &#x27;N&#x27;, 1);    // 下位机控制节点    Lidar lidar(lidar_uart);    lidar.Run();    return 0;&#125;
-
-
-
-
-雷达消息话题名一般默认为：/scan
-
-3.6 雷达数据处理创建一个新的软件包lidar_handle_pkg
-haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lidar_handle_pkg roscpp rospy sensor_msgsCreated file lidar_handle_pkg/package.xmlCreated file lidar_handle_pkg/CMakeLists.txtCreated folder lidar_handle_pkg/include/lidar_handle_pkgCreated folder lidar_handle_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/lidar_handle_pkg. Please adjust the values in package.xml.
-
-
-
-暂时只创建一个main文件，测试接收到的激光雷达发送的数据，并判断前方障碍物的距离。
-main.cpp
-#include &lt;ros/ros.h&gt;#include &lt;sensor_msgs/LaserScan.h&gt;void LidarCallback(const sensor_msgs::LaserScan msg)&#123;    float fMidDist = msg.ranges[180];    ROS_INFO(&quot;前方距离：ranges[180] = %f 米&quot;, fMidDist);&#125;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;lidar_handle_node&quot;);    ros::NodeHandle nh_;                                                     // 节点管理工具    ros::Subscriber lidar_sub_ = nh_.subscribe(&quot;/scan&quot;, 10, &amp;LidarCallback); // 订阅雷达数据    ros::spin();    return 0;&#125;
-
-
-
-添加避障逻辑方法，判断当障碍物距离过近时，发送速度消息，控制小车避开。
-#include &lt;ros/ros.h&gt;#include &lt;sensor_msgs/LaserScan.h&gt;#include &lt;geometry_msgs/Twist.h&gt; // 速度消息ros::Publisher vel_pub;void LidarCallback(const sensor_msgs::LaserScan msg)&#123;    float fMidDist = msg.ranges[180];    ROS_INFO(&quot;前方距离：ranges[180] = %f 米&quot;, fMidDist);    geometry_msgs::Twist vel_cmd;    if (fMidDist &lt; 1.5)    &#123;        vel_cmd.angular.z = 0.5;    &#125;    else    &#123;        vel_cmd.linear.x = 0.05;    &#125;    vel_pub.publish(vel_cmd);&#125;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;lidar_handle_node&quot;);    ros::NodeHandle nh_;                                                     // 节点管理工具    ros::Subscriber lidar_sub_ = nh_.subscribe(&quot;/scan&quot;, 10, &amp;LidarCallback); // 订阅雷达数据    vel_pub = nh_.advertise&lt;geometry_msgs::Twist&gt;(&quot;/cmd_vel&quot;, 10);    ros::spin();    return 0;&#125;
-
-
-
-3.7 栅格地图创建一个软件包map_pkg，用来发布地图数据。
-haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg map_pkg roscpp rospy nav_msgsCreated file map_pkg/package.xmlCreated file map_pkg/CMakeLists.txtCreated folder map_pkg/include/map_pkgCreated folder map_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/map_pkg. Please adjust the values in package.xml.
-
-
-
-只创建一个main文件，发布一个固定的地图。
-main.cpp
-#include &lt;ros/ros.h&gt;#include &lt;nav_msgs/OccupancyGrid.h&gt;int main(int argc, char *argv[])&#123;    // 防止ROS_INFO中文乱码    setlocale(LC_CTYPE, &quot;zh_CN.utf8&quot;);    // 下位机控制节点    ros::init(argc, argv, &quot;map_pub_node&quot;);    ros::NodeHandle nh_;                                                            // 节点管理工具    ros::Publisher map_pub_ = nh_.advertise&lt;nav_msgs::OccupancyGrid&gt;(&quot;/map&quot;, 10); // 发布地图数据    // 每秒一次    ros::Rate r(1);    while (ros::ok())    &#123;        nav_msgs::OccupancyGrid msg;        msg.header.frame_id = &quot;map&quot;;        msg.header.stamp = ros::Time::now();        msg.info.origin.position.x = 0;        msg.info.origin.position.y = 0;        msg.info.resolution = 1.0; // 栅格分辨率（每个格子1米）        msg.info.width = 4;        // 地图宽度（格子数）        msg.info.height = 2;       // 地图高度（格子数）        msg.data.resize(4 * 2); // 地图数据        msg.data[0] = 100;        msg.data[1] = 100;        msg.data[2] = 0;        msg.data[3] = -1;        map_pub_.publish(msg);        r.sleep();    &#125;    return 0;&#125;
-
-
-
-将软件包运行起来。
-然后启动rviz工具，查看发布的栅格地图。
-haozi@haozi:~/work/develop/TspCarWs$ rviz
-
-启动rviz之后，添加一个地图原点Axes，添加一个地图map，并将地图消息类型Topic修改为/map，就可以看到发布的测试消息了。
-
-3.8 SLAM地图创建流程为：
-
-激光雷达节点，发布雷达数据/scan
-SLAM节点，接收雷达数据/scan，发送地图数据/map
-其他节点，接收地图数据/map
-
-也就是，SLAM节点接收雷达数据后，经过处理就可以得到地图数据了。
-其中SLAM节点有现成的软件包可以用，比如Hector_Mapping
-3.8.1 Hector_Mapping安装软件包
-haozi@haozi:~/work/develop/TspCarWs$ sudo apt install ros-noetic-hector-mapping
-
-运行Hector_Mapping节点
-haozi@haozi:~/work/develop/TspCarWs$ rosrun hector_mapping hector_mapping
-
-rviz查看建图数据
-haozi@haozi:~$ rosrun rviz rviz
-
-
-
-创建一个新的软件包slam_pkg
-haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg slam_pkg roscpp rospy std_msgsCreated file slam_pkg/package.xmlCreated file slam_pkg/CMakeLists.txtCreated folder slam_pkg/include/slam_pkgCreated folder slam_pkg/srcSuccessfully created files in /home/haozi/work/develop/TspCarWs/src/slam_pkg. Please adjust the values in package.xml.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>Linux应用</category>
-      </categories>
-      <tags>
-        <tag>ROS</tag>
-        <tag>ROS1</tag>
       </tags>
   </entry>
   <entry>
@@ -4030,65 +4030,6 @@ CAN-ID 均为 000h，具备最高的 CAN 优先级。数据为2个字节：
       </tags>
   </entry>
   <entry>
-    <title>Ymodem</title>
-    <url>/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/</url>
-    <content><![CDATA[1. 交互流程
-这里是以BootLoader为目的写的。
-很多Shell工具都有自带的Xmodem、Ymodem传输文件的功能。这里以SecureCRT 9.2软件为例进行分析。不同的软件实际上可能有些许差异。
-
-
-至此，流程结束。
-2. STM32示例这里已经将Ymodem协议接收部分已经封装好了。
-
-头文件
-
-/* * ymodem.h * *  Created on: 2024年9月23日 *      Author: ZhangJinhao */#ifndef PROTOCOL_YMODEM_H_#define PROTOCOL_YMODEM_H_#include &quot;stdint.h&quot;/* 此协议流程参考：SecureCRT 9.2, Ymodem协议，其他上位机未经过测试 */// 一包数据格式为：帧命令 + 索引 + 索引反码 + 数据(128/1024) + CRC16校验码// 帧命令#define YMODEM_SOH (0x01)    // 128字节数据命令#define YMODEM_STX (0x02)    // 1024字节数据命令#define YMODEM_EOT (0x04)    // 发送结束命令#define YMODEM_ACK (0x06)    // 接收正确应答命令#define YMODEM_NAK (0x15)    // 接收错误应答命令#define YMODEM_CA (0x18)     // 取消传输#define YMODEM_C (0x43)      // 开始发送命令#define YMODEM_ABORT1 (0x41) /* &#x27;A&#x27; == 0x41, abort by user */#define YMODEM_ABORT2 (0x61) /* &#x27;a&#x27; == 0x61, abort by user */// 长度定义#define YMODEM_PACKET_HEADER_LEN (3)                                                  // 包头长度(命令+索引+索引反码)#define YMODEM_PACKET_SIZE (128)                                                      // Ymodem包长度#define YMODEM_PACKET_1K_SIZE (1024)                                                  // Ymodem-1K包长度#define YMODEM_PACKET_TRAILER_LEN (2)                                                 // 包尾长度(CRC16)#define YMODEM_PACKET_OVERHEAD (YMODEM_PACKET_HEADER_LEN + YMODEM_PACKET_TRAILER_LEN) // 除去数据外，另外的长度// 一包数据中，索引和索引反码所处的位置#define YMODEM_PACKET_SEQNO_INDEX (1)#define YMODEM_PACKET_SEQNO_COMP_INDEX (2)// 文件信息帧中文件长度#define YMODEM_FILE_NAME_LENGTH (80) // 文件名长度#define YMODEM_FILE_SIZE_LENGTH (16) // 文件大小长度// 超时时间定义#define NAK_TIMEOUT (5000) // 5秒typedef struct _ymodem&#123;    uint8_t file_name[128];                                      // 需要接收的文件名    uint32_t file_size;                                          // 需要接收的文件大小（单位：字节）    uint8_t buf[YMODEM_PACKET_1K_SIZE + YMODEM_PACKET_OVERHEAD]; // 最大：帧命令 + 索引 + 索引反码 + 数据(128/1024) + CRC16校验码 = 1029字节    uint8_t pack_cnt;                                            // 下一包需要接收的索引号（0-FF之间循环）    uint8_t info_done;                                           // 收到文件信息    uint8_t file_done;                                           // 收到了文件数据    uint8_t null_done;                                           // 收到空文件信息    uint32_t app_addr;  // app程序的起始地址    uint32_t app_size;  // app程序占用空间大小    uint32_t flash_cnt; // 已经写入到flash的字节数&#125; ymodem_t;typedef ymodem_t *ymodem_ptr;int32_t ymodem_receive(void);#endif /* PROTOCOL_YMODEM_H_ */
-
-
-源文件
-
-#include &quot;ymodem.h&quot;#include &quot;stdlib.h&quot;#include &quot;iap.h&quot;#include &quot;usart.h&quot;// ============================================ 以下函数需要用户做适配 ============================================ //ymodem_t ymodem =    &#123;        .file_name = &#123;0&#125;,        .file_size = 0,        .buf = &#123;0&#125;,        .pack_cnt = 0,        .info_done = 0,        .file_done = 0,        .null_done = 0,        .app_addr = 0x08004000, // APP起始地址        .app_size = 0x3C000,    // APP空间大小        .flash_cnt = 0,&#125;;// 发送一个字符static uint8_t ymodem_send_byte(uint8_t byte)&#123;    HAL_UART_Transmit(&amp;huart1, &amp;byte, 1, 0xFF);    return 0;&#125;// 接收一个字符，成功返回0，失败返回1static uint8_t ymodem_recv_byte(uint8_t *data, uint32_t timeout)&#123;    HAL_UART_Receive(&amp;huart1, data, 1, timeout);    	return 0;&#125;// ymodem写flash函数，将接收到的数据写到flash中static uint8_t ymodem_flash_write(uint32_t addr, uint8_t *data, uint32_t len)&#123;	stm32_flash_write(addr, data, len);    return 0;&#125;// ymodem擦除app函数，擦除app区域flashstatic uint8_t ymodem_flash_erase(uint32_t addr, uint32_t len)&#123;    stm32_flash_erase(addr, len);&#125;    // 调试信息输出static uint8_t ymodem_printf(const char *format, ...)&#123;    return 0;&#125;// ============================================ 以上函数需要用户做适配 ============================================ //// CRC校验函数static uint16_t CRC16_Xmodem(uint8_t *data, uint32_t len)&#123;    uint8_t i;    uint16_t crc = 0x0000;    while (len--)    &#123;        crc ^= (*data++ &lt;&lt; 8);        for (i = 0; i &lt; 8; i++)        &#123;            if (crc &amp; 0x8000)                crc = (crc &lt;&lt; 1) ^ 0x1021;            else                crc = crc &lt;&lt; 1;        &#125;    &#125;    return crc;&#125;// ymodem 接收一个包的数据// return://     -1: 接收失败（未收到 或 超时 或 错误命令 或 校验失败）//      0：正常成功（收到完整数据length=128/1024 或 收到结束帧length=0 或 发送方要求停止length=-1）//      1：主机要求取消传输static int8_t ymodem_recv_packet(uint8_t *data, uint32_t *length, uint32_t timeout)&#123;    uint16_t i, packet_size, crc;    uint8_t c;    *length = 0;    // 接收第一个字符    if (ymodem_recv_byte(&amp;c, timeout) != 0)    &#123;        return -1;    &#125;    // 判断命令类型    switch (c)    &#123;    case YMODEM_SOH:        packet_size = YMODEM_PACKET_SIZE; // 128byte        break;    case YMODEM_STX:        packet_size = YMODEM_PACKET_1K_SIZE; // 1024byte        break;    case YMODEM_EOT:        return 0;    case YMODEM_CA:        if ((ymodem_recv_byte(&amp;c, timeout) == 0) &amp;&amp; (c == YMODEM_CA))        &#123;            *length = -1;            return 0;        &#125;        else        &#123;            return -1;        &#125;    case YMODEM_ABORT1:    case YMODEM_ABORT2:        return 1;    default:        return -1;    &#125;    // 如果命令正确，继续接收够一包数据    // 第一个字节    *data = c;    // 剩下的字节    for (i = 1; i &lt; (packet_size + YMODEM_PACKET_OVERHEAD); i++)    &#123;        if (ymodem_recv_byte(data + i, timeout) != 0)        &#123;            return -1;        &#125;    &#125;    // 校验索引和索引反码是否配对    if (data[YMODEM_PACKET_SEQNO_INDEX] != ((data[YMODEM_PACKET_SEQNO_COMP_INDEX] ^ 0xff) &amp; 0xff))    &#123;        return -1;    &#125;    // 校验CRC校验码是否正确(仅计算数据区域)    crc = CRC16_Xmodem(&amp;data[YMODEM_PACKET_HEADER_LEN], packet_size);    if (((crc &gt;&gt; 8) != data[YMODEM_PACKET_HEADER_LEN + packet_size]) || ((crc &amp; 0x00FF) != data[YMODEM_PACKET_HEADER_LEN + packet_size + 1]))    &#123;        return -1;    &#125;    // 记录本包中有效数据长度    *length = packet_size;    return 0;&#125;// 阻塞式接收，一直到接收完成后返回。// return://      1: 发送方要求停止//      0: 接收成功int32_t ymodem_receive(void)&#123;    uint32_t packet_length = 0;    // 擦除flash    ymodem_flash_erase(ymodem.app_addr, ymodem.app_size);    // 发送字符C,开始接收    ymodem_send_byte(YMODEM_C);    while (1)    &#123;        // 先清空缓冲区，重新收        memset(ymodem.buf, 0, YMODEM_PACKET_1K_SIZE + YMODEM_PACKET_OVERHEAD);        // 接收一包数据        switch (ymodem_recv_packet(ymodem.buf, &amp;packet_length, NAK_TIMEOUT))        &#123;        // 成功接收到一包数据        case 0:            // 根据收到的数据长度判断收到的是什么命令            switch (packet_length)            &#123;            // 发送方要求停止            case -1:                ymodem_send_byte(YMODEM_ACK);                return 1;            // 收到文件结束帧            case 0:                ymodem_send_byte(YMODEM_ACK);                ymodem_send_byte(YMODEM_C);                ymodem.file_done = 1;                ymodem.pack_cnt = 0;                break;            // 收到了正常的一包数据            default:                // 判断索引是否正确                if (ymodem.buf[YMODEM_PACKET_SEQNO_INDEX] != ymodem.pack_cnt)                &#123;                	ymodem_printf(&quot;index err, need_cnt=%x, real_cnt=%x \r\n&quot;, ymodem.pack_cnt, ymodem.buf[YMODEM_PACKET_SEQNO_INDEX]);                    // 索引不对，发送错误应答，重新接收本包数据                    ymodem_send_byte(YMODEM_NAK);                &#125;                else                &#123;                    // 索引正确                    // 第一包数据 和 文件数据结束之后的第一包数据 是文件信息                    if ((ymodem.info_done == 0) || (ymodem.file_done == 1))                    &#123;                        // 非空文件名，是第一包数据                        if (ymodem.buf[YMODEM_PACKET_HEADER_LEN] != 0x00)                        &#123;                            // 解析文件名：                            uint8_t file_name_len = 0;                            for (uint8_t i = YMODEM_PACKET_HEADER_LEN; i &lt; YMODEM_FILE_NAME_LENGTH; i++)                            &#123;                                if (ymodem.buf[i] == 0x00)                                &#123;                                    file_name_len = i - 3;                                    memcpy(ymodem.file_name, &amp;(ymodem.buf[3]), file_name_len);                                    ymodem.file_name[file_name_len] = &#x27;\0&#x27;;                                    ymodem_printf(&quot;file name = %s \r\n&quot;, ymodem.file_name);                                    break;                                &#125;                            &#125;                            // 解析文件字节数：                            for (uint8_t i = YMODEM_PACKET_HEADER_LEN + file_name_len + 1; i &lt; YMODEM_PACKET_HEADER_LEN + file_name_len + 1 + YMODEM_FILE_SIZE_LENGTH; i++)                            &#123;                                // 遇到分隔符、非法字符                                if ((ymodem.buf[i] == 0x20) || (ymodem.buf[i] &lt; &#x27;0&#x27;) || (ymodem.buf[i] &gt; &#x27;9&#x27;))                                &#123;                                    // 打印一下信息                                    ymodem_printf(&quot;file size = %d byte.\r\n&quot;, ymodem.file_size);                                    break;                                &#125;                                else                                &#123;                                    ymodem.file_size = ymodem.file_size * 10 + (ymodem.buf[i] - &#x27;0&#x27;);                                &#125;                            &#125;                            // 解析成功                            ymodem.info_done = 1;                            ymodem.pack_cnt = 1;                            // 发送应答开始接收数据                            ymodem_send_byte(YMODEM_ACK);                            ymodem_send_byte(YMODEM_C);                        &#125;                        // 空文件名是最后一帧数据                        else                        &#123;                            ymodem_send_byte(YMODEM_ACK);                            // TODO:延时半秒                            ymodem_send_byte(YMODEM_ACK);                            ymodem.null_done = 1;                            break;                        &#125;                    &#125;                    // 文件数据                    else                    &#123;                        // 将数据写入到flash                        ymodem_flash_write(ymodem.app_addr + ymodem.flash_cnt, &amp;(ymodem.buf[YMODEM_PACKET_HEADER_LEN]), packet_length);                        // 记录已经写入到flash中的字节数                        ymodem.flash_cnt = ymodem.flash_cnt + packet_length;                        // 记录下一包应该收到的索引                        if (ymodem.pack_cnt == 0xFF)                        &#123;                            ymodem.pack_cnt = 0;                        &#125;                        else                        &#123;                            ymodem.pack_cnt++;                        &#125;                        // 发送应答，接收下一帧数据                        ymodem_send_byte(YMODEM_ACK);                    &#125;                &#125;            &#125;            break;        // 主机要求取消传输        case 1:            ymodem_send_byte(YMODEM_CA);            ymodem_send_byte(YMODEM_CA);            return 1;        // 接收失败（校验失败、接收超时、命令不对）        default:            // 如果是在等待文件信息            if (ymodem.info_done == 0)            &#123;                // 重新发送C                ymodem_send_byte(YMODEM_C);            &#125;            // 如果是接收数据过程出错            if ((ymodem.info_done == 1) &amp;&amp; (ymodem.file_done == 0))            &#123;                // 发送错误应答，重新接收数据                ymodem_send_byte(YMODEM_NAK);            &#125;            // 如果是等待空文件信息出错            if (ymodem.file_done == 1)            &#123;                // 重新发送C                ymodem_send_byte(YMODEM_C);            &#125;            break;        &#125;        // 判断接收流程是否全部结束        if (ymodem.null_done == 1)        &#123;        	ymodem_printf(&quot;recv over, need size=%d, real size=%d \r\n&quot;, ymodem.file_size, ymodem.flash_cnt);            return 0;        &#125;    &#125;&#125;
-
-其中：
-
-头文件可以完全不用动；
-源文件用户适配部分需要根据不同的单片机和接口进行修改。
-
-
-使用案例
-
-void main()&#123;    // init        while(1)    &#123;        // 如果需要进行OTA        if(need_updata)        &#123;			// 接收app程序            ymodem_receive();                        // 跳转到app区域            jump_to_app();        &#125;    &#125;&#125;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>通信协议</category>
-      </categories>
-      <tags>
-        <tag>Uart</tag>
-        <tag>Ymodem</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Modbus</title>
     <url>/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/</url>
     <content><![CDATA[1. 简介特点
@@ -4575,6 +4516,194 @@ PDU（帧结构）&#x3D; 功能码 + 数据
       </tags>
   </entry>
   <entry>
+    <title>CanDBC文件制作</title>
+    <url>/2025/11/05/08.%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/</url>
+    <content><![CDATA[1. 工具下载这里使用的工具是：Vector CANdb++ Editor
+下载地址：https://www.vector.com/cn/zh/support-downloads/download-center
+按照下图中的选项找到软件。
+
+下载完成之后，按照提示安装即可。 
+
+可能需要翻墙，不然加载很慢，或者加载不出来。
+
+2. dbc制作CAN消息结构如下：
+
+CAN消息
+ID
+DATA
+字节&#x2F;位
+
+
+
+
+
+根据上述结构，将报文进行分解：
+
+一条消息：对应一个ID
+一串数据：对应一串Data，标准8字节数据则共64个位
+一个位数据：对应Data中的一个或多个字节或位
+
+这里创建dbc的消息也是按照这个结构开始的。
+2.1 创建dbc文件打开软件后，点击左上角File-&gt;Create Database
+选择CANTemplate.dbc，然后点击OK，起个名字，保存文件即可。
+
+创建完成后，左侧主要看Messages和Signals，
+
+Message定义了一共有几条消息
+Signals定义了消息中用到的各个字节和位的含义。
+
+
+2.2 创建消息上位机发送以下消息
+id：	0x010AFEdata：	字节0：要控制的设备编号	字节1：0：关机，1：启动	字节2：0：充电，1：放电	字节3-7：保留len：	8
+
+上位机接收以下消息
+id：	0x02FE0Adata：	字节0：设备编号	字节1：bit0:短路; bit1:输出过压; bit2:输入欠压; bit3:过温保护;	字节2-3：当前电压（u16,低字节在前）    字节4-5：当前电流（u16,低字节在前）	字节6：当前温度（u8,偏移40）len：	8
+
+先创建这两条消息
+在左侧目录的Message处，点击右键New，在弹出的界面中填入
+
+消息名称（随便写）
+消息类型（扩展帧&#x2F;标准帧）
+消息ID
+消息长度
+
+
+重复操作，添加需要的所有消息。
+添加完成后如下图所示。
+
+这个时候消息已经添加完成了，但是还没有定义消息中的数据分别是干啥的。
+2.3 添加单字节信号比如以下数据是由一个字节定义的。
+
+0x010AFE
+
+字节0、1、2
+
+
+0x02FE0A
+
+字节0
+
+
+
+在左侧目录的Signals处，点击右键New，或者点击Signals后，右侧在空白处右键New。
+在弹出的界面中填入信号信息。
+
+然后将这个信号添加到对应的消息中。
+双击消息名称，在消息的Signals中点击Add，选择创建的信号，然后点击OK即可。
+同一个信号可以在多条消息中重复添加。
+
+枚举信号
+比如以下数据是有固定的枚举类型的，就可以给这个信号创建枚举类型的选择表。
+
+0x010AFE
+字节1、2
+
+
+
+同样的方法首先创建一个单字节信号，比如这里只有0和1。
+
+然后创建一个枚举表。
+点击View-&gt;Value Tables，在弹出的页面中右键New，在Value Descriptions中多次点击Add并修改不同枚举值的含义，Definition中可定义这个枚举值的名称，然后点击确定即可。
+
+然后把这个枚举值绑定到一个Signals中。
+双击要绑定的信号，选择目标枚举表，然后点击确定即可。
+
+创建完成后，把这个信号也绑定到消息中。
+
+重复上述步骤可以继续添加消息中的其他信号。
+验证
+保存当前dbc文件，在ZCANPRO中使用dbc发送，并加载此dbc文件。
+
+字节0未定义枚举，可以直接在实际值中填写
+字节1定义了枚举，可以在值描述中选择已经定义的值
+
+
+2.4 添加位信号比如以下数据是需要按位解析的
+
+0x02FE0A
+字节1的bit0-bit4
+
+
+
+创建一个信号，其中信号长度填1个bit。
+
+然后将信号绑定到消息中，可以看到这个消息是从bit8开始的，长度为1个bit。
+
+重复此操作，创建并添加剩下的bit信息。
+
+
+这些bit信号也可以创建并绑定枚举表，比如0正常，1错误。
+
+2.5 添加多字节信号同单字节信号，将信号长度改为16位，根据实际需求设置大小端模式和倍率。
+]]></content>
+      <categories>
+        <category>开发工具</category>
+      </categories>
+      <tags>
+        <tag>Can</tag>
+        <tag>DBC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ymodem</title>
+    <url>/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/</url>
+    <content><![CDATA[1. 交互流程
+这里是以BootLoader为目的写的。
+很多Shell工具都有自带的Xmodem、Ymodem传输文件的功能。这里以SecureCRT 9.2软件为例进行分析。不同的软件实际上可能有些许差异。
+
+
+至此，流程结束。
+2. STM32示例这里已经将Ymodem协议接收部分已经封装好了。
+
+头文件
+
+/* * ymodem.h * *  Created on: 2024年9月23日 *      Author: ZhangJinhao */#ifndef PROTOCOL_YMODEM_H_#define PROTOCOL_YMODEM_H_#include &quot;stdint.h&quot;/* 此协议流程参考：SecureCRT 9.2, Ymodem协议，其他上位机未经过测试 */// 一包数据格式为：帧命令 + 索引 + 索引反码 + 数据(128/1024) + CRC16校验码// 帧命令#define YMODEM_SOH (0x01)    // 128字节数据命令#define YMODEM_STX (0x02)    // 1024字节数据命令#define YMODEM_EOT (0x04)    // 发送结束命令#define YMODEM_ACK (0x06)    // 接收正确应答命令#define YMODEM_NAK (0x15)    // 接收错误应答命令#define YMODEM_CA (0x18)     // 取消传输#define YMODEM_C (0x43)      // 开始发送命令#define YMODEM_ABORT1 (0x41) /* &#x27;A&#x27; == 0x41, abort by user */#define YMODEM_ABORT2 (0x61) /* &#x27;a&#x27; == 0x61, abort by user */// 长度定义#define YMODEM_PACKET_HEADER_LEN (3)                                                  // 包头长度(命令+索引+索引反码)#define YMODEM_PACKET_SIZE (128)                                                      // Ymodem包长度#define YMODEM_PACKET_1K_SIZE (1024)                                                  // Ymodem-1K包长度#define YMODEM_PACKET_TRAILER_LEN (2)                                                 // 包尾长度(CRC16)#define YMODEM_PACKET_OVERHEAD (YMODEM_PACKET_HEADER_LEN + YMODEM_PACKET_TRAILER_LEN) // 除去数据外，另外的长度// 一包数据中，索引和索引反码所处的位置#define YMODEM_PACKET_SEQNO_INDEX (1)#define YMODEM_PACKET_SEQNO_COMP_INDEX (2)// 文件信息帧中文件长度#define YMODEM_FILE_NAME_LENGTH (80) // 文件名长度#define YMODEM_FILE_SIZE_LENGTH (16) // 文件大小长度// 超时时间定义#define NAK_TIMEOUT (5000) // 5秒typedef struct _ymodem&#123;    uint8_t file_name[128];                                      // 需要接收的文件名    uint32_t file_size;                                          // 需要接收的文件大小（单位：字节）    uint8_t buf[YMODEM_PACKET_1K_SIZE + YMODEM_PACKET_OVERHEAD]; // 最大：帧命令 + 索引 + 索引反码 + 数据(128/1024) + CRC16校验码 = 1029字节    uint8_t pack_cnt;                                            // 下一包需要接收的索引号（0-FF之间循环）    uint8_t info_done;                                           // 收到文件信息    uint8_t file_done;                                           // 收到了文件数据    uint8_t null_done;                                           // 收到空文件信息    uint32_t app_addr;  // app程序的起始地址    uint32_t app_size;  // app程序占用空间大小    uint32_t flash_cnt; // 已经写入到flash的字节数&#125; ymodem_t;typedef ymodem_t *ymodem_ptr;int32_t ymodem_receive(void);#endif /* PROTOCOL_YMODEM_H_ */
+
+
+源文件
+
+#include &quot;ymodem.h&quot;#include &quot;stdlib.h&quot;#include &quot;iap.h&quot;#include &quot;usart.h&quot;// ============================================ 以下函数需要用户做适配 ============================================ //ymodem_t ymodem =    &#123;        .file_name = &#123;0&#125;,        .file_size = 0,        .buf = &#123;0&#125;,        .pack_cnt = 0,        .info_done = 0,        .file_done = 0,        .null_done = 0,        .app_addr = 0x08004000, // APP起始地址        .app_size = 0x3C000,    // APP空间大小        .flash_cnt = 0,&#125;;// 发送一个字符static uint8_t ymodem_send_byte(uint8_t byte)&#123;    HAL_UART_Transmit(&amp;huart1, &amp;byte, 1, 0xFF);    return 0;&#125;// 接收一个字符，成功返回0，失败返回1static uint8_t ymodem_recv_byte(uint8_t *data, uint32_t timeout)&#123;    HAL_UART_Receive(&amp;huart1, data, 1, timeout);    	return 0;&#125;// ymodem写flash函数，将接收到的数据写到flash中static uint8_t ymodem_flash_write(uint32_t addr, uint8_t *data, uint32_t len)&#123;	stm32_flash_write(addr, data, len);    return 0;&#125;// ymodem擦除app函数，擦除app区域flashstatic uint8_t ymodem_flash_erase(uint32_t addr, uint32_t len)&#123;    stm32_flash_erase(addr, len);&#125;    // 调试信息输出static uint8_t ymodem_printf(const char *format, ...)&#123;    return 0;&#125;// ============================================ 以上函数需要用户做适配 ============================================ //// CRC校验函数static uint16_t CRC16_Xmodem(uint8_t *data, uint32_t len)&#123;    uint8_t i;    uint16_t crc = 0x0000;    while (len--)    &#123;        crc ^= (*data++ &lt;&lt; 8);        for (i = 0; i &lt; 8; i++)        &#123;            if (crc &amp; 0x8000)                crc = (crc &lt;&lt; 1) ^ 0x1021;            else                crc = crc &lt;&lt; 1;        &#125;    &#125;    return crc;&#125;// ymodem 接收一个包的数据// return://     -1: 接收失败（未收到 或 超时 或 错误命令 或 校验失败）//      0：正常成功（收到完整数据length=128/1024 或 收到结束帧length=0 或 发送方要求停止length=-1）//      1：主机要求取消传输static int8_t ymodem_recv_packet(uint8_t *data, uint32_t *length, uint32_t timeout)&#123;    uint16_t i, packet_size, crc;    uint8_t c;    *length = 0;    // 接收第一个字符    if (ymodem_recv_byte(&amp;c, timeout) != 0)    &#123;        return -1;    &#125;    // 判断命令类型    switch (c)    &#123;    case YMODEM_SOH:        packet_size = YMODEM_PACKET_SIZE; // 128byte        break;    case YMODEM_STX:        packet_size = YMODEM_PACKET_1K_SIZE; // 1024byte        break;    case YMODEM_EOT:        return 0;    case YMODEM_CA:        if ((ymodem_recv_byte(&amp;c, timeout) == 0) &amp;&amp; (c == YMODEM_CA))        &#123;            *length = -1;            return 0;        &#125;        else        &#123;            return -1;        &#125;    case YMODEM_ABORT1:    case YMODEM_ABORT2:        return 1;    default:        return -1;    &#125;    // 如果命令正确，继续接收够一包数据    // 第一个字节    *data = c;    // 剩下的字节    for (i = 1; i &lt; (packet_size + YMODEM_PACKET_OVERHEAD); i++)    &#123;        if (ymodem_recv_byte(data + i, timeout) != 0)        &#123;            return -1;        &#125;    &#125;    // 校验索引和索引反码是否配对    if (data[YMODEM_PACKET_SEQNO_INDEX] != ((data[YMODEM_PACKET_SEQNO_COMP_INDEX] ^ 0xff) &amp; 0xff))    &#123;        return -1;    &#125;    // 校验CRC校验码是否正确(仅计算数据区域)    crc = CRC16_Xmodem(&amp;data[YMODEM_PACKET_HEADER_LEN], packet_size);    if (((crc &gt;&gt; 8) != data[YMODEM_PACKET_HEADER_LEN + packet_size]) || ((crc &amp; 0x00FF) != data[YMODEM_PACKET_HEADER_LEN + packet_size + 1]))    &#123;        return -1;    &#125;    // 记录本包中有效数据长度    *length = packet_size;    return 0;&#125;// 阻塞式接收，一直到接收完成后返回。// return://      1: 发送方要求停止//      0: 接收成功int32_t ymodem_receive(void)&#123;    uint32_t packet_length = 0;    // 擦除flash    ymodem_flash_erase(ymodem.app_addr, ymodem.app_size);    // 发送字符C,开始接收    ymodem_send_byte(YMODEM_C);    while (1)    &#123;        // 先清空缓冲区，重新收        memset(ymodem.buf, 0, YMODEM_PACKET_1K_SIZE + YMODEM_PACKET_OVERHEAD);        // 接收一包数据        switch (ymodem_recv_packet(ymodem.buf, &amp;packet_length, NAK_TIMEOUT))        &#123;        // 成功接收到一包数据        case 0:            // 根据收到的数据长度判断收到的是什么命令            switch (packet_length)            &#123;            // 发送方要求停止            case -1:                ymodem_send_byte(YMODEM_ACK);                return 1;            // 收到文件结束帧            case 0:                ymodem_send_byte(YMODEM_ACK);                ymodem_send_byte(YMODEM_C);                ymodem.file_done = 1;                ymodem.pack_cnt = 0;                break;            // 收到了正常的一包数据            default:                // 判断索引是否正确                if (ymodem.buf[YMODEM_PACKET_SEQNO_INDEX] != ymodem.pack_cnt)                &#123;                	ymodem_printf(&quot;index err, need_cnt=%x, real_cnt=%x \r\n&quot;, ymodem.pack_cnt, ymodem.buf[YMODEM_PACKET_SEQNO_INDEX]);                    // 索引不对，发送错误应答，重新接收本包数据                    ymodem_send_byte(YMODEM_NAK);                &#125;                else                &#123;                    // 索引正确                    // 第一包数据 和 文件数据结束之后的第一包数据 是文件信息                    if ((ymodem.info_done == 0) || (ymodem.file_done == 1))                    &#123;                        // 非空文件名，是第一包数据                        if (ymodem.buf[YMODEM_PACKET_HEADER_LEN] != 0x00)                        &#123;                            // 解析文件名：                            uint8_t file_name_len = 0;                            for (uint8_t i = YMODEM_PACKET_HEADER_LEN; i &lt; YMODEM_FILE_NAME_LENGTH; i++)                            &#123;                                if (ymodem.buf[i] == 0x00)                                &#123;                                    file_name_len = i - 3;                                    memcpy(ymodem.file_name, &amp;(ymodem.buf[3]), file_name_len);                                    ymodem.file_name[file_name_len] = &#x27;\0&#x27;;                                    ymodem_printf(&quot;file name = %s \r\n&quot;, ymodem.file_name);                                    break;                                &#125;                            &#125;                            // 解析文件字节数：                            for (uint8_t i = YMODEM_PACKET_HEADER_LEN + file_name_len + 1; i &lt; YMODEM_PACKET_HEADER_LEN + file_name_len + 1 + YMODEM_FILE_SIZE_LENGTH; i++)                            &#123;                                // 遇到分隔符、非法字符                                if ((ymodem.buf[i] == 0x20) || (ymodem.buf[i] &lt; &#x27;0&#x27;) || (ymodem.buf[i] &gt; &#x27;9&#x27;))                                &#123;                                    // 打印一下信息                                    ymodem_printf(&quot;file size = %d byte.\r\n&quot;, ymodem.file_size);                                    break;                                &#125;                                else                                &#123;                                    ymodem.file_size = ymodem.file_size * 10 + (ymodem.buf[i] - &#x27;0&#x27;);                                &#125;                            &#125;                            // 解析成功                            ymodem.info_done = 1;                            ymodem.pack_cnt = 1;                            // 发送应答开始接收数据                            ymodem_send_byte(YMODEM_ACK);                            ymodem_send_byte(YMODEM_C);                        &#125;                        // 空文件名是最后一帧数据                        else                        &#123;                            ymodem_send_byte(YMODEM_ACK);                            // TODO:延时半秒                            ymodem_send_byte(YMODEM_ACK);                            ymodem.null_done = 1;                            break;                        &#125;                    &#125;                    // 文件数据                    else                    &#123;                        // 将数据写入到flash                        ymodem_flash_write(ymodem.app_addr + ymodem.flash_cnt, &amp;(ymodem.buf[YMODEM_PACKET_HEADER_LEN]), packet_length);                        // 记录已经写入到flash中的字节数                        ymodem.flash_cnt = ymodem.flash_cnt + packet_length;                        // 记录下一包应该收到的索引                        if (ymodem.pack_cnt == 0xFF)                        &#123;                            ymodem.pack_cnt = 0;                        &#125;                        else                        &#123;                            ymodem.pack_cnt++;                        &#125;                        // 发送应答，接收下一帧数据                        ymodem_send_byte(YMODEM_ACK);                    &#125;                &#125;            &#125;            break;        // 主机要求取消传输        case 1:            ymodem_send_byte(YMODEM_CA);            ymodem_send_byte(YMODEM_CA);            return 1;        // 接收失败（校验失败、接收超时、命令不对）        default:            // 如果是在等待文件信息            if (ymodem.info_done == 0)            &#123;                // 重新发送C                ymodem_send_byte(YMODEM_C);            &#125;            // 如果是接收数据过程出错            if ((ymodem.info_done == 1) &amp;&amp; (ymodem.file_done == 0))            &#123;                // 发送错误应答，重新接收数据                ymodem_send_byte(YMODEM_NAK);            &#125;            // 如果是等待空文件信息出错            if (ymodem.file_done == 1)            &#123;                // 重新发送C                ymodem_send_byte(YMODEM_C);            &#125;            break;        &#125;        // 判断接收流程是否全部结束        if (ymodem.null_done == 1)        &#123;        	ymodem_printf(&quot;recv over, need size=%d, real size=%d \r\n&quot;, ymodem.file_size, ymodem.flash_cnt);            return 0;        &#125;    &#125;&#125;
+
+其中：
+
+头文件可以完全不用动；
+源文件用户适配部分需要根据不同的单片机和接口进行修改。
+
+
+使用案例
+
+void main()&#123;    // init        while(1)    &#123;        // 如果需要进行OTA        if(need_updata)        &#123;			// 接收app程序            ymodem_receive();                        // 跳转到app区域            jump_to_app();        &#125;    &#125;&#125;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>通信协议</category>
+      </categories>
+      <tags>
+        <tag>Uart</tag>
+        <tag>Ymodem</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>充电桩国标协议解析</title>
     <url>/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/</url>
     <content><![CDATA[1. 国标概述
@@ -4818,137 +4947,8 @@ BCP数据部分：
         <category>标准</category>
       </categories>
       <tags>
-        <tag>充电桩国标</tag>
-        <tag>CAN</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CanOpen</title>
-    <url>/2025/11/05/08.%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/</url>
-    <content><![CDATA[1. 工具下载这里使用的工具是：Vector CANdb++ Editor
-下载地址：https://www.vector.com/cn/zh/support-downloads/download-center
-按照下图中的选项找到软件。
-
-下载完成之后，按照提示安装即可。 
-
-可能需要翻墙，不然加载很慢，或者加载不出来。
-
-2. dbc制作CAN消息结构如下：
-
-CAN消息
-ID
-DATA
-字节&#x2F;位
-
-
-
-
-
-根据上述结构，将报文进行分解：
-
-一条消息：对应一个ID
-一串数据：对应一串Data，标准8字节数据则共64个位
-一个位数据：对应Data中的一个或多个字节或位
-
-这里创建dbc的消息也是按照这个结构开始的。
-2.1 创建dbc文件打开软件后，点击左上角File-&gt;Create Database
-选择CANTemplate.dbc，然后点击OK，起个名字，保存文件即可。
-
-创建完成后，左侧主要看Messages和Signals，
-
-Message定义了一共有几条消息
-Signals定义了消息中用到的各个字节和位的含义。
-
-
-2.2 创建消息上位机发送以下消息
-id：	0x010AFEdata：	字节0：要控制的设备编号	字节1：0：关机，1：启动	字节2：0：充电，1：放电	字节3-7：保留len：	8
-
-上位机接收以下消息
-id：	0x02FE0Adata：	字节0：设备编号	字节1：bit0:短路; bit1:输出过压; bit2:输入欠压; bit3:过温保护;	字节2-3：当前电压（u16,低字节在前）    字节4-5：当前电流（u16,低字节在前）	字节6：当前温度（u8,偏移40）len：	8
-
-先创建这两条消息
-在左侧目录的Message处，点击右键New，在弹出的界面中填入
-
-消息名称（随便写）
-消息类型（扩展帧&#x2F;标准帧）
-消息ID
-消息长度
-
-
-重复操作，添加需要的所有消息。
-添加完成后如下图所示。
-
-这个时候消息已经添加完成了，但是还没有定义消息中的数据分别是干啥的。
-2.3 添加单字节信号比如以下数据是由一个字节定义的。
-
-0x010AFE
-
-字节0、1、2
-
-
-0x02FE0A
-
-字节0
-
-
-
-在左侧目录的Signals处，点击右键New，或者点击Signals后，右侧在空白处右键New。
-在弹出的界面中填入信号信息。
-
-然后将这个信号添加到对应的消息中。
-双击消息名称，在消息的Signals中点击Add，选择创建的信号，然后点击OK即可。
-同一个信号可以在多条消息中重复添加。
-
-枚举信号
-比如以下数据是有固定的枚举类型的，就可以给这个信号创建枚举类型的选择表。
-
-0x010AFE
-字节1、2
-
-
-
-同样的方法首先创建一个单字节信号，比如这里只有0和1。
-
-然后创建一个枚举表。
-点击View-&gt;Value Tables，在弹出的页面中右键New，在Value Descriptions中多次点击Add并修改不同枚举值的含义，Definition中可定义这个枚举值的名称，然后点击确定即可。
-
-然后把这个枚举值绑定到一个Signals中。
-双击要绑定的信号，选择目标枚举表，然后点击确定即可。
-
-创建完成后，把这个信号也绑定到消息中。
-
-重复上述步骤可以继续添加消息中的其他信号。
-验证
-保存当前dbc文件，在ZCANPRO中使用dbc发送，并加载此dbc文件。
-
-字节0未定义枚举，可以直接在实际值中填写
-字节1定义了枚举，可以在值描述中选择已经定义的值
-
-
-2.4 添加位信号比如以下数据是需要按位解析的
-
-0x02FE0A
-字节1的bit0-bit4
-
-
-
-创建一个信号，其中信号长度填1个bit。
-
-然后将信号绑定到消息中，可以看到这个消息是从bit8开始的，长度为1个bit。
-
-重复此操作，创建并添加剩下的bit信息。
-
-
-这些bit信号也可以创建并绑定枚举表，比如0正常，1错误。
-
-2.5 添加多字节信号同单字节信号，将信号长度改为16位，根据实际需求设置大小端模式和倍率。
-]]></content>
-      <categories>
-        <category>开发工具</category>
-      </categories>
-      <tags>
         <tag>Can</tag>
-        <tag>DBC</tag>
+        <tag>充电桩国标</tag>
       </tags>
   </entry>
 </search>

@@ -6,7 +6,7 @@ tags:
   - ROS2
 categories:
   - Linux应用
-description: 项目中需要将已有的ros1项目迁移到ros2系统中，因此学习了ros2的相关知识，并再次做个记录。
+description: 项目中需要将基于ros1编写的movebase代码迁移到ros2系统中，在开始前先学习了ros2的相关知识，并在此做个记录。迁移过程中发现，如果不做算法相关的内容，其实学会四大通信就够完成任务了。
 ---
 
 
@@ -1189,7 +1189,7 @@ int main(int argc, char **argv)
 
 
 
-## 4.4 参数（用到了再看）
+## 4.4 参数
 
 参数：由键值对组成。
 
@@ -1228,7 +1228,7 @@ ros2 run <package_name> <executable_name> --ros-args --params-file <file_name>
 
 
 
-## 4.5 动作（用到了再看）
+## 4.5 动作（暂未用到）
 
 * Action的三大组成部分目标、反馈和结果。
   * 目标：即Action客户端告诉服务端要做什么，服务端针对该目标要有响应。解决了不能确认服务端接收并处理目标问题

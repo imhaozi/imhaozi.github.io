@@ -25,7 +25,7 @@ custom_file_path:
   #postMeta: source/_data/post-meta.njk
   #postBodyStart: source/_data/post-body-start.njk
   #postBodyEnd: source/_data/post-body-end.njk
-  #footer: source/_data/footer.njk
+  footer: source/_data/footer.njk
   #bodyEnd: source/_data/body-end.njk
   #variable: source/_data/variables.styl
   #mixin: source/_data/mixins.styl
@@ -38,8 +38,8 @@ custom_file_path:
 
 # Schemes
 # scheme: Muse
-#scheme: Mist
-#scheme: Pisces
+# scheme: Mist
+# scheme: Pisces
 scheme: Gemini
 
 # Dark Mode
@@ -101,7 +101,7 @@ menu:
   categories: /categories/ || fa fa-th
   archives: /archives/ || fa fa-archive
   about: /about/ || fa fa-user
-  # schedule: /schedule/ || fa fa-calendar
+  schedule: /schedule/ || fa fa-calendar
   #sitemap: /sitemap.xml || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
 
@@ -192,9 +192,9 @@ toc:
   # If true, all words will placed on next lines if header width longer then sidebar width.
   wrap: true
   # If true, all level of TOC in a post will be displayed, rather than the activated part of it.
-  expand_all: false
+  expand_all: true
   # Maximum heading depth of generated toc.
-  max_depth: 6
+  max_depth: 15
 
 
 # ---------------------------------------------------------------
@@ -214,7 +214,7 @@ footer:
     # Icon name in Font Awesome. See: https://fontawesome.com/icons
     name: fa fa-heart
     # If you want to animate the icon, set it to true.
-    animated: false
+    animated: true
     # Change the color of icon, using Hex Code.
     color: "#ff0000"
 
@@ -603,7 +603,7 @@ lazyload: false
 # Automatically insert whitespace between CJK and half-width characters.
 # For more information: https://github.com/vinta/pangu.js
 # Server-side plugin: https://github.com/next-theme/hexo-pangu
-pangu: false
+pangu: true
 
 # Prefetch links based on what is in the user's viewport.
 # For more information: https://getquick.link

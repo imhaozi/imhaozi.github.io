@@ -806,6 +806,11 @@ void upper_modbus_task(void)
 						upper_modbus_write_register(&upper_uart, temp_recv_data);
 					}
 				}
+                else
+                {
+                    // 清空缓冲区的数据 防止循环报错
+                    // 
+                }
 			}
 		}
 	}

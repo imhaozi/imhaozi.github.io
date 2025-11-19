@@ -380,16 +380,12 @@ ROS相关:
 
 
 
-# 2. 下位机功能
+# 2. 下位机开发
 
 下位机一共需要实现以下功能：
 
-1. 串口接收，上位机发送的目标电机速度、雷达供电打开或关闭指令；
-2. PID调节电机速度，保持速度稳定；
-3. 记录电机编码器值；
-4. 电池电量获取；
-5. MPU传感器值获取；
-6. 定时上报下位机状态，编码器值、电池电量、MPU、雷达打开状态等；
+1. 串口接收上位机发送的目标电机速度，使用PID调节电机速度，保持速度稳定；
+3. 获取电机编码器值、电池电量、MPU数据（暂时不用），通过串口定时上报；
 
 
 
@@ -397,17 +393,317 @@ ROS相关:
 
 
 
-# 3. 上位机功能
+
+
+
+
+# 3. 上位机开发
 
 主要规划和构建各个软件包的功能。
 
-## 3.1 底盘（下位机）控制
+
+
+## 3.1 创建项目
+
+创建一个工作空间文件夹（就是一个工程文件夹）
+
+1. 工作空间中可以有多个软件包
+2. 软件包中又可以又多个节点
+
+
+
+**步骤1：创建工作空间**
+
+比如这里想创建一个小车项目，就可以创建下面的文件目录
+
+* Ros1CarWs
+  * src：存放代码，源代码、功能包等
+
+创建一个`Ros1CarWs`目录作为本项目的工作空间。
+
+~~~ sh
+haozi@computer:~/develop$ mkdir Ros1CarWs
+haozi@computer:~/develop$ cd Ros1CarWs/
+haozi@computer:~/develop/Ros1CarWs$ mkdir src
+~~~
+
+
+
+**步骤2：创建软件包**
+
+在工作空间的src目录下可以有多个软件包。
+
+因此需要在src目录下进行创建，切换到工作空间的src目录下，执行如下格式指令：
+
+~~~ sh
+catkin_create_pkg 包名 <依赖项1> <依赖项2> ...
+~~~
+
+比如，创建一个名叫`test_pkg`的包，指令如下：
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs/src$ catkin_create_pkg test_pkg rospy roscpp std_msgs
+~~~
+
+执行完成后，在src目录下就会多出一个新的目录`test_pkg`，该目录就是一个包了，包里面又包含了多个文件。
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs/src$ ls
+CMakeLists.txt  test_pkg  wpr_simulation
+haozi@computer:~/develop/Ros1CarWs/src$ cd test_pkg/
+haozi@computer:~/develop/Ros1CarWs/src/test_pkg$ ls
+CMakeLists.txt  include  package.xml  src
+~~~
+
+
+
+**步骤3：添加节点代码**
+
+在软件包的src目录下创建代码文件`main.cpp`
+
+~~~ cpp
+#include <ros/ros.h>
+
+int main(int argc, char *argv[])
+{
+    printf("test_pkg running~ \n");
+    
+    // 后面的是节点名称
+    ros::init(argc, argv, "test_node");
+
+    while(ros::ok())
+    {
+        printf("test_node running~ \n");
+        sleep(1);
+    }
+    return 0;
+}
+~~~
+
+在这个包的CMakeLists.txt文件中，build部分，找到对应的注释的位置，添加如下两条（没注释掉的是添加的，注释掉的是原有的）。
+
+~~~ cmake
+## Declare a C++ executable
+## With catkin_make all packages are built within a single CMake context
+## The recommended prefix ensures that target names across packages don't collide
+# add_executable(${PROJECT_NAME}_node src/test_pkg_node.cpp)
+add_executable(test_node src/main.cpp)
+
+## Specify libraries to link a library or executable target against
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
+target_link_libraries(test_node
+  ${catkin_LIBRARIES}
+)
+~~~
+
+其中：
+
+* add_executable：表示需要编译可执行文件
+* target_link_libraries：表示需要链接ros库
+
+
+
+**步骤4：编译代码**
+
+在工作空间目录Ros1CarWs下执行编译命令
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs$ pwd
+/home/haozi/develop/Ros1CarWs
+haozi@computer:~/develop/Ros1CarWs$ catkin_make
+[100%] Linking CXX executable /home/haozi/develop/Ros1CarWs/devel/lib/test_pkg/test_node
+[100%] Built target test_node
+~~~
+
+编译完成后，工作空间下就会多出来两个文件夹，build、devel
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs$ ls
+build  devel  src
+~~~
+
+* build：编译文件
+* devel：执行文件，执行前需要在这里添加源
+
+
+
+**步骤5：执行**
+
+启动一个新的终端，启动ros
+
+~~~ sh
+roscore
+~~~
+
+添加代码源（注意相对目录或者绝对目录）
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs$ source devel/setup.bash
+~~~
+
+执行代码
+
+~~~ sh
+# 命令格式：rosrun 包名 节点名
+haozi@computer:~/develop/Ros1CarWs$ rosrun test_pkg test_node
+test_pkg running~ 
+test_node running~ 
+test_node running~ 
+test_node running~
+~~~
+
+到这里，创建一个ros软件包并执行的流程就完成了。
+
+还可以继续重复步骤2-5，就可以创建多个不同的软件包了。
+
+
+
+**步骤6：优化**
+
+每次打开终端总要source一下，可以修改配置，打开终端时自动source。
+
+执行如下指令
+
+~~~ sh
+haozi@computer:~$ gedit ~/.bashrc
+~~~
+
+在弹出的编辑器中，最后一行添加如下内容。
+
+~~~ sh
+source ~/Ros1CarWs/devel/setup.bash
+~~~
+
+这样每次打开终端，就会自动执行这一行命令了。
+
+> 不过这里我还是不用了，手动挺好的。
+
+
+
+## 3.2 电脑端可视化
+
+小车主控不具有可视化能力，需要借用电脑来进行可视化操作。
+
+1. 将电脑和开发板链接同一个wifi
+2. 查看电脑端和开发板IP地址和设备名
+
+电脑端
+
+~~~ sh
+192.168.186.128	# IP
+computer		# 主机名
+~~~
+
+开发板端
+
+~~~ sh
+192.168.31.35		# IP
+MiWiFi-R3GV2-srv	# 主机名
+~~~
+
+3. 编辑`/etc/hosts`文件，添加一行
+
+电脑端
+
+~~~ sh
+192.168.186.128    computer
+~~~
+
+开发板端
+
+~~~ sh
+192.168.31.35    MiWiFi-R3GV2-srv
+~~~
+
+4. 编辑`~/.bashrc`文件，添加几行
+
+如果是开发板作为主机端（可以跑ros的话，开发板作为主机合理一点）
+
+开发板端
+
+~~~ sh
+# ROS网络配置
+export ROS_MASTER_URI=http://MiWiFi-R3GV2-srv:11311
+export ROS_HOSTNAME=MiWiFi-R3GV2-srv
+# 或者使用IP地址（如果主机名解析有问题）：
+# export ROS_MASTER_URI=http://192.168.31.35:11311
+# export ROS_IP=192.168.31.35
+source ~/.bashrc
+~~~
+
+电脑端
+
+~~~ sh
+# ROS网络配置
+export ROS_MASTER_URI=http://MiWiFi-R3GV2-srv:11311
+export ROS_HOSTNAME=computer
+# 或者使用IP地址（如果主机名解析有问题）：
+# export ROS_MASTER_URI=http://192.168.31.35:11311
+# export ROS_IP=192.168.186.128
+source ~/.bashrc
+~~~
+
+然后在开发板端运行roscore及其他服务，在电脑端就可以使用相关命令看到状态了。
+
+
+
+## 3.3 下位机控制包（base_ctrl_pkg）
+
+本软件包主要实现以下功能：
+
+1. 接收下位机编码器值、电池电压；
+2. 发布里程计消息；
+3. 订阅速度控制`/vel`消息，定时下发给下位机。
 
 
 
 
 
 
+
+## 3.4 雷达软件包（lidar_pkg）
+
+本软件包主要实现以下功能
+
+1. 解析雷达数据，并发布`/scan`消息；
+
+
+
+雷达消息格式：
+
+~~~ cpp
+sensor_msgs/LaserScan.msg
+~~~
+
+比如
+
+~~~ markdown
+---
+header: 
+  seq: 5250
+  stamp: 
+    secs: 696
+    nsecs: 435000000
+  frame_id: "laser"
+angle_min: -3.141590118408203
+angle_max: 3.141590118408203
+angle_increment: 0.017501894384622574
+time_increment: 0.0
+scan_time: 0.0
+range_min: 0.23999999463558197
+range_max: 6.0
+ranges: "<array type: float32, length: 360>"
+intensities: "<array type: float32, length: 360>"
+---
+~~~
+
+创建一个新的软件包`lidar_pkg`，用于发布雷达数据。
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs/src$ catkin_create_pkg lidar_pkg rospy roscpp std_msgs sensor_msgs
+~~~
 
 
 

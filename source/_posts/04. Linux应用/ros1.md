@@ -13,16 +13,71 @@ description: 以一个差速轮小车为驱动，学习ros1的使用。
 
 # 1. 环境准备
 
+
+
+## 1.1 安装ubuntu
+
 * ubuntu环境
   * 这里使用的`ubuntu 20.04.3`
   * 镜像名称：ubuntu-20.04.6-desktop-amd64.iso（文件大小：4.05G）
   * 下载地址：http://mirrors.ustc.edu.cn/ubuntu-releases/
+
+
+## 1.2 安装Ros
+
 * ros1环境
-  * 这里使用的是`Noetic版本`。
-  * 安装方式：小鱼一键安装
+  * 这里使用的是`Noetic版本`
+
+* 安装方式1：小鱼一键安装
 
 ~~~ sh
 wget http://fishros.com/install -O fishros && bash fishros
+~~~
+
+* 安装方式2：官方文档，下方网址中选择系统架构，并按照步骤进行安装（需要梯子，不然很卡）
+
+~~~ markdown
+# 选择系统网址
+https://wiki.ros.org/noetic/Installation
+
+# ubuntu系统安装步骤
+https://wiki.ros.org/noetic/Installation/Ubuntu#Installation
+~~~
+
+* 运行测试
+
+~~~ sh
+# 打开新窗口
+# 安装小乌龟
+sudo apt install ros-noetic-rqt-robot-steering
+sudo apt install ros-noetic-turtlesim
+# 运行ros核心
+roscore
+
+# 打开两个新窗口分别运行
+rosrun rqt_robot_steering rqt_robot_steering
+rosrun turtlesim turtlesim_node
+# 然后把发布速度的话题名修改为 turtle1/cmd_vel
+# 接下来就可以控制小乌龟了
+~~~
+
+
+
+## 1.3 安装Vscode
+
+* 搜教程安装
+* 安装插件
+  * Chinese
+  * Robotics Developer Environment
+  * Cmake Tools
+  * 需要啥装啥
+
+
+
+## 1.4 安装Git
+
+~~~ sh
+sudo apt install git
 ~~~
 
 
@@ -33,65 +88,56 @@ wget http://fishros.com/install -O fishros && bash fishros
 
 
 
-**步骤一：创建工程**
+## 2.1 创建工程
 
 1. 创建一个工作空间文件夹（就是一个工程文件夹）
    1. 工作空间中可以有多个软件包
    2. 软件包中又可以又多个节点
 
-比如这里想创建一个基于泰山派的小车项目，就可以创建下面的文件目录
+比如这里想创建一个小车项目，就可以创建下面的文件目录
 
-* TspCarWs
+* Ros1CarWs
   * src：存放代码，源代码、功能包等
 
-
-
-创建一个`TspCarWs`目录作为本项目的工作空间。
+创建一个`Ros1CarWs`目录作为本项目的工作空间。
 
 ~~~ sh
-haozi@haozi:~/work/develop$ mkdir TspCarWs
-haozi@haozi:~/work/develop$ cd TspCarWs/
-haozi@haozi:~/work/develop/TspCarWs$ mkdir src
+haozi@computer:~/develop$ mkdir Ros1CarWs
+haozi@computer:~/develop$ cd Ros1CarWs/
+haozi@computer:~/develop/Ros1CarWs$ mkdir src
 ~~~
 
 
 
-**步骤二：创建软件包**
+## 2.2 创建软件包
 
-本项目采用上下位机的架构进行设计，上下位机通过通信进行交互和控制，首先实现一个用于控制下位机运动的软件包`lower_ctrl_pkg`。
+在工作空间的src目录下可以有多个软件包。
 
-
-
-切换到工作空间的src目录下，执行如下指令：
+因此需要在src目录下进行创建，切换到工作空间的src目录下，执行如下格式指令：
 
 ~~~ sh
 catkin_create_pkg 包名 <依赖项1> <依赖项2> ...
 ~~~
 
-如下：
+比如，创建一个名叫`test_pkg`的包，指令如下：
 
 ~~~ sh
-haozi@haozi:~/work/develop/TspCarWs/src$ catkin_create_pkg lower_ctrl_pkg rospy roscpp std_msgs
-Created file lower_ctrl_pkg/package.xml
-Created file lower_ctrl_pkg/CMakeLists.txt
-Created folder lower_ctrl_pkg/include/lower_ctrl_pkg
-Created folder lower_ctrl_pkg/src
-Successfully created files in /home/haozi/work/develop/TspCarWs/src/lower_ctrl_pkg. Please adjust the values in package.xml.
+haozi@computer:~/develop/Ros1CarWs/src$ catkin_create_pkg test_pkg rospy roscpp std_msgs
 ~~~
 
-执行完成后，在src目录下就会多出一个新的目录`catkin_create_pkg`，该目录就是一个包了，包里面又包含了多个文件。
+执行完成后，在src目录下就会多出一个新的目录`test_pkg`，该目录就是一个包了，包里面又包含了多个文件。
 
 ~~~ sh
-haozi@haozi:~/work/develop/TspCarWs/src$ ls
-lower_ctrl_pkg
-haozi@haozi:~/work/develop/TspCarWs/src$ cd lower_ctrl_pkg/
-haozi@haozi:~/work/develop/TspCarWs/src/lower_ctrl_pkg$ ls
+haozi@computer:~/develop/Ros1CarWs/src$ ls
+CMakeLists.txt  test_pkg  wpr_simulation
+haozi@computer:~/develop/Ros1CarWs/src$ cd test_pkg/
+haozi@computer:~/develop/Ros1CarWs/src/test_pkg$ ls
 CMakeLists.txt  include  package.xml  src
 ~~~
 
 
 
-**步骤三：添加代码**
+## 2.3 添加节点
 
 在软件包的src目录下创建代码文件`main.cpp`
 
@@ -100,35 +146,34 @@ CMakeLists.txt  include  package.xml  src
 
 int main(int argc, char *argv[])
 {
-    printf("lower_ctrl_node running~ \n");
+    printf("test_pkg running~ \n");
     
     // 后面的是节点名称
-    ros::init(argc, argv, "lower_ctrl_node");
+    ros::init(argc, argv, "test_node");
 
     while(ros::ok())
     {
-        printf("lower_ctrl_node running~ \n");
+        printf("test_node running~ \n");
         sleep(1);
     }
     return 0;
 }
 ~~~
 
-在CMakeLists.txt文件中，build部分，找到对应的注释的位置，添加如下两条（没注释掉的是添加的，注释掉的是原有的）。
+在这个包的CMakeLists.txt文件中，build部分，找到对应的注释的位置，添加如下两条（没注释掉的是添加的，注释掉的是原有的）。
 
 ~~~ cmake
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/lower_ctrl_pkg_node.cpp)
-add_executable(lower_ctrl_node src/main.cpp)
+# add_executable(${PROJECT_NAME}_node src/test_pkg_node.cpp)
+add_executable(test_node src/main.cpp)
 
-## Specify libraries t
-o link a library or executable target against
+## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(lower_ctrl_node
+target_link_libraries(test_node
   ${catkin_LIBRARIES}
 )
 ~~~
@@ -141,39 +186,31 @@ target_link_libraries：表示需要链接ros库
 
 
 
-**步骤四：编译代码**
+## 2.4 编译代码
 
-在工作空间目录（tsp_car_ws）下执行编译命令
+在工作空间目录Ros1CarWs下执行编译命令
 
 ~~~ sh
-haozi@haozi:~/work/develop/TspCarWs$ pwd
-/home/haozi/work/develop/TspCarWs
-haozi@haozi:~/work/develop/TspCarWs$ catkin_make
-Base path: /home/haozi/work/develop/TspCarWs
-Source space: /home/haozi/work/develop/TspCarWs/src
-Build space: /home/haozi/work/develop/TspCarWs/build
-Devel space: /home/haozi/work/develop/TspCarWs/devel
-Install space: /home/haozi/work/develop/TspCarWs/install
-####
-#### Running command: "make cmake_check_build_system" in "/home/haozi/work/develop/TspCarWs/build"
-####
-####
-#### Running command: "make -j4 -l4" in "/home/haozi/work/develop/TspCarWs/build"
-####
-[100%] Built target lower_ctrl_node
+haozi@computer:~/develop/Ros1CarWs$ pwd
+/home/haozi/develop/Ros1CarWs
+haozi@computer:~/develop/Ros1CarWs$ catkin_make
+[100%] Linking CXX executable /home/haozi/develop/Ros1CarWs/devel/lib/test_pkg/test_node
+[100%] Built target test_node
 ~~~
 
 编译完成后，工作空间下就会多出来两个文件夹，build、devel
 
 ~~~ sh
-haozi@haozi:~/work/develop/TspCarWs$ ls
+haozi@computer:~/develop/Ros1CarWs$ ls
 build  devel  src
 ~~~
 
 * build：编译文件
 * devel：执行文件，执行前需要在这里添加源
 
-**步骤五：执行**
+
+
+## 2.5 执行
 
 启动一个新的终端，启动ros
 
@@ -184,26 +221,313 @@ roscore
 添加代码源（注意相对目录或者绝对目录）
 
 ~~~ sh
-haozi@haozi:~/work/develop/TspCarWs$ source devel/setup.bash
+haozi@computer:~/develop/Ros1CarWs$ source devel/setup.bash
 ~~~
 
 执行代码
 
 ~~~ sh
-# rosrun：执行
-# lower_ctrl_pkg：报名
-# lower_ctrl_node：节点名roslaunch launch_pkg all.launch tf
-haozi@haozi:~/work/develop/TspCarWs$ rosrun lower_ctrl_pkg lower_ctrl_node
-lower_ctrl_node running~
+# 命令格式：rosrun 包名 节点名
+haozi@computer:~/develop/Ros1CarWs$ rosrun test_pkg test_node
+test_pkg running~ 
+test_node running~ 
+test_node running~ 
+test_node running~
 ~~~
 
 到这里，创建一个ros软件包，并执行的流程就完成了。
 
+可以看出一个节点，其实就是一个程序。
 
+
+
+## 2.6 优化
+
+每次打开终端总要source一下，可以修改配置，打开终端时自动source。
+
+执行如下指令
+
+~~~ sh
+haozi@computer:~$ gedit ~/.bashrc
+~~~
+
+在弹出的编辑器中，最后一行添加如下内容。
+
+~~~ sh
+source ~/Ros1CarWs/devel/setup.bash
+~~~
+
+这样每次打开终端，就会自动执行这一行命令了。
+
+> 不过这里我还是不用了，手动挺好的。
 
 
 
 # 3. 小车开发
+
+
+
+## 3.1 机器人运动
+
+关于机器人移动时的控制描述如下：
+
+* 矢量速度，米每秒：
+
+  * 正前方：X方向
+
+  * 正左方：Y方向
+
+  * 正上方：Z方向
+
+* 旋转方向，弧度每秒：
+
+  * 滚转运动：沿X轴 朝右转为正，也就是往右倒下的方向。
+
+  * 俯仰运动：沿Y轴 往前转为正，也就是往前倒下的方向。
+
+  * 自转运动：沿Z轴 顺时针为正，也就是往左旋转的方向。
+
+对应的数据类型如下，分别包含三个xyz三个值。
+
+~~~ markdown
+geometry_msgs/Vector3 linear
+geometry_msgs/Vector3 angular
+~~~
+
+
+
+### 3.1.1 速度发布
+
+创建一个新的软件包`vel_pkg`，用于发布速度控制消息。
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs/src$ catkin_create_pkg vel_pkg rospy roscpp std_msgs geometry_msgs
+~~~
+
+src目录下创建main.cpp
+
+~~~ cpp
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+#include <geometry_msgs/Twist.h> // 速度消息
+
+int main(int argc, char *argv[])
+{
+    printf("move_ctrl_node running~ \n");
+
+    ros::init(argc, argv, "vel_node");
+
+    ros::NodeHandle nh;
+    ros::Publisher vel_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
+
+    // 创建一个频率控制对象,每秒循环10次
+    ros::Rate loop_rate(10);
+
+    while (ros::ok())
+    {
+        geometry_msgs::Twist vel_msg;
+        vel_msg.linear.x = 0.1;
+        vel_msg.linear.y = 0.0;
+        vel_msg.linear.z = 0.0;
+        vel_msg.angular.x = 0.0;
+        vel_msg.angular.y = 0.0;
+        vel_msg.angular.z = 0.0;
+        vel_pub.publish(vel_msg);   // 发布
+
+        // 延时（约等于 sleep）
+        loop_rate.sleep();
+    }
+    return 0;
+}
+~~~
+
+
+
+### 3.1.2 速度订阅
+
+创建一个新的软件包`move_base_pkg`，用于接受控制指令，发布运动状态。
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs/src$ catkin_create_pkg move_base_pkg rospy roscpp std_msgs geometry_msgs
+~~~
+
+src目录下创建main.cpp
+
+~~~ cpp
+#include <ros/ros.h>
+#include <std_msgs/String.h>     // 标准消息
+#include <geometry_msgs/Twist.h> // 速度消息
+
+// 速度指令订阅回调函数
+void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &msg)
+{
+    ROS_INFO("tar linear = %f(m/s), angular = %f(rad/s) ~ \n", msg->linear.x, msg->angular.z);
+}
+
+int main(int argc, char *argv[])
+{
+    // 防止ROS_INFO中文乱码
+    setlocale(LC_CTYPE, "zh_CN.utf8");
+
+    // 下位机控制节点
+    ros::init(argc, argv, "move_base_node");
+
+    ros::NodeHandle nh;
+    ros::Subscriber cmd_vel_sub;
+    cmd_vel_sub = nh.subscribe("/cmd_vel", 10, CmdVelCallback); // 订阅目标速度
+
+    while (ros::ok())
+    {
+        ros::spinOnce();
+    }
+
+    return 0;
+}
+~~~
+
+
+
+### 3.1.3 消息查看
+
+将两个软件包中的两个节点都运行起来
+
+* `rostopic list`：查看当前存在的话题
+* `rostopic echo 话题名`：查看当前话题发布的消息
+* `rqt_graph`：查看话题之间的关系（需要图像显示）
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs$ rostopic list
+/cmd_vel
+/rosout
+/rosout_agg
+haozi@computer:~/develop/Ros1CarWs/$ rostopic echo /cmd_vel
+linear: 
+  x: 0.1
+  y: 0.0
+  z: 0.0
+angular: 
+  x: 0.0
+  y: 0.0
+  z: 0.0
+---
+~~~
+
+
+
+### 3.1.4 格式化
+
+
+
+
+
+
+
+## 3.2 Rviz雷达数据
+
+激光雷达消息数据格式
+
+~~~ markdown
+sensor_msgs/LaserScan.msg
+~~~
+
+比如
+
+~~~ markdown
+---
+header: 
+  seq: 5250
+  stamp: 
+    secs: 696
+    nsecs: 435000000
+  frame_id: "laser"
+angle_min: -3.141590118408203
+angle_max: 3.141590118408203
+angle_increment: 0.017501894384622574
+time_increment: 0.0
+scan_time: 0.0
+range_min: 0.23999999463558197
+range_max: 6.0
+ranges: "<array type: float32, length: 360>"
+intensities: "<array type: float32, length: 360>"
+---
+~~~
+
+
+
+创建一个新的软件包`lidar_pkg`，用于发布雷达数据。
+
+~~~ sh
+haozi@computer:~/develop/Ros1CarWs/src$ catkin_create_pkg lidar_pkg rospy roscpp std_msgs sensor_msgs
+~~~
+
+src目录下创建main.cpp
+
+~~~ cpp
+#include <ros/ros.h>
+#include <std_msgs/String.h>
+#include <geometry_msgs/Twist.h> // 速度消息
+
+int main(int argc, char *argv[])
+{
+    printf("move_ctrl_node running~ \n");
+
+    ros::init(argc, argv, "vel_node");
+
+    ros::NodeHandle nh;
+    ros::Publisher vel_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 10);
+
+    // 创建一个频率控制对象,每秒循环10次
+    ros::Rate loop_rate(10);
+
+    while (ros::ok())
+    {
+        geometry_msgs::Twist vel_msg;
+        vel_msg.linear.x = 0.1;
+        vel_msg.linear.y = 0.0;
+        vel_msg.linear.z = 0.0;
+        vel_msg.angular.x = 0.0;
+        vel_msg.angular.y = 0.0;
+        vel_msg.angular.z = 0.0;
+        vel_pub.publish(vel_msg);   // 发布
+
+        // 延时（约等于 sleep）
+        loop_rate.sleep();
+    }
+    return 0;
+}
+~~~
+
+
+
+## 3.3 IMU数据
+
+激光雷达消息数据格式
+
+~~~ markdown
+geometry_msgs/Quaternion orientation
+geometry_msgs/Vector3 angular_velocity
+geometry_msgs/Vector3 angular_acceleration
+~~~
+
+话题规定
+
+~~~ markdown
+imu/data_raw(sensor_msgs/Imu) 加速度输出的矢量加速度 和 陀螺仪输出的旋转角速度
+imu/data(sensor_msgs/Imu) 上面的数据 加 融合后的四元数姿态描述
+imu/mag(sensor_msgs/MagneticField) 磁强计输出磁强数据
+~~~
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 3.1 速度订阅
 

@@ -12,7 +12,7 @@ description: 以一个ros小车为驱动，学习ros1的使用。其中项目分
 
 
 
-# 1. 上位机准备
+# 1. 泰山派设置
 
 ## 1.1 官方镜像
 
@@ -422,7 +422,7 @@ crw-rw-rw- 1 root dialout 4, 67 11月 28 14:21 /dev/ttyS3
 
 
 
-# 2. 下位机开发
+# 2. 下位机开发（Base）
 
 下位机相对来说核心逻辑比较简单，一共需要实现以下功能：
 
@@ -676,7 +676,7 @@ while (1)
 
 
 
-# 3. 上位机开发
+# 3. 上位机开发（RosWs）
 
 主要规划和构建各个软件包的功能。
 
@@ -1542,13 +1542,7 @@ sudo apt install ros-noetic-gmapping
 
 
 
-
-
-
-
-
-
-# 4. 常用命令
+## 3.10 常用命令
 
 节点相关
 
@@ -1580,6 +1574,32 @@ rosrun rqt_robot_steering rqt_robot_steering
 
 
 
+
+# 4. APP开发
+
+这里为了实现任意电脑控制，而不是在虚拟机中的进行可视化，制作了QT上位机。
+
+
+
+## 4.1 通信支持包
+
+我们的上位机中肯定是无法直接运行ros来和小车进行通信的，可以使用网络通信获取ros中的消息内容。
+
+在小车中需要一个将Ros消息和网络消息转换的东西（有现成的）。
+
+
+
+将ROS环境的运行信息进行上报需要软件包`rosbridge_server`，安装命令如下
+
+~~~ sh
+sudo apt install ros-noetic-rosbridge-suite
+~~~
+
+和其他的软件包一样，最后把这个软件包也启动起来即可。
+
+~~~ sh
+roslaunch rosbridge_server rosbridge_websocket.launch
+~~~
 
 
 

@@ -1538,7 +1538,136 @@ sudo apt install ros-noetic-gmapping
 
 ## 3.8 地图保存和加载
 
-当建图完成之后，需要把这个地图保存起来，下次启动直接调用即可。要不然总不能每次开机总要先人工带着巡视一遍江山吧。
+当建图完成之后，需要把这个地图保存起来，下次启动直接调用即可。
+
+### 3.8.1 地图保存
+
+软件包安装
+
+~~~ sh
+sudo apt install ros-noetic-map-server
+~~~
+
+安装完成后，先使用建图软件包完成建图，保持建图程序不要关闭。
+
+运行地图保存程序
+
+~~~ sh
+rosrun map_server map_saver -f <文件名>
+~~~
+
+如果只有一个文件名就是当前终端的路径，这里使用绝对路径
+
+需要先创建`/home/lckfb/TspRosCar/RosCarWs/src/map_config/home`这个文件夹，否则会保存失败
+
+~~~ sh
+rosrun map_server map_saver -f /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map
+~~~
+
+运行结果如下
+
+~~~ sh
+lckfb@MiWiFi-R3GV2-srv:~/TspRosCar/RosCarWs$ rosrun map_server map_saver -f /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map
+[INFO] [1764853848.865978437]: Waiting for the map
+[INFO] [1764853849.171315087]: Received a 4000 X 4000 map @ 0.050 m/pix
+[INFO] [1764853849.171582836]: Writing map occupancy data to /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map.pgm
+[INFO] [1764853850.342584721]: Writing map occupancy data to /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map.yaml
+[INFO] [1764853850.343969550]: Done
+
+lckfb@MiWiFi-R3GV2-srv:~/TspRosCar/RosCarWs/src/map_config$ cd /home/lckfb/TspRosCar/RosCarWs/src/map_config/home
+lckfb@MiWiFi-R3GV2-srv:~/TspRosCar/RosCarWs/src/map_config/home$ ls
+home_map.pgm  home_map.yaml
+~~~
+
+得到两个文件，两个文件共同组成了一个地图数据。
+
+* home_map.pgm：一张图片的格式
+* home_map.yaml：描述了这个图片的信息，比如每个像素点对应的实际大小、起始点等信息
+
+
+
+### 3.8.2 地图加载
+
+地图加载完成后，关闭建图节点，只运行一个roscore即可。
+
+运行之后，查看当前ros存在的话题是找不到`/map`的
+
+~~~ sh
+rostopic list
+~~~
+
+然后运行以下命令加载地图（只需要yaml文件即可，文件中有对应的地图图片的名字）
+
+~~~ sh
+rosrun map_server map_server <地图名.yaml>
+~~~
+
+同样的这里使用绝对路径
+
+~~~ sh
+rosrun map_server map_server /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map.yaml
+~~~
+
+加载完成之后就有地图话题了，在rviz中可以看到发布的地图。
+
+
+
+## 3.9 导航节点
+
+
+
+创建一个导航软件包
+
+~~~ sh
+catkin_create_pkg nav_pkg roscpp rospy move_base_msgs actionlib
+~~~
+
+
+
+
+
+
+
+
+
+## 3.10 摄像头节点
+
+
+
+这里使用系统镜像里默认支持的摄像头`OV5695`
+
+~~~ sh
+lckfb@MiWiFi-R3GV2-srv:~$ v4l2-ctl --list-devices
+rkisp-statistics (platform: rkisp):
+        /dev/video7
+        /dev/video8
+
+rkisp_mainpath (platform:rkisp-vir0):
+        /dev/video0
+        /dev/video1
+        /dev/video2
+        /dev/video3
+        /dev/video4
+        /dev/video5
+        /dev/video6
+        /dev/media0
+~~~
+
+安装依赖
+
+~~~ sh
+
+~~~
+
+创建一个软件包，用于发布摄像头数据
+
+
+
+
+
+
+
+
 
 
 
@@ -1551,6 +1680,18 @@ sudo apt install ros-noetic-gmapping
 每个单独的功能都可以实现，但是和上位机交互时，需要在不同情况下调用不同的软件包。
 
 这里创建一个软件包用来管理不同的功能同步。
+
+
+
+创建管理包
+
+~~~ sh
+catkin_create_pkg manage_pkg rospy roscpp std_msgs
+~~~
+
+
+
+
 
 
 
@@ -1614,6 +1755,32 @@ sudo apt install ros-noetic-rosbridge-suite
 ~~~ sh
 roslaunch rosbridge_server rosbridge_websocket.launch
 ~~~
+
+
+
+
+
+
+
+~~~ sh
+# 安装movebase
+sudo apt-get install ros-noetic-navigation
+
+# 创建导航包
+catkin_create_pkg nav_pkg roscpp rospy move_base_msgs actionlib
+~~~
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

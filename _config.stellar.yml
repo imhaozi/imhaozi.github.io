@@ -1,0 +1,47 @@
+open_graph:
+  enable: true
+  twitter_id: # for open_graph meta
+
+article:
+  type: tech          # tech/story
+  auto_excerpt: 200   # 自动从文章内容截取一定字数的文字作为摘要
+  license: '本文由 imhaozi 编写，采用 [署名-非商业性使用-相同方式共享 4.0 国际](https://creativecommons.org/licenses/by-nc-sa/4.0/) 许可协议，转载请注明出处。'
+
+
+logo:
+  subtitle: '装备锻造中 | Write By imhaozi' # '文字1 | 文字2' (鼠标放上去会切换到文字2)
+  avatar: '[/images/avatar.jpg](/about/)' # you can set avatar link in _config.yml or '[https://xxx.png](/about/)'
+  title: '[{config.title}](/)' # you can set html tag like: '[<img no-lazy height="32px" src="xxx"/>](/)'
+
+# 侧边栏主功能导航菜单
+menubar:
+  columns: 4 # 一行多少个
+  items: # 可按照自己需求增加，符合以下格式即可
+    - id: post # 页面中高亮的 menu_id
+      theme: '#1BCDFC' # 高亮时的颜色，仅 svg 中 fill="currentColor" 时有效
+      icon: solar:documents-bold-duotone # 支持 svg/img 标签，可以定义在 icons.yml 文件中，也支持外部图片的 URL
+      title: 博客 # 标题
+      url: / # 跳转链接，支持相对路径和绝对路径
+    - id: wiki
+      theme: '#3DC550'
+      icon: solar:notebook-bookmark-bold-duotone
+      title: 文档
+      url: /wiki/
+    - id: social
+      theme: '#F44336'
+      icon: solar:chat-square-like-bold-duotone
+      title: 关于
+      url: /about/
+
+# 图标下载自 https://fontawesome.com/
+footer:
+  social:
+    github:
+      icon: '/images/github.svg'
+      url: https://github.com/imhaozi
+    music:
+      icon: '/images/bilibili.svg'
+      url: https://space.bilibili.com/330622220
+    comments:
+      icon: '<img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/942ebbf1a4b91.svg"/>'
+      url: https://

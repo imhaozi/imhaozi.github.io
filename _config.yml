@@ -4,12 +4,16 @@
 
 # Site
 title: Blog
-subtitle: '攻城狮装备搭建日记'
-description: '身体和心灵总有一个在路上'
+subtitle: ''
+description: ''
 keywords:
-author: Haozi
-language: zh-CN
+author: imhaozi
+language:
+  - zh-CN
+  - en
 timezone: ''
+
+favicon: /images/avatar.jpg
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
@@ -80,7 +84,7 @@ meta_generator: true
 date_format: YYYY-MM-DD
 time_format: HH:mm:ss
 ## updated_option supports 'mtime', 'date', 'empty'
-updated_option: 'empty' # 不显示更新时间
+updated_option: 'mtime'
 
 # Pagination
 ## Set per_page to 0 to disable pagination
@@ -96,7 +100,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next
+theme: stellar
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment

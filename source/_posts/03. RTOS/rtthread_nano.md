@@ -46,13 +46,15 @@ description: RT-Thread Nano系统移植记录
 
 ## 1.1 Nano Pack 安装
 
-RT-Thread Master 的源码可以从https://github.com/RT-Thread/rt-thread下载。
+RT-Thread Master 的源码可以从 https://github.com/RT-Thread/rt-thread 下载。
 
 Nano就是从里面扣出来的，去掉了一些组件和各种开发板的BSP，保留了OS的核心功能，但足够我们使用。
 
 ### 方式一：手动下载安装
 
-RT-Thread 官方将抠出来的 Nano 作为一个Package放在了KEIL网站：http://www.keil.com/dd2/pack/，打开这条连接，然后拉到下面找到RealThread即可下载。
+RT-Thread 官方将抠出来的 Nano 作为一个Package放在了KEIL网站：http://www.keil.com/dd2/pack/
+
+打开这条连接，然后拉到下面找到RealThread即可下载。
 
 ![1.1.1](./rtthread_nano/1.1.jpg)
 

@@ -1,0 +1,883 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
+  
+  
+  <meta name="generator" content="Hexo 8.1.1">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title>Ymodem - Blog</title>
+
+  
+    <meta name="description" content="Ymodem协议解析和boot代码示例。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ymodem">
+<meta property="og:url" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="Ymodem协议解析和boot代码示例。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B.png">
+<meta property="article:published_time" content="2022-12-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-13T02:00:38.651Z">
+<meta property="article:author" content="imhaozi">
+<meta property="article:tag" content="Uart">
+<meta property="article:tag" content="Ymodem">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B.png">
+  
+  
+  
+  <meta name="keywords" content="Uart,Ymodem">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.33.1">
+
+
+  
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+  
+
+  
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"imhaozi","sameAs":[]},"dateCreated":"2023-01-01T00:00:00+08:00","dateModified":"2025-11-13T10:00:38+08:00","datePublished":"2023-01-01T00:00:00+08:00","description":"","headline":"Ymodem","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/"},"publisher":{"@type":"Organization","name":"imhaozi","sameAs":[]},"url":"http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/","keywords":"Uart, Ymodem","image":[]}</script>
+  
+</head>
+<body>
+
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/avatar.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Blog</div><div class="sub normal cap">装备锻造中</div><div class="sub hover cap" style="opacity:0"> Write By imhaozi</div></a></div></header>
+
+<div class="nav-area">
+
+<nav class="menu dis-select"><a class="nav-item active" title="博客" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="文档" href="/wiki/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="关于" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/2024/10/08/05.%20%E5%BC%80%E6%BA%90%E5%BA%93/lvgl%E7%A7%BB%E6%A4%8D/"><span class="title">lvgl移植</span></a><a class="item title" href="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/"><span class="title">ros1小车diy记录</span></a><a class="item title" href="/2020/10/01/03.%20RTOS/rtthread_nano/"><span class="title">rtthread_nano移植</span></a><a class="item title" href="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/"><span class="title">v3s开发板制作</span></a><a class="item title" href="/2025/08/29/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/"><span class="title">博客搭建指南</span></a><a class="item title" href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/"><span class="title">充电桩国标协议解析</span></a><a class="item title" href="/2025/11/05/08.%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/"><span class="title">CanDBC文件制作</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/"><span class="title">Ymodem</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/"><span class="title">Modbus</span></a><a class="item title" href="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/"><span class="title">CanOpen</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/imhaozi" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/github.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://space.bilibili.com/330622220" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/bilibili.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/942ebbf1a4b91.svg"/></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/">通信协议</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2022-12-31T16:00:00.000Z">2023-01-01</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2025-11-13T02:00:38.651Z">2025-11-13</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>Ymodem</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><h1 id="1-交互流程"><a href="#1-交互流程" class="headerlink" title="1. 交互流程"></a>1. 交互流程</h1><blockquote>
+<p>这里是以BootLoader为目的写的。</p>
+<p>很多Shell工具都有自带的Xmodem、Ymodem传输文件的功能。这里以<strong>SecureCRT 9.2</strong>软件为例进行分析。不同的软件实际上可能有些许差异。</p>
+</blockquote>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B.png" alt="交互流程"></p>
+<p>至此，流程结束。</p>
+<h1 id="2-STM32示例"><a href="#2-STM32示例" class="headerlink" title="2. STM32示例"></a>2. STM32示例</h1><p>这里已经将Ymodem协议接收部分已经封装好了。</p>
+<ul>
+<li>头文件</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * ymodem.h</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  Created on: 2024年9月23日</span></span><br><span class="line"><span class="comment"> *      Author: ZhangJinhao</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> PROTOCOL_YMODEM_H_</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PROTOCOL_YMODEM_H_</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stdint.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 此协议流程参考：SecureCRT 9.2, Ymodem协议，其他上位机未经过测试 */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 一包数据格式为：帧命令 + 索引 + 索引反码 + 数据(128/1024) + CRC16校验码</span></span><br><span class="line"><span class="comment">// 帧命令</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_SOH (0x01)    <span class="comment">// 128字节数据命令</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_STX (0x02)    <span class="comment">// 1024字节数据命令</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_EOT (0x04)    <span class="comment">// 发送结束命令</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_ACK (0x06)    <span class="comment">// 接收正确应答命令</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_NAK (0x15)    <span class="comment">// 接收错误应答命令</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_CA (0x18)     <span class="comment">// 取消传输</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_C (0x43)      <span class="comment">// 开始发送命令</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_ABORT1 (0x41) <span class="comment">/* &#x27;A&#x27; == 0x41, abort by user */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_ABORT2 (0x61) <span class="comment">/* &#x27;a&#x27; == 0x61, abort by user */</span></span></span><br><span class="line"><span class="comment">// 长度定义</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_PACKET_HEADER_LEN (3)                                                  <span class="comment">// 包头长度(命令+索引+索引反码)</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_PACKET_SIZE (128)                                                      <span class="comment">// Ymodem包长度</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_PACKET_1K_SIZE (1024)                                                  <span class="comment">// Ymodem-1K包长度</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_PACKET_TRAILER_LEN (2)                                                 <span class="comment">// 包尾长度(CRC16)</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_PACKET_OVERHEAD (YMODEM_PACKET_HEADER_LEN + YMODEM_PACKET_TRAILER_LEN) <span class="comment">// 除去数据外，另外的长度</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 一包数据中，索引和索引反码所处的位置</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_PACKET_SEQNO_INDEX (1)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_PACKET_SEQNO_COMP_INDEX (2)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 文件信息帧中文件长度</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_FILE_NAME_LENGTH (80) <span class="comment">// 文件名长度</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YMODEM_FILE_SIZE_LENGTH (16) <span class="comment">// 文件大小长度</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 超时时间定义</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> NAK_TIMEOUT (5000) <span class="comment">// 5秒</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">ymodem</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">uint8_t</span> file_name[<span class="number">128</span>];                                      <span class="comment">// 需要接收的文件名</span></span><br><span class="line">    <span class="type">uint32_t</span> file_size;                                          <span class="comment">// 需要接收的文件大小（单位：字节）</span></span><br><span class="line">    <span class="type">uint8_t</span> buf[YMODEM_PACKET_1K_SIZE + YMODEM_PACKET_OVERHEAD]; <span class="comment">// 最大：帧命令 + 索引 + 索引反码 + 数据(128/1024) + CRC16校验码 = 1029字节</span></span><br><span class="line">    <span class="type">uint8_t</span> pack_cnt;                                            <span class="comment">// 下一包需要接收的索引号（0-FF之间循环）</span></span><br><span class="line">    <span class="type">uint8_t</span> info_done;                                           <span class="comment">// 收到文件信息</span></span><br><span class="line">    <span class="type">uint8_t</span> file_done;                                           <span class="comment">// 收到了文件数据</span></span><br><span class="line">    <span class="type">uint8_t</span> null_done;                                           <span class="comment">// 收到空文件信息</span></span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> app_addr;  <span class="comment">// app程序的起始地址</span></span><br><span class="line">    <span class="type">uint32_t</span> app_size;  <span class="comment">// app程序占用空间大小</span></span><br><span class="line">    <span class="type">uint32_t</span> flash_cnt; <span class="comment">// 已经写入到flash的字节数</span></span><br><span class="line">&#125; <span class="type">ymodem_t</span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="type">ymodem_t</span> *ymodem_ptr;</span><br><span class="line"></span><br><span class="line"><span class="type">int32_t</span> <span class="title function_">ymodem_receive</span><span class="params">(<span class="type">void</span>)</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* PROTOCOL_YMODEM_H_ */</span></span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>源文件</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ymodem.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;stdlib.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;iap.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;usart.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ============================================ 以下函数需要用户做适配 ============================================ //</span></span><br><span class="line"><span class="type">ymodem_t</span> ymodem =</span><br><span class="line">    &#123;</span><br><span class="line">        .file_name = &#123;<span class="number">0</span>&#125;,</span><br><span class="line">        .file_size = <span class="number">0</span>,</span><br><span class="line">        .buf = &#123;<span class="number">0</span>&#125;,</span><br><span class="line">        .pack_cnt = <span class="number">0</span>,</span><br><span class="line">        .info_done = <span class="number">0</span>,</span><br><span class="line">        .file_done = <span class="number">0</span>,</span><br><span class="line">        .null_done = <span class="number">0</span>,</span><br><span class="line"></span><br><span class="line">        .app_addr = <span class="number">0x08004000</span>, <span class="comment">// APP起始地址</span></span><br><span class="line">        .app_size = <span class="number">0x3C000</span>,    <span class="comment">// APP空间大小</span></span><br><span class="line">        .flash_cnt = <span class="number">0</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 发送一个字符</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint8_t</span> <span class="title function_">ymodem_send_byte</span><span class="params">(<span class="type">uint8_t</span> byte)</span></span><br><span class="line">&#123;</span><br><span class="line">    HAL_UART_Transmit(&amp;huart1, &amp;byte, <span class="number">1</span>, <span class="number">0xFF</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接收一个字符，成功返回0，失败返回1</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint8_t</span> <span class="title function_">ymodem_recv_byte</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">uint32_t</span> timeout)</span></span><br><span class="line">&#123;</span><br><span class="line">    HAL_UART_Receive(&amp;huart1, data, <span class="number">1</span>, timeout);</span><br><span class="line">    </span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ymodem写flash函数，将接收到的数据写到flash中</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint8_t</span> <span class="title function_">ymodem_flash_write</span><span class="params">(<span class="type">uint32_t</span> addr, <span class="type">uint8_t</span> *data, <span class="type">uint32_t</span> len)</span></span><br><span class="line">&#123;</span><br><span class="line">	stm32_flash_write(addr, data, len);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ymodem擦除app函数，擦除app区域flash</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint8_t</span> <span class="title function_">ymodem_flash_erase</span><span class="params">(<span class="type">uint32_t</span> addr, <span class="type">uint32_t</span> len)</span></span><br><span class="line">&#123;</span><br><span class="line">    stm32_flash_erase(addr, len);</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line"><span class="comment">// 调试信息输出</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint8_t</span> <span class="title function_">ymodem_printf</span><span class="params">(<span class="type">const</span> <span class="type">char</span> *format, ...)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ============================================ 以上函数需要用户做适配 ============================================ //</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// CRC校验函数</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint16_t</span> <span class="title function_">CRC16_Xmodem</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">uint32_t</span> len)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint8_t</span> i;</span><br><span class="line">    <span class="type">uint16_t</span> crc = <span class="number">0x0000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (len--)</span><br><span class="line">    &#123;</span><br><span class="line">        crc ^= (*data++ &lt;&lt; <span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (crc &amp; <span class="number">0x8000</span>)</span><br><span class="line">                crc = (crc &lt;&lt; <span class="number">1</span>) ^ <span class="number">0x1021</span>;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                crc = crc &lt;&lt; <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> crc;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ymodem 接收一个包的数据</span></span><br><span class="line"><span class="comment">// return:</span></span><br><span class="line"><span class="comment">//     -1: 接收失败（未收到 或 超时 或 错误命令 或 校验失败）</span></span><br><span class="line"><span class="comment">//      0：正常成功（收到完整数据length=128/1024 或 收到结束帧length=0 或 发送方要求停止length=-1）</span></span><br><span class="line"><span class="comment">//      1：主机要求取消传输</span></span><br><span class="line"><span class="type">static</span> <span class="type">int8_t</span> <span class="title function_">ymodem_recv_packet</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">uint32_t</span> *length, <span class="type">uint32_t</span> timeout)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint16_t</span> i, packet_size, crc;</span><br><span class="line">    <span class="type">uint8_t</span> c;</span><br><span class="line">    *length = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 接收第一个字符</span></span><br><span class="line">    <span class="keyword">if</span> (ymodem_recv_byte(&amp;c, timeout) != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 判断命令类型</span></span><br><span class="line">    <span class="keyword">switch</span> (c)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> YMODEM_SOH:</span><br><span class="line">        packet_size = YMODEM_PACKET_SIZE; <span class="comment">// 128byte</span></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> YMODEM_STX:</span><br><span class="line">        packet_size = YMODEM_PACKET_1K_SIZE; <span class="comment">// 1024byte</span></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> YMODEM_EOT:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">case</span> YMODEM_CA:</span><br><span class="line">        <span class="keyword">if</span> ((ymodem_recv_byte(&amp;c, timeout) == <span class="number">0</span>) &amp;&amp; (c == YMODEM_CA))</span><br><span class="line">        &#123;</span><br><span class="line">            *length = <span class="number">-1</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">case</span> YMODEM_ABORT1:</span><br><span class="line">    <span class="keyword">case</span> YMODEM_ABORT2:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果命令正确，继续接收够一包数据</span></span><br><span class="line">    <span class="comment">// 第一个字节</span></span><br><span class="line">    *data = c;</span><br><span class="line">    <span class="comment">// 剩下的字节</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">1</span>; i &lt; (packet_size + YMODEM_PACKET_OVERHEAD); i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (ymodem_recv_byte(data + i, timeout) != <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 校验索引和索引反码是否配对</span></span><br><span class="line">    <span class="keyword">if</span> (data[YMODEM_PACKET_SEQNO_INDEX] != ((data[YMODEM_PACKET_SEQNO_COMP_INDEX] ^ <span class="number">0xff</span>) &amp; <span class="number">0xff</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 校验CRC校验码是否正确(仅计算数据区域)</span></span><br><span class="line">    crc = CRC16_Xmodem(&amp;data[YMODEM_PACKET_HEADER_LEN], packet_size);</span><br><span class="line">    <span class="keyword">if</span> (((crc &gt;&gt; <span class="number">8</span>) != data[YMODEM_PACKET_HEADER_LEN + packet_size]) || ((crc &amp; <span class="number">0x00FF</span>) != data[YMODEM_PACKET_HEADER_LEN + packet_size + <span class="number">1</span>]))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 记录本包中有效数据长度</span></span><br><span class="line">    *length = packet_size;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 阻塞式接收，一直到接收完成后返回。</span></span><br><span class="line"><span class="comment">// return:</span></span><br><span class="line"><span class="comment">//      1: 发送方要求停止</span></span><br><span class="line"><span class="comment">//      0: 接收成功</span></span><br><span class="line"><span class="type">int32_t</span> <span class="title function_">ymodem_receive</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint32_t</span> packet_length = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 擦除flash</span></span><br><span class="line">    ymodem_flash_erase(ymodem.app_addr, ymodem.app_size);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发送字符C,开始接收</span></span><br><span class="line">    ymodem_send_byte(YMODEM_C);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 先清空缓冲区，重新收</span></span><br><span class="line">        <span class="built_in">memset</span>(ymodem.buf, <span class="number">0</span>, YMODEM_PACKET_1K_SIZE + YMODEM_PACKET_OVERHEAD);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 接收一包数据</span></span><br><span class="line">        <span class="keyword">switch</span> (ymodem_recv_packet(ymodem.buf, &amp;packet_length, NAK_TIMEOUT))</span><br><span class="line">        &#123;</span><br><span class="line">        <span class="comment">// 成功接收到一包数据</span></span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">            <span class="comment">// 根据收到的数据长度判断收到的是什么命令</span></span><br><span class="line">            <span class="keyword">switch</span> (packet_length)</span><br><span class="line">            &#123;</span><br><span class="line">            <span class="comment">// 发送方要求停止</span></span><br><span class="line">            <span class="keyword">case</span> <span class="number">-1</span>:</span><br><span class="line">                ymodem_send_byte(YMODEM_ACK);</span><br><span class="line">                <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">            <span class="comment">// 收到文件结束帧</span></span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                ymodem_send_byte(YMODEM_ACK);</span><br><span class="line">                ymodem_send_byte(YMODEM_C);</span><br><span class="line">                ymodem.file_done = <span class="number">1</span>;</span><br><span class="line">                ymodem.pack_cnt = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="comment">// 收到了正常的一包数据</span></span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="comment">// 判断索引是否正确</span></span><br><span class="line">                <span class="keyword">if</span> (ymodem.buf[YMODEM_PACKET_SEQNO_INDEX] != ymodem.pack_cnt)</span><br><span class="line">                &#123;</span><br><span class="line">                	ymodem_printf(<span class="string">&quot;index err, need_cnt=%x, real_cnt=%x \r\n&quot;</span>, ymodem.pack_cnt, ymodem.buf[YMODEM_PACKET_SEQNO_INDEX]);</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 索引不对，发送错误应答，重新接收本包数据</span></span><br><span class="line">                    ymodem_send_byte(YMODEM_NAK);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// 索引正确</span></span><br><span class="line">                    <span class="comment">// 第一包数据 和 文件数据结束之后的第一包数据 是文件信息</span></span><br><span class="line">                    <span class="keyword">if</span> ((ymodem.info_done == <span class="number">0</span>) || (ymodem.file_done == <span class="number">1</span>))</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="comment">// 非空文件名，是第一包数据</span></span><br><span class="line">                        <span class="keyword">if</span> (ymodem.buf[YMODEM_PACKET_HEADER_LEN] != <span class="number">0x00</span>)</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="comment">// 解析文件名：</span></span><br><span class="line">                            <span class="type">uint8_t</span> file_name_len = <span class="number">0</span>;</span><br><span class="line">                            <span class="keyword">for</span> (<span class="type">uint8_t</span> i = YMODEM_PACKET_HEADER_LEN; i &lt; YMODEM_FILE_NAME_LENGTH; i++)</span><br><span class="line">                            &#123;</span><br><span class="line">                                <span class="keyword">if</span> (ymodem.buf[i] == <span class="number">0x00</span>)</span><br><span class="line">                                &#123;</span><br><span class="line">                                    file_name_len = i - <span class="number">3</span>;</span><br><span class="line">                                    <span class="built_in">memcpy</span>(ymodem.file_name, &amp;(ymodem.buf[<span class="number">3</span>]), file_name_len);</span><br><span class="line">                                    ymodem.file_name[file_name_len] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">                                    ymodem_printf(<span class="string">&quot;file name = %s \r\n&quot;</span>, ymodem.file_name);</span><br><span class="line">                                    <span class="keyword">break</span>;</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">// 解析文件字节数：</span></span><br><span class="line">                            <span class="keyword">for</span> (<span class="type">uint8_t</span> i = YMODEM_PACKET_HEADER_LEN + file_name_len + <span class="number">1</span>; i &lt; YMODEM_PACKET_HEADER_LEN + file_name_len + <span class="number">1</span> + YMODEM_FILE_SIZE_LENGTH; i++)</span><br><span class="line">                            &#123;</span><br><span class="line">                                <span class="comment">// 遇到分隔符、非法字符</span></span><br><span class="line">                                <span class="keyword">if</span> ((ymodem.buf[i] == <span class="number">0x20</span>) || (ymodem.buf[i] &lt; <span class="string">&#x27;0&#x27;</span>) || (ymodem.buf[i] &gt; <span class="string">&#x27;9&#x27;</span>))</span><br><span class="line">                                &#123;</span><br><span class="line">                                    <span class="comment">// 打印一下信息</span></span><br><span class="line">                                    ymodem_printf(<span class="string">&quot;file size = %d byte.\r\n&quot;</span>, ymodem.file_size);</span><br><span class="line">                                    <span class="keyword">break</span>;</span><br><span class="line">                                &#125;</span><br><span class="line">                                <span class="keyword">else</span></span><br><span class="line">                                &#123;</span><br><span class="line">                                    ymodem.file_size = ymodem.file_size * <span class="number">10</span> + (ymodem.buf[i] - <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line"></span><br><span class="line">                            <span class="comment">// 解析成功</span></span><br><span class="line">                            ymodem.info_done = <span class="number">1</span>;</span><br><span class="line">                            ymodem.pack_cnt = <span class="number">1</span>;</span><br><span class="line">                            <span class="comment">// 发送应答开始接收数据</span></span><br><span class="line">                            ymodem_send_byte(YMODEM_ACK);</span><br><span class="line">                            ymodem_send_byte(YMODEM_C);</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">// 空文件名是最后一帧数据</span></span><br><span class="line">                        <span class="keyword">else</span></span><br><span class="line">                        &#123;</span><br><span class="line">                            ymodem_send_byte(YMODEM_ACK);</span><br><span class="line">                            <span class="comment">// <span class="doctag">TODO:</span>延时半秒</span></span><br><span class="line">                            ymodem_send_byte(YMODEM_ACK);</span><br><span class="line"></span><br><span class="line">                            ymodem.null_done = <span class="number">1</span>;</span><br><span class="line">                            <span class="keyword">break</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">// 文件数据</span></span><br><span class="line">                    <span class="keyword">else</span></span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="comment">// 将数据写入到flash</span></span><br><span class="line">                        ymodem_flash_write(ymodem.app_addr + ymodem.flash_cnt, &amp;(ymodem.buf[YMODEM_PACKET_HEADER_LEN]), packet_length);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 记录已经写入到flash中的字节数</span></span><br><span class="line">                        ymodem.flash_cnt = ymodem.flash_cnt + packet_length;</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 记录下一包应该收到的索引</span></span><br><span class="line">                        <span class="keyword">if</span> (ymodem.pack_cnt == <span class="number">0xFF</span>)</span><br><span class="line">                        &#123;</span><br><span class="line">                            ymodem.pack_cnt = <span class="number">0</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span></span><br><span class="line">                        &#123;</span><br><span class="line">                            ymodem.pack_cnt++;</span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// 发送应答，接收下一帧数据</span></span><br><span class="line">                        ymodem_send_byte(YMODEM_ACK);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="comment">// 主机要求取消传输</span></span><br><span class="line">        <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">            ymodem_send_byte(YMODEM_CA);</span><br><span class="line">            ymodem_send_byte(YMODEM_CA);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 接收失败（校验失败、接收超时、命令不对）</span></span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            <span class="comment">// 如果是在等待文件信息</span></span><br><span class="line">            <span class="keyword">if</span> (ymodem.info_done == <span class="number">0</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 重新发送C</span></span><br><span class="line">                ymodem_send_byte(YMODEM_C);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果是接收数据过程出错</span></span><br><span class="line">            <span class="keyword">if</span> ((ymodem.info_done == <span class="number">1</span>) &amp;&amp; (ymodem.file_done == <span class="number">0</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 发送错误应答，重新接收数据</span></span><br><span class="line">                ymodem_send_byte(YMODEM_NAK);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 如果是等待空文件信息出错</span></span><br><span class="line">            <span class="keyword">if</span> (ymodem.file_done == <span class="number">1</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 重新发送C</span></span><br><span class="line">                ymodem_send_byte(YMODEM_C);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 判断接收流程是否全部结束</span></span><br><span class="line">        <span class="keyword">if</span> (ymodem.null_done == <span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">        	ymodem_printf(<span class="string">&quot;recv over, need size=%d, real size=%d \r\n&quot;</span>, ymodem.file_size, ymodem.flash_cnt);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ol>
+<li>头文件可以完全不用动；</li>
+<li>源文件用户适配部分需要根据不同的单片机和接口进行修改。</li>
+</ol>
+<ul>
+<li>使用案例</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// init</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 如果需要进行OTA</span></span><br><span class="line">        <span class="keyword">if</span>(need_updata)</span><br><span class="line">        &#123;</span><br><span class="line">			<span class="comment">// 接收app程序</span></span><br><span class="line">            ymodem_receive();</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 跳转到app区域</span></span><br><span class="line">            jump_to_app();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+<div class="article-footer">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文由 imhaozi 编写，采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+
+</div>
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/">CanOpen</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/">Modbus</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">imhaozi</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B"><span class="toc-text">1. 交互流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-STM32%E7%A4%BA%E4%BE%8B"><span class="toc-text">2. STM32示例</span></a></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a></div></widget>
+</div></aside><div class='float-panel'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+
+
+<script type="text/javascript">
+  window.canonical = {"originalHost":null,"officialHosts":["localhost"],"encoded":""};
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+    tag_plugins: {
+      chat: Object.assign({"api":"https://siteinfo.listentothewind.cn/api/v1"}),
+    }
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"skip_search":null,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+    loading: `https://api.iconify.design/eos-icons:three-dots-loading.svg?color=%231cd0fd`,
+  };
+  const deps = {
+    jquery: `https://gcore.jsdelivr.net/npm/jquery@3.7/dist/jquery.min.js`,
+    marked: `https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js`,
+    lazyload: `/%5Bobject%20Object%5D`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = () => {
+          utils.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) => {
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index, 1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')) {
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function () {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      const maxRetry = 3;
+      let retryCount = 0;
+
+      return new Promise((resolve, reject) => {
+        const load = () => {
+          utils.onLoading?.(el);
+
+          let timedOut = false;
+          const timeout = setTimeout(() => {
+            timedOut = true;
+            console.warn('[request] 超时:', url);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject('请求超时');
+            } else {
+              setTimeout(load, 1000);
+            }
+          }, 5000);
+
+          fetch(url).then(resp => {
+            if (timedOut) return;
+            clearTimeout(timeout);
+
+            if (!resp.ok) throw new Error('响应失败');
+            return resp;
+          }).then(data => {
+            if (timedOut) return;
+            utils.onLoadSuccess?.(el);
+            callback(data);
+            resolve(data);
+          }).catch(err => {
+            clearTimeout(timeout);
+            console.warn('[request] 错误:', err);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject(err);
+            } else {
+              setTimeout(load, 1000);
+            }
+          });
+        };
+
+        load();
+      });
+    },
+    requestWithoutLoading: (url, options = {}, maxRetry = 2, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        let retryCount = 0;
+
+        const tryRequest = () => {
+          let timedOut = false;
+          const timer = setTimeout(() => {
+            timedOut = true;
+            if (++retryCount > maxRetry) reject('timeout');
+            else tryRequest();
+          }, timeout);
+
+          fetch(url, options)
+            .then(resp => {
+              clearTimeout(timer);
+              if (!resp.ok) throw new Error('bad response');
+              resolve(resp);
+            })
+            .catch(err => {
+              clearTimeout(timer);
+              if (++retryCount > maxRetry) reject(err);
+              else setTimeout(tryRequest, 500);
+            });
+        };
+
+        tryRequest();
+      });
+    },
+    /********************** requestAnimationFrame ********************************/
+    // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+    // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+    requestAnimationFrame: (fn) => {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+      }
+      window.requestAnimationFrame(fn)
+    },
+    dark: {},
+  };
+
+  // utils.dark.mode 当前模式 dark or light
+  // utils.dark.toggle() 暗黑模式触发器
+  // utils.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  utils.dark.method = {
+    toggle: new RunItem(),
+  };
+  utils.dark = Object.assign(utils.dark, {
+    push: utils.dark.method.toggle.push,
+  });
+</script>
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+<script async src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+    callback_loaded: (el) => {
+      el.classList.add('loaded');
+      const wrapper = el.closest('.lazy-box');
+      const icon = wrapper?.querySelector('.lazy-icon');
+      if (icon) icon.remove();
+    }
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+
+  window.wrapLazyloadImages = (container) => {
+    if (typeof container === 'string') {
+      container = document.querySelector(container);
+    }
+    if (!container) return;
+    
+    const images = container.querySelectorAll('img');
+    images.forEach((img) => {
+      if (img.classList.contains('lazy')) return;
+
+      const src = img.getAttribute('src');
+      if (!src) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'lazy-box';
+
+      const newImg = img.cloneNode();
+      newImg.removeAttribute('src');
+      newImg.setAttribute('data-src', src);
+      newImg.classList.add('lazy');
+
+      const icon = document.createElement('div');
+      icon.className = 'lazy-icon';
+      if (def.loading) {
+        icon.style.backgroundImage = `url("${def.loading}")`;
+      }
+
+      wrapper.appendChild(newImg);
+      wrapper.appendChild(icon);
+
+      img.replaceWith(wrapper);
+    });
+
+    // 通知 LazyLoad 更新
+    if (window.lazyLoadInstance?.update) {
+      window.lazyLoadInstance.update();
+    }
+  }
+  
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.33.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    // applyThemeToGiscus(theme)
+  }
+
+  // FIXME: 这会导致无法使用 preferred_color_scheme 以外的主题
+  const applyThemeToGiscus = (theme) => {
+    // theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+    utils.dark.mode = newTheme === 'auto' ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : newTheme;
+    utils.dark.method.toggle.start();
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    } else {
+      utils.dark.mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    utils.dark.method.toggle.start();
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"rating":{"js":"/js/services/rating.js","api":"https://star-vote.xaox.cc/api/rating"},"vote":{"js":"/js/services/vote.js","api":"https://star-vote.xaox.cc/api/vote"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"friends_and_posts":{"js":"/js/services/friends_and_posts.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"},"voice":{"js":"/js/plugins/voice.js"},"video":{"js":"/js/plugins/video.js"},"download-file":{"js":"/js/plugins/download-file.js"},"twikoo":{"js":"/js/services/twikoo_latest_comment.js"},"waline":{"js":"/js/services/waline_latest_comment.js"},"artalk":{"js":"/js/services/artalk_latest_comment.js"},"giscus":{"js":"/js/services/giscus_latest_comment.js"},"contributors":{"edit_this_page":{"_posts/":null,"wiki/stellar/":"https://github.com/xaoxuu/hexo-theme-stellar-docs/blob/main/"},"js":"/js/services/contributors.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else if (id == 'voice') {
+        ctx.voiceAudios = document.querySelectorAll('.voice>audio');
+        if (ctx.voiceAudios?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            createVoiceDom(ctx.voiceAudios);
+          });
+        }
+      } else if (id == 'video') {
+        ctx.videos = document.querySelectorAll('.video>video');
+        if (ctx.videos?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            videoEvents(ctx.videos);
+          });
+        }
+      } else if (id == 'download-file') {
+        ctx.files = document.querySelectorAll('.file');
+        if (ctx.files?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            downloadFileEvent(ctx.files);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+
+    // chat iphone time
+    let phoneTimes = document.querySelectorAll('.chat .status-bar .time');
+
+    if (phoneTimes.length > 0) {
+      NowTime();
+      var date = new Date();
+      var sec = date.getSeconds();
+      var firstAdjustInterval = setInterval(firstAdjustTime, 1000 * (60 - sec));
+    }
+
+    function firstAdjustTime() {
+      NowTime();
+      clearInterval(firstAdjustInterval);
+      setInterval(NowTime, 1000 * 60);
+    }
+
+    function NowTime() {
+      for (let i = 0; i < phoneTimes.length; ++i) {
+        var timeSpan = phoneTimes[i];
+        var date = new Date();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+        timeSpan.innerHTML = check(hour) + ":" + check(min);
+      }
+    };
+
+    function check(val) {
+      if (val < 10) {
+        return ("0" + val);
+      }
+      return (val);
+    }
+
+    // chat quote
+    const chat_quote_obverser = new IntersectionObserver((entries, observer) => {
+      entries.filter((entry) => { return entry.isIntersecting }).sort((a, b) => a.intersectionRect.y !== b.intersectionRect.y ? a.intersectionRect.y - b.intersectionRect.y : a.intersectionRect.x - b.intersectionRect.x).forEach((entry, index) => {
+          observer.unobserve(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('quote-blink');
+            setTimeout(() => {
+              entry.target.classList.remove('quote-blink');
+            }, 1000);
+          }, Math.max(100, 16) * (index + 1));
+        });
+    });
+
+    var chatQuotes = document.querySelectorAll(".chat .talk .quote");
+    chatQuotes.forEach((quote) => {
+      quote.addEventListener('click', function () {
+        var chatCellDom = document.getElementById("quote-" + quote.getAttribute("quotedCellTag"));
+        if (chatCellDom) {
+          var chatDiv = chatCellDom.parentElement;
+          var mid = chatDiv.clientHeight / 2;
+          var offsetTop = chatCellDom.offsetTop;
+          if (offsetTop > mid - chatCellDom.clientHeight / 2) {
+            chatDiv.scrollTo({
+              top: chatCellDom.offsetTop - mid + chatCellDom.clientHeight / 2,
+              behavior: "smooth"
+            });
+          } else {
+            chatDiv.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
+          }
+          chat_quote_obverser.observe(chatCellDom);
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error), .with-fancybox .atk-content img:not([atk-emoticon])';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const memos = document.getElementsByClassName('ds-memos');
+    if (memos != undefined && memos.length > 0) {
+      needFancybox = true;
+    }
+    const fancybox = document.getElementsByClassName('with-fancybox');
+    if (fancybox != undefined && fancybox.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>

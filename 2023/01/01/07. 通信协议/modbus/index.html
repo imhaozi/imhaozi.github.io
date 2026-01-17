@@ -1,0 +1,1319 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
+  
+  
+  <meta name="generator" content="Hexo 8.1.1">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title>Modbus - Blog</title>
+
+  
+    <meta name="description" content="Modbus协议解析和手写代码实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Modbus">
+<meta property="og:url" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="Modbus协议解析和手写代码实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/VSPD%E6%B7%BB%E5%8A%A0%E4%B8%B2%E5%8F%A3.jpg">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/%E8%99%9A%E6%8B%9F%E4%B8%B2%E5%8F%A3.jpg">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Poll%E9%80%9A%E8%AE%AF%E8%AE%BE%E7%BD%AE.jpg">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Poll%E8%BF%9E%E6%8E%A5%E4%B8%B2%E5%8F%A3.jpg">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Slave%E9%80%9A%E8%AE%AF%E8%AE%BE%E7%BD%AE.jpg">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Slave%E8%BF%9E%E6%8E%A5%E4%B8%B2%E5%8F%A3.jpg">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E6%95%88%E6%9E%9C.jpg">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/%E6%94%B6%E5%8F%91%E7%9A%84%E6%8A%A5%E6%96%87.jpg">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Poll%E8%BF%9E%E6%8E%A5TCP.jpg">
+<meta property="og:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Slave%E8%BF%9E%E6%8E%A5TCP.jpg">
+<meta property="article:published_time" content="2022-12-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-13T02:00:38.642Z">
+<meta property="article:author" content="imhaozi">
+<meta property="article:tag" content="Modbus">
+<meta property="article:tag" content="Uart">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/VSPD%E6%B7%BB%E5%8A%A0%E4%B8%B2%E5%8F%A3.jpg">
+  
+  
+  
+  <meta name="keywords" content="Uart,Modbus">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.33.1">
+
+
+  
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+  
+
+  
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"imhaozi","sameAs":[]},"dateCreated":"2023-01-01T00:00:00+08:00","dateModified":"2025-11-13T10:00:38+08:00","datePublished":"2023-01-01T00:00:00+08:00","description":"","headline":"Modbus","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/"},"publisher":{"@type":"Organization","name":"imhaozi","sameAs":[]},"url":"http://example.com/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/","keywords":"Uart, Modbus","image":[]}</script>
+  
+</head>
+<body>
+
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/avatar.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Blog</div><div class="sub normal cap">装备锻造中</div><div class="sub hover cap" style="opacity:0"> Write By imhaozi</div></a></div></header>
+
+<div class="nav-area">
+
+<nav class="menu dis-select"><a class="nav-item active" title="博客" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="文档" href="/wiki/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="关于" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/2024/10/08/05.%20%E5%BC%80%E6%BA%90%E5%BA%93/lvgl%E7%A7%BB%E6%A4%8D/"><span class="title">lvgl移植</span></a><a class="item title" href="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/"><span class="title">ros1小车diy记录</span></a><a class="item title" href="/2020/10/01/03.%20RTOS/rtthread_nano/"><span class="title">rtthread_nano移植</span></a><a class="item title" href="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/"><span class="title">v3s开发板制作</span></a><a class="item title" href="/2025/08/29/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/"><span class="title">博客搭建指南</span></a><a class="item title" href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/"><span class="title">充电桩国标协议解析</span></a><a class="item title" href="/2025/11/05/08.%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/"><span class="title">CanDBC文件制作</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/"><span class="title">Ymodem</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/"><span class="title">Modbus</span></a><a class="item title" href="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/"><span class="title">CanOpen</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/imhaozi" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/github.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://space.bilibili.com/330622220" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/bilibili.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/942ebbf1a4b91.svg"/></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/">通信协议</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2022-12-31T16:00:00.000Z">2023-01-01</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2025-11-13T02:00:38.642Z">2025-11-13</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>Modbus</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><h1 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h1><p>特点</p>
+<ul>
+<li>免费</li>
+<li>简单</li>
+<li>接口：Modbus协议只是一种规约，属于应用层的协议，因此不仅可以应用在串口（485&#x2F;232&#x2F;422），也可以在以太网、光纤、蓝牙、无线上传输。</li>
+</ul>
+<h1 id="2-Modbus-思路"><a href="#2-Modbus-思路" class="headerlink" title="2. Modbus 思路"></a>2. Modbus 思路</h1><h2 id="2-1-存储区分类"><a href="#2-1-存储区分类" class="headerlink" title="2.1 存储区分类"></a>2.1 存储区分类</h2><p>我们想要制定一个协议，我们首先要明确，协议的目的是为了数据传输。</p>
+<p>把数据分类：</p>
+<ul>
+<li>布尔数据（线圈，即只有开断的概念，也就是值只有0&#x2F;1）</li>
+<li>非布尔数据（寄存器，即各种不同的数据，一般为16位）</li>
+</ul>
+<p>这些数据按照输入还是输出，还可以继续分类。</p>
+<ul>
+<li>输入意味着该存储区里的值必须由外部设备接入，是<code>只读</code>的。</li>
+<li>输出表示输出结果给外部设备，是<code>可读可写</code>的。</li>
+</ul>
+<p>因此，进一步分类之后得到：</p>
+<table>
+<thead>
+<tr>
+<th align="center">序号</th>
+<th align="center">读写</th>
+<th align="center">存储类型</th>
+<th align="center">存储区名称</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">只读</td>
+<td align="center">线圈</td>
+<td align="center">输入线圈</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">读写</td>
+<td align="center">线圈</td>
+<td align="center">输出线圈</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">只读</td>
+<td align="center">寄存器</td>
+<td align="center">输入寄存器</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">读写</td>
+<td align="center">寄存器</td>
+<td align="center">保持寄存器</td>
+</tr>
+</tbody></table>
+<h2 id="2-2-存储区代号"><a href="#2-2-存储区代号" class="headerlink" title="2.2 存储区代号"></a>2.2 存储区代号</h2><p>Modbus 用数字给这些存储区取了一个代号，就有了下面的存储区代号的规定：</p>
+<table>
+<thead>
+<tr>
+<th align="center">序号</th>
+<th align="center">读写</th>
+<th align="center">存储类型</th>
+<th align="center">存储区名称</th>
+<th align="center">存储区代号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">只读</td>
+<td align="center">线圈</td>
+<td align="center">输入线圈</td>
+<td align="center">1区</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">读写</td>
+<td align="center">线圈</td>
+<td align="center">输出线圈</td>
+<td align="center">0区</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">只读</td>
+<td align="center">寄存器</td>
+<td align="center">输入寄存器</td>
+<td align="center">3区</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">读写</td>
+<td align="center">寄存器</td>
+<td align="center">保持寄存器</td>
+<td align="center">4区</td>
+</tr>
+</tbody></table>
+<h2 id="2-3-存储区范围"><a href="#2-3-存储区范围" class="headerlink" title="2.3 存储区范围"></a>2.3 存储区范围</h2><p>Modbus 规定，每个存储区的最大范围是 65536。那么，访问一个数据，我们需要知道它在哪个存储区、它在这个存储区的索引是什么。</p>
+<p>这里我们按照绝对地址、相对地址的概念来理解：</p>
+<p>我们把：</p>
+<ul>
+<li><code>存储区编号</code> + <code>地址索引</code> 理解为<strong>绝对地址</strong>。</li>
+<li>后面的地址索引 理解为<strong>相对地址</strong>。</li>
+</ul>
+<p>那么对于 Modbus：绝对地址 &#x3D; 区号 + 相对地址</p>
+<hr>
+<table>
+<thead>
+<tr>
+<th align="center">存储区名称</th>
+<th align="center">存储区代号</th>
+<th align="center">绝对地址范围</th>
+<th align="center">相对地址范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">输入线圈</td>
+<td align="center">1区</td>
+<td align="center">100001 - 165536</td>
+<td align="center">0 - 65535</td>
+</tr>
+<tr>
+<td align="center">输出线圈</td>
+<td align="center">0区</td>
+<td align="center">000001 - 065536</td>
+<td align="center">0 - 65535</td>
+</tr>
+<tr>
+<td align="center">输入寄存器</td>
+<td align="center">3区</td>
+<td align="center">300001 - 365536</td>
+<td align="center">0 - 65535</td>
+</tr>
+<tr>
+<td align="center">保持寄存器</td>
+<td align="center">4区</td>
+<td align="center">400001 - 465535</td>
+<td align="center">0 - 65535</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>以保持型寄存器为例，可以看到，第一个绝对地址是400001，这个地方不是400000，这个是由 Modbus 规约决定的，其它存储区也是类似。</p>
+</blockquote>
+<p>但在实际使用中，我们一般用不了这么多地址，一般情况下，10000 以内就已经足够我们使用了，因此，为了方便起见，我们有一种短的地址模型，如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">存储区名称</th>
+<th align="center">存储区代号</th>
+<th align="center">绝对地址范围</th>
+<th align="center">相对地址范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">输入线圈</td>
+<td align="center">1区</td>
+<td align="center">10001 - 19999</td>
+<td align="center">0 - 9998</td>
+</tr>
+<tr>
+<td align="center">输出线圈</td>
+<td align="center">0区</td>
+<td align="center">00001 - 09999</td>
+<td align="center">0 - 9998</td>
+</tr>
+<tr>
+<td align="center">输入寄存器</td>
+<td align="center">3区</td>
+<td align="center">30001 - 39999</td>
+<td align="center">0 - 9998</td>
+</tr>
+<tr>
+<td align="center">保持寄存器</td>
+<td align="center">4区</td>
+<td align="center">40001 - 49999</td>
+<td align="center">0 - 9998</td>
+</tr>
+</tbody></table>
+<h2 id="2-4-功能码"><a href="#2-4-功能码" class="headerlink" title="2.4 功能码"></a>2.4 功能码</h2><p>我们的初衷是，传输数据，即读取或者写入数据。</p>
+<p>我们根据数据的类型已经分好区域了，只需对其读写就好了。那么，我们怎么表示我们是要读还是写呢？这个动作就是功能码。好了，继续分类。</p>
+<p>数据（存储区）有四种，读写这个动作是两种，但是有两种数据是只读的，没有写动作。因此一共有六种行为。</p>
+<table>
+<thead>
+<tr>
+<th align="center">行为序号</th>
+<th align="center">行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">读取输入线圈</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">读取输出线圈</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">读取输入寄存器</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">读取保持寄存器</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td align="center">写入输出线圈</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td align="center">写入保持寄存器</td>
+</tr>
+</tbody></table>
+<p>但是，Modbus 规约将写入输出线圈和写入保持寄存器这 2 种行为，又进一步做了细分，包括写入单个和写入多个，因此原来的 6 种行为就变成了 8 种行为，同时给每种行为设置一个代号，就形成了下表所示的功能码列表：</p>
+<table>
+<thead>
+<tr>
+<th align="center">功能码</th>
+<th align="center">功能说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0x01</td>
+<td align="center">读取输出线圈</td>
+</tr>
+<tr>
+<td align="center">0x02</td>
+<td align="center">读取输入线圈</td>
+</tr>
+<tr>
+<td align="center">0x03</td>
+<td align="center">读取保持寄存器</td>
+</tr>
+<tr>
+<td align="center">0x04</td>
+<td align="center">读取输入寄存器</td>
+</tr>
+<tr>
+<td align="center">0x05</td>
+<td align="center">写入单个线圈</td>
+</tr>
+<tr>
+<td align="center">0x06</td>
+<td align="center">写入单个寄存器</td>
+</tr>
+<tr>
+<td align="center">0x0F</td>
+<td align="center">写入多个线圈</td>
+</tr>
+<tr>
+<td align="center">0x10</td>
+<td align="center">写入多个寄存器</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>Modbus 规约中的功能码其实不止这 8 个，还有一些功能码是用于诊断或异常码，但是一般很少使用，这 8 种功能码是最主要的核心功能码。</p>
+</blockquote>
+<h2 id="2-5-协议分类"><a href="#2-5-协议分类" class="headerlink" title="2.5 协议分类"></a>2.5 协议分类</h2><p>Modbus 严格来说，是一个标准化的规约，而不是一个具体协议。我们常说的设备A和设备B之间通过 Modbus 协议来通信，这句话其实是不严谨的。</p>
+<p>Modbus 规约上有三种不同的协议：</p>
+<ul>
+<li>ModbusRtu</li>
+<li>ModbusAscii</li>
+<li>ModbusTcp</li>
+</ul>
+<p>一般来说，ModbusRtu 和 ModbusAscii 是运行在串口上的协议，ModbusTcp 是运行是以太网上的协议，但是这并非绝对的，我们也可以将 ModbusRtu、ModbusAscii 运行在以太网或光纤上使用，同样的，在串口网络里，我们也可以使用 ModbusTcp 的协议，因为协议只是一种规范，并不限制通信介质。</p>
+<h2 id="2-6-报文格式"><a href="#2-6-报文格式" class="headerlink" title="2.6 报文格式"></a>2.6 报文格式</h2><ul>
+<li><p>ModbusRtu 的报文格式如下（经常需要自己实现）：</p>
+<ul>
+<li>第一部分：从站地址，占1个字节</li>
+<li>第二部分：功能码，占1个字节</li>
+<li>第三部分：数据部分，每个数据2字节（高字节在前）</li>
+<li>第四部分：校验部分，CRC校验，占2个字节（校验前面的所有数据，结果低字节在前）</li>
+</ul>
+</li>
+<li><p>ModbusAscii 的报文格式如下：</p>
+<ul>
+<li>第一部分：开始字符（:）</li>
+<li>第二部分：从站地址，占2个字节</li>
+<li>第三部分：功能码，占2个字节</li>
+<li>第四部分：数据部分，占N个字节</li>
+<li>第五部分：校验部分，LRC校验，占2个字节</li>
+<li>第六部分：结束字符（CR LF）</li>
+</ul>
+</li>
+<li><p>ModbusTcp 的报文格式如下：</p>
+<ul>
+<li>第一部分：事务处理标识符，占2个字节</li>
+<li>第二部分：协议标识符，占2个字节</li>
+<li>第三部分：长度，占2个字节</li>
+<li>第四部分：单元标识符，占1个字节</li>
+<li>第五部分：功能码，占1个字节</li>
+<li>第六部分：数据部分，占N个字节</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-协议补充"><a href="#3-协议补充" class="headerlink" title="3. 协议补充"></a>3. 协议补充</h1><p>前面 Modbus 协议建立的过程中，没有丝毫提及通信应该用几根线、用什么样的线。</p>
+<p>可以看出，跟串口、IIC、SPI、CAN之类的协议不同，这里定义的只是一种<strong>消息结构</strong>。而不管你是用哪种方式通信的。</p>
+<h2 id="3-1-主从模式"><a href="#3-1-主从模式" class="headerlink" title="3.1 主从模式"></a>3.1 主从模式</h2><p>前面可以看出，数据收发需要<code>一个节点（主节点）</code>主动向<code>另一个节点（从节点）</code>发起请求，然后从节点进行回复。这种数据收发模式叫<strong>单播模式</strong>。</p>
+<p>也可以，<code>主节点</code>向<code>所有从节点</code>发送请求，从节点无需发送应答，只需要执行相应的动作就可以了。这种模式叫<strong>广播模式</strong>。</p>
+<blockquote>
+<p>一个网络中可以有一个主节点、一个或多个从节点。</p>
+</blockquote>
+<h2 id="3-2-ADU、PDU"><a href="#3-2-ADU、PDU" class="headerlink" title="3.2 ADU、PDU"></a>3.2 ADU、PDU</h2><p>每次 Modbus 发送的报文为：地址域 + 功能码 + 数据 + 差错校验</p>
+<ul>
+<li>地址域：要发送给的从节点（0 广播地址，1-247 从节点地址，248-255 保留地址）。</li>
+<li>功能码：要执行的动作。前面表格里说过了。</li>
+<li>数据域：要发送的数据。</li>
+<li>校验码：校验。</li>
+</ul>
+<p>其中：</p>
+<p>ADU（应用数据单元）&#x3D; 地址域 + 功能码 + 数据 + 差错校验</p>
+<p>PDU（协议数据单元）&#x3D; 功能码 + 数据</p>
+<p>另外，ADU 的最大长度为：256 字节。</p>
+<p>而 PDU 的最大长度要看使用的通信方式。</p>
+<ul>
+<li>如果使用RS232、RS485通信</li>
+</ul>
+<p>ADU &#x3D; 地址域（1字节）+ PDU（）+ CRC（2字节）&#x3D; 256字节。</p>
+<p>即 PDU 最大为 253 字节。</p>
+<ul>
+<li>如果使用以太网口通信，其是再TCP&#x2F;IP协议中又封装了一层 modbus 协议。</li>
+</ul>
+<p>ADU &#x3D; MBAP（7字节）+ PDU（）&#x3D; 256字节。</p>
+<p>即 PDU 最大为 249 字节。</p>
+<h1 id="4-手写代码实现"><a href="#4-手写代码实现" class="headerlink" title="4. 手写代码实现"></a>4. 手写代码实现</h1><p>实际使用中，在linux编程中，如果使用modbus，基本上都可以直接使用现成的库。</p>
+<p>而如果使用单片机进行通信，一般用的最多的是<strong>ModbusRtu</strong>，因为串口（485）是比较经济的通信方式，同时为了方便，大多都是对寄存器数据的操作。</p>
+<p>这里需要自己可以实现此种通信方式，主要需要实现以下接口（从发送和接收方都需要会实现）：</p>
+<ul>
+<li>写单个寄存器</li>
+<li>读多个寄存器</li>
+</ul>
+<p><strong>读寄存器命令：</strong></p>
+<ol>
+<li>字节0：从机地址</li>
+<li>字节1：命令，读为0x04</li>
+<li>字节2-3：要读的寄存器地址，高字节在前</li>
+<li>字节4-5：要读的寄存器个数</li>
+<li>字节6-7：CRC校验码（低字节在前）</li>
+</ol>
+<p><strong>响应读寄存器命令：</strong></p>
+<ol>
+<li>字节0：从机地址</li>
+<li>字节1：功能码，还是04（原样回复）</li>
+<li>字节2：数据长度（一个寄存器16位，则长度为 寄存器个数*2）</li>
+<li>字节3-4：寄存器1数据</li>
+<li>字节5-6：寄存器2数据</li>
+<li>…</li>
+<li>最后两个字节数据：CRC</li>
+</ol>
+<p><strong>写寄存器命令：</strong></p>
+<ol>
+<li>字节0：从机地址</li>
+<li>字节1：命令，写为0x06</li>
+<li>字节2-3：要写的寄存器地址，高字节在前</li>
+<li>字节4-5：要写的寄存器值，高字节在前</li>
+<li>字节6-7：CRC校验码（低字节在前）</li>
+</ol>
+<p><strong>响写寄存器命令：</strong></p>
+<ol>
+<li>字节0：从机地址</li>
+<li>字节1：命令，写为0x06</li>
+<li>字节2-3：写的寄存器地址，高字节在前</li>
+<li>字节4-5：写的寄存器值，高字节在前</li>
+<li>字节6-7：CRC校验码（低字节在前）</li>
+</ol>
+<h2 id="4-1-发送方（读-或-写的一方）"><a href="#4-1-发送方（读-或-写的一方）" class="headerlink" title="4.1 发送方（读 或 写的一方）"></a>4.1 发送方（读 或 写的一方）</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;mlcp.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;mlcp_def.h&quot;</span>   <span class="comment">// modbus地址定义</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span>     <span class="comment">// 内存比较函数</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Tool.h&quot;</span>       <span class="comment">// 日志输出接口</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;serial.h&quot;</span>     <span class="comment">// 串口接口</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ==================================================== modbus操作接口 ==================================================== //</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">enum</span> _<span class="title">MODBUS_STATUS</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    MODBUS_OK = <span class="number">0x01</span>,</span><br><span class="line">    MODBUS_SEND_FAILED = <span class="number">0x01</span>,</span><br><span class="line">    MODBUS_RECV_TIMEOUT = <span class="number">0x02</span>,</span><br><span class="line">    MODBUS_ADDR_ERROR = <span class="number">0x03</span>,</span><br><span class="line">    MODBUS_CRC_ERROR = <span class="number">0x04</span>,</span><br><span class="line">&#125; MODBUS_STATUS;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 计算modbus校验码</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint16_t</span> <span class="title function_">modbus_crc16</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">uint8_t</span> len)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint16_t</span> crc = <span class="number">0xffff</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">uint8_t</span> num = <span class="number">0</span>; num &lt; len; num++)</span><br><span class="line">    &#123;</span><br><span class="line">        crc = (*data++) ^ crc;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">uint8_t</span> x = <span class="number">0</span>; x &lt; <span class="number">8</span>; x++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (crc &amp; <span class="number">0x0001</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                crc = crc &gt;&gt; <span class="number">1</span>;</span><br><span class="line">                crc = crc ^ <span class="number">0xA001</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                crc = crc &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> crc;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读寄存器操作</span></span><br><span class="line"><span class="comment">// reg_addr: 要读的寄存器地址。reg_num: 要读的寄存器数量。reg_data: 读到的寄存器值</span></span><br><span class="line"><span class="type">static</span> MODBUS_STATUS <span class="title function_">modbus_read_reg</span><span class="params">(<span class="type">uint16_t</span> reg_addr, <span class="type">uint16_t</span> reg_num, <span class="type">uint16_t</span> *reg_data)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 先清空缓冲区中的数据</span></span><br><span class="line">    <span class="type">uint8_t</span> temp_tx_buf[<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">while</span> (SerialReceive(MLCP_UART_PORT, temp_tx_buf, <span class="number">1</span>) &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发送读寄存器命令</span></span><br><span class="line">    <span class="type">uint8_t</span> tx_message[<span class="number">8</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    tx_message[<span class="number">0</span>] = DEFAULT_MLCP_ADDR;      <span class="comment">// 下位机地址</span></span><br><span class="line">    tx_message[<span class="number">1</span>] = <span class="number">0x03</span>;                   <span class="comment">// 读数据</span></span><br><span class="line">    tx_message[<span class="number">2</span>] = (reg_addr &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// 寄存器地址（高位）</span></span><br><span class="line">    tx_message[<span class="number">3</span>] = (reg_addr &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// 寄存器地址（低位）</span></span><br><span class="line">    tx_message[<span class="number">4</span>] = (reg_num &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>;  <span class="comment">// 寄存器个数（高位）</span></span><br><span class="line">    tx_message[<span class="number">5</span>] = (reg_num &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>;  <span class="comment">// 寄存器个数（低位）</span></span><br><span class="line">    <span class="type">uint16_t</span> crc16_tx = modbus_crc16(tx_message, <span class="number">6</span>);</span><br><span class="line">    tx_message[<span class="number">6</span>] = (crc16_tx &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// CRC校验码（低位）</span></span><br><span class="line">    tx_message[<span class="number">7</span>] = (crc16_tx &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// CRC校验码（高位）</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发送数据</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0</span> != SerialSend(MLCP_UART_PORT, tx_message, <span class="number">8</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> MODBUS_SEND_FAILED;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待返回数据（返回的数据会存到缓冲区中）</span></span><br><span class="line">    task_delay(<span class="number">30</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从缓冲区中接收返回的数据，数据长度 = 设备地址1 + 功能码1 + 数据长度1 + 返回数据reg_num*2 + CRC校验2 = 5 + reg_num * 2</span></span><br><span class="line">    <span class="type">uint16_t</span> recv_data_len = <span class="number">5</span> + reg_num * <span class="number">2</span>;</span><br><span class="line">    <span class="type">uint8_t</span> rx_message[<span class="number">100</span>] = &#123;<span class="number">0</span>&#125;;      <span class="comment">// 串口缓冲区也就这么大，最大支持47个寄存器</span></span><br><span class="line">    <span class="keyword">if</span> (recv_data_len != SerialReceive(MLCP_UART_PORT, rx_message, recv_data_len))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> MODBUS_RECV_TIMEOUT;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ((rx_message[<span class="number">0</span>] == DEFAULT_MLCP_ADDR) &amp;&amp; <span class="comment">// 从机地址正确</span></span><br><span class="line">        (rx_message[<span class="number">1</span>] == <span class="number">0x03</span>) &amp;&amp;              <span class="comment">// 功能码正确</span></span><br><span class="line">        (rx_message[<span class="number">2</span>] == (reg_num * <span class="number">2</span>)))       <span class="comment">// 数据长度正确</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 计算CRC</span></span><br><span class="line">        <span class="type">uint16_t</span> crc_rx = modbus_crc16(rx_message, reg_num * <span class="number">2</span> + <span class="number">3</span>);</span><br><span class="line">        <span class="type">uint8_t</span> crc_rx_h = crc_rx &gt;&gt; <span class="number">8</span>;</span><br><span class="line">        <span class="type">uint8_t</span> crc_rx_l = crc_rx &amp; <span class="number">0xFF</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> ((rx_message[reg_num * <span class="number">2</span> + <span class="number">3</span>] == crc_rx_l) &amp;&amp; (rx_message[reg_num * <span class="number">2</span> + <span class="number">3</span> + <span class="number">1</span>] == crc_rx_h))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 数据，高字节在前</span></span><br><span class="line">            <span class="type">uint8_t</span> i = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (i &lt; reg_num)</span><br><span class="line">            &#123;</span><br><span class="line">                reg_data[i] = ((rx_message[<span class="number">3</span> + i * <span class="number">2</span>] &lt;&lt; <span class="number">8</span>) | (rx_message[<span class="number">3</span> + i * <span class="number">2</span> + <span class="number">1</span>]));</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">return</span> MODBUS_OK;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> MODBUS_CRC_ERROR;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> MODBUS_ADDR_ERROR;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 写寄存器操作</span></span><br><span class="line"><span class="comment">// reg_addr: 要写的寄存器地址。reg_data: 要写入到寄存器的值</span></span><br><span class="line"><span class="type">static</span> MODBUS_STATUS <span class="title function_">modbus_write_reg</span><span class="params">(<span class="type">uint16_t</span> reg_addr, <span class="type">uint16_t</span> reg_data)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 先清空缓冲区中的数据</span></span><br><span class="line">    <span class="type">uint8_t</span> temp_tx_buf[<span class="number">1</span>];</span><br><span class="line">    <span class="keyword">while</span> (SerialReceive(MLCP_UART_PORT, temp_tx_buf, <span class="number">1</span>) &gt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发送写寄存器命令</span></span><br><span class="line">    <span class="type">uint8_t</span> tx_message[<span class="number">8</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    tx_message[<span class="number">0</span>] = DEFAULT_MLCP_ADDR;      <span class="comment">// 下位机地址</span></span><br><span class="line">    tx_message[<span class="number">1</span>] = <span class="number">0x06</span>;                   <span class="comment">// 写数据</span></span><br><span class="line">    tx_message[<span class="number">2</span>] = (reg_addr &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// 寄存器地址（高位）</span></span><br><span class="line">    tx_message[<span class="number">3</span>] = (reg_addr &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// 寄存器地址（低位）</span></span><br><span class="line">    tx_message[<span class="number">4</span>] = (reg_data &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// 待写入寄存器的值（高位）</span></span><br><span class="line">    tx_message[<span class="number">5</span>] = (reg_data &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// 待写入寄存器的值（低位）</span></span><br><span class="line">    <span class="type">uint16_t</span> crc16_tx = modbus_crc16(tx_message, <span class="number">6</span>);</span><br><span class="line">    tx_message[<span class="number">6</span>] = (crc16_tx &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// CRC校验码（低位）</span></span><br><span class="line">    tx_message[<span class="number">7</span>] = (crc16_tx &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>; <span class="comment">// CRC校验码（高位）</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发送数据</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0</span> != SerialSend(MLCP_UART_PORT, tx_message, <span class="number">8</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> MODBUS_SEND_FAILED;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待返回数据（返回的数据会存到缓冲区中）</span></span><br><span class="line">    task_delay(<span class="number">30</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从缓冲区中接收返回的数据，数据长度 = 设备地址1 + 功能码1 + 数据长度1 + 返回数据reg_num*2 + CRC校验2 = 5 + reg_num * 2</span></span><br><span class="line">    <span class="type">uint8_t</span> rx_message[<span class="number">10</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">8</span> != SerialReceive(MLCP_UART_PORT, rx_message, <span class="number">8</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> MODBUS_RECV_TIMEOUT;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 写数据时，发送的数据和返回的数据相同</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0</span> == <span class="built_in">memcmp</span>(tx_message, rx_message, <span class="number">8</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> MODBUS_OK;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> MODBUS_ADDR_ERROR;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ==================================================== app应用读取接口 ==================================================== //</span></span><br><span class="line"></span><br><span class="line"><span class="type">mlcp_data_t</span> mlcp;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">mlcp_read_version</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    MODBUS_STATUS status;</span><br><span class="line">    <span class="type">uint16_t</span> table[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    status = modbus_read_reg(SOFTWARE_VERSION_REGISTER, <span class="number">1</span>, table);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (MODBUS_OK == status)</span><br><span class="line">    &#123;</span><br><span class="line">        mlcp.version = table[<span class="number">0</span>];</span><br><span class="line">        Log_DebugOut(<span class="string">&quot;[MLCP] mlcp version is %d \r\n&quot;</span>, mlcp.version);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        Log_DebugOut(<span class="string">&quot;[MLCP] mlcp read version failed, status = %d \r\n&quot;</span>, status);</span><br><span class="line">        mlcp.err_count++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">mlcp_read_status</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    MODBUS_STATUS status;</span><br><span class="line">    <span class="type">uint16_t</span> table[<span class="number">33</span>];</span><br><span class="line"></span><br><span class="line">    status = modbus_read_reg(WORKING_MODE_REGISTER, <span class="number">33</span>, table);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (MODBUS_OK == status)</span><br><span class="line">    &#123;</span><br><span class="line">        mlcp.now_work_mode = (MLCP_MODE)table[<span class="number">0</span>]; <span class="comment">// 当前工作状态</span></span><br><span class="line">        mlcp.error_info = table[<span class="number">1</span>];               <span class="comment">// 故障信息</span></span><br><span class="line">        mlcp.warnning_info = table[<span class="number">2</span>];            <span class="comment">// 预警信息</span></span><br><span class="line">        mlcp.temp_in = (<span class="type">float</span>)table[<span class="number">3</span>] / <span class="number">10</span> - <span class="number">40</span>;   <span class="comment">// 进液温度</span></span><br><span class="line">        mlcp.temp_out = (<span class="type">float</span>)table[<span class="number">4</span>] / <span class="number">10</span> - <span class="number">40</span>;  <span class="comment">// 出液温度</span></span><br><span class="line">        mlcp.temp_env = (<span class="type">float</span>)table[<span class="number">6</span>] / <span class="number">10</span> - <span class="number">40</span>;  <span class="comment">// 环境温度</span></span><br><span class="line">        mlcp.press_in = table[<span class="number">20</span>];                <span class="comment">// 进液压力</span></span><br><span class="line">        mlcp.press_out = table[<span class="number">21</span>];               <span class="comment">// 出液压力</span></span><br><span class="line">        mlcp.fan1_speed = table[<span class="number">23</span>];              <span class="comment">// 风机1转速</span></span><br><span class="line">        mlcp.fan2_speed = table[<span class="number">24</span>];              <span class="comment">// 风机2转速</span></span><br><span class="line">        mlcp.fan3_speed = table[<span class="number">25</span>];              <span class="comment">// 风机3转速</span></span><br><span class="line">        mlcp.fan4_speed = table[<span class="number">26</span>];              <span class="comment">// 风机4转速</span></span><br><span class="line">        mlcp.fan5_speed = table[<span class="number">27</span>];              <span class="comment">// 风机5转速</span></span><br><span class="line">        mlcp.fan6_speed = table[<span class="number">28</span>];              <span class="comment">// 风机6转速</span></span><br><span class="line">        mlcp.fan7_speed = table[<span class="number">29</span>];              <span class="comment">// 风机7转速</span></span><br><span class="line">        mlcp.io_input_status = table[<span class="number">32</span>];         <span class="comment">// IO输入状态</span></span><br><span class="line"></span><br><span class="line">        mlcp.err_count = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        Log_DebugOut(<span class="string">&quot;[MLCP] mlcp read status failed, status = %d \r\n&quot;</span>, status);</span><br><span class="line">        mlcp.err_count++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">mlcp_write_mode</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 如果目标模式和实际模式不一致</span></span><br><span class="line">    <span class="keyword">if</span> (mlcp.now_work_mode != mlcp.need_work_mode)</span><br><span class="line">    &#123;</span><br><span class="line">        MLCP_MODE set_mode = SHUTDOWN_MODE;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果当前没有故障</span></span><br><span class="line">        <span class="keyword">if</span> (mlcp.error_info == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            set_mode = (<span class="type">uint16_t</span>)(mlcp.need_work_mode);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 写 </span></span><br><span class="line">        <span class="keyword">if</span> (MODBUS_OK != modbus_write_reg(WORK_MODE_REGISTER, set_mode))</span><br><span class="line">        &#123;</span><br><span class="line">            mlcp.err_count++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 风机转速</span></span><br><span class="line">    <span class="keyword">if</span> (MODBUS_OK != modbus_write_reg(FAND_SPEED_CTRL_REGISTER, mlcp.need_fan_speed))</span><br><span class="line">    &#123;</span><br><span class="line">        mlcp.err_count++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">mlcp_offline_recovery</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 大概断开十几秒</span></span><br><span class="line">    <span class="keyword">if</span> (mlcp.err_count &gt;= <span class="number">50</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 防止溢出</span></span><br><span class="line">        mlcp.err_count = <span class="number">50</span>;</span><br><span class="line"></span><br><span class="line">        SerialClose(MLCP_UART_PORT);</span><br><span class="line"></span><br><span class="line">        task_delay(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        SerialOpen(MLCP_UART_PORT, <span class="number">115200</span>);</span><br><span class="line"></span><br><span class="line">        mlcp.now_work_mode = ERROR_MODE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// modbus读取任务</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">mlcp_task_func</span><span class="params">(<span class="type">void</span> *arg)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 打开串口</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="number">0</span> == SerialOpen(MLCP_UART_PORT, <span class="number">115200</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            Log_DebugOut(<span class="string">&quot;[MLCP] mlcp open uart%d success! \r\n&quot;</span>, MLCP_UART_PORT);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Log_DebugOut(<span class="string">&quot;[MLCP] mlcp open uart%d failed! \r\n&quot;</span>, MLCP_UART_PORT);</span><br><span class="line">            task_delay(<span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取版本信息</span></span><br><span class="line">    mlcp_read_version();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (;;)</span><br><span class="line">    &#123;</span><br><span class="line">        task_delay(<span class="number">200</span>);</span><br><span class="line">        </span><br><span class="line">        mlcp_read_status();</span><br><span class="line"></span><br><span class="line">        task_delay(<span class="number">200</span>);</span><br><span class="line">        </span><br><span class="line">        mlcp_write_mode();</span><br><span class="line"></span><br><span class="line">        task_delay(<span class="number">200</span>);</span><br><span class="line"></span><br><span class="line">        mlcp_offline_recovery();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">mlcp_init</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">memset</span>(&amp;mlcp, <span class="number">0</span>, <span class="keyword">sizeof</span>(mlcp));</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">task_struct</span> *<span class="title">mlcp_task</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    mlcp_task = task_create(mlcp_task_func,</span><br><span class="line">                            <span class="string">&quot;mlcp_task&quot;</span>,</span><br><span class="line">                            (<span class="type">uint16_t</span>)<span class="number">4096</span>,</span><br><span class="line">                            <span class="literal">NULL</span>,</span><br><span class="line">                            (<span class="type">unsigned</span> <span class="type">long</span>)<span class="number">5</span>);</span><br><span class="line">    <span class="keyword">if</span> (mlcp_task != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        Log_DebugOut(<span class="string">&quot;[MLCP] Creat mlcp_task success! \r\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        Log_DebugOut(<span class="string">&quot;[MLCP] Creat mlcp_task faild  %08x ! \r\n&quot;</span>, (<span class="type">uint32_t</span>)mlcp_task);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置当前工作模式</span></span><br><span class="line"><span class="type">uint8_t</span> <span class="title function_">mlcp_set_work_status</span><span class="params">(MLCP_MODE mode)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> ((mode == SHUTDOWN_MODE) || (mode == WORKING_MODE))</span><br><span class="line">    &#123;</span><br><span class="line">        mlcp.need_work_mode = mode;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取当前工作模式</span></span><br><span class="line">MLCP_MODE <span class="title function_">mlcp_get_work_status</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> mlcp.now_work_mode;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置风机转速</span></span><br><span class="line"><span class="type">uint8_t</span> <span class="title function_">mlcp_set_fan_speed</span><span class="params">(<span class="type">uint8_t</span> speed)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (speed &lt;= <span class="number">100</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        mlcp.need_fan_speed = speed;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-2-接收方（创建寄存器-被读或写的一方）"><a href="#4-2-接收方（创建寄存器-被读或写的一方）" class="headerlink" title="4.2 接收方（创建寄存器&#x2F;被读或写的一方）"></a>4.2 接收方（创建寄存器&#x2F;被读或写的一方）</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * upper_modbus_task.c</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *  Created on: 2024年9月9日</span></span><br><span class="line"><span class="comment"> *      Author: ZhangJinhao</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 功能码 */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> READ_REGISTER 0x03  <span class="comment">// 读寄存器</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> WRITE_REGISTER 0x06 <span class="comment">// 读寄存器</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ERROR_BACK 0x80     <span class="comment">// 读寄存器(0x80+异常码)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 计算modbus校验码</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint16_t</span> <span class="title function_">modbus_crc16</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">uint8_t</span> len)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">uint16_t</span> crc = <span class="number">0xffff</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (<span class="type">uint8_t</span> num = <span class="number">0</span>; num &lt; len; num++)</span><br><span class="line">	&#123;</span><br><span class="line">		crc = (*data++) ^ crc; <span class="comment">// 把数据与16位的CRC寄存器的低8位相异或，结果存放于CRC寄存器</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="type">uint8_t</span> x = <span class="number">0</span>; x &lt; <span class="number">8</span>; x++)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="comment">// 判断最低位为：“1”</span></span><br><span class="line">			<span class="keyword">if</span> (crc &amp; <span class="number">0x0001</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				crc = crc &gt;&gt; <span class="number">1</span>;		<span class="comment">// 先右移</span></span><br><span class="line">				crc = crc ^ <span class="number">0xA001</span>; <span class="comment">// 再与0xA001异或</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> <span class="comment">// 判断最低位为：“0”</span></span><br><span class="line">			&#123;</span><br><span class="line">				crc = crc &gt;&gt; <span class="number">1</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> crc;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// crc校验,0成功，1失败</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint8_t</span> <span class="title function_">modbus_crc_check</span><span class="params">(<span class="type">uint8_t</span> *data)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">uint16_t</span> result = <span class="number">0</span>;</span><br><span class="line">	<span class="type">uint8_t</span> crc_h, crc_l;</span><br><span class="line"></span><br><span class="line">	result = modbus_crc16(data, <span class="number">6</span>);</span><br><span class="line"></span><br><span class="line">	crc_h = (<span class="type">uint8_t</span>)(result &gt;&gt; <span class="number">8</span>);</span><br><span class="line">	crc_l = (<span class="type">uint8_t</span>)(result &amp; <span class="number">0xFF</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (crc_l == data[<span class="number">6</span>] &amp;&amp; crc_h == data[<span class="number">7</span>])</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 上位机读数据，板卡回复</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">upper_modbus_read_register</span><span class="params">(upper_uart_ptr dev, <span class="type">uint8_t</span> *data)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">uint16_t</span> register_addr = <span class="number">0</span>;</span><br><span class="line">	<span class="type">uint16_t</span> register_len = <span class="number">0</span>;</span><br><span class="line">	<span class="type">uint8_t</span> respond_data[<span class="number">400</span>] = &#123;<span class="number">0</span>&#125;;	<span class="comment">// 存储回应回去的数据</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 解析命令</span></span><br><span class="line">	register_addr = (data[<span class="number">2</span>] &lt;&lt; <span class="number">8</span>) | data[<span class="number">3</span>];	<span class="comment">// 目标寄存器地址</span></span><br><span class="line">	register_len = (data[<span class="number">4</span>] &lt;&lt; <span class="number">8</span>) | data[<span class="number">5</span>];	<span class="comment">// 想要读取的寄存器个数</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 拼接回应数据</span></span><br><span class="line">	respond_data[<span class="number">0</span>] = data[<span class="number">0</span>];    <span class="comment">//从机ID</span></span><br><span class="line">	respond_data[<span class="number">1</span>] = data[<span class="number">1</span>];    <span class="comment">//功能码</span></span><br><span class="line">	respond_data[<span class="number">2</span>] = (<span class="type">uint8_t</span>)(register_len * <span class="number">2</span>);    	<span class="comment">// 获取总的字节数</span></span><br><span class="line">	<span class="keyword">for</span>(<span class="type">uint16_t</span> i = <span class="number">0</span>; i &lt;= register_len; i++)			<span class="comment">// 读取的寄存器的值</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="type">uint16_t</span> temp_addr = register_addr + i;</span><br><span class="line"></span><br><span class="line">		<span class="type">uint16_t</span> temp_data = <span class="number">0</span>;</span><br><span class="line">		<span class="type">uint8_t</span> data_h = <span class="number">0</span>, data_l = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 根据地址，填需要回复的数据</span></span><br><span class="line">		<span class="keyword">switch</span>(temp_addr)</span><br><span class="line">		&#123;</span><br><span class="line">		<span class="comment">/* part 1 */</span></span><br><span class="line">		<span class="keyword">case</span> MODUBLE_ADDR_REGISTER:			<span class="comment">// 从机地址信息</span></span><br><span class="line">			temp_data = upper_uart.board_addr;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">case</span> SOFTWARE_VERSION_REGISTER:		<span class="comment">// 软件版本信息</span></span><br><span class="line">			temp_data = SOFT_WARE_VERSION;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			temp_data = <span class="number">0</span>;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 计算高低位</span></span><br><span class="line">		data_h = temp_data &gt;&gt; <span class="number">8</span>;</span><br><span class="line">		data_l = temp_data &amp; <span class="number">0x00FF</span>;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 赋值</span></span><br><span class="line">		respond_data[<span class="number">3</span> + <span class="number">2</span> * i] = data_h;</span><br><span class="line">		respond_data[<span class="number">3</span> + <span class="number">2</span> * i + <span class="number">1</span>] = data_l;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">// 计算crc</span></span><br><span class="line">	<span class="type">uint16_t</span> crc_temp = modbus_crc16(respond_data, respond_data[<span class="number">2</span>] + <span class="number">3</span>);</span><br><span class="line">	respond_data[respond_data[<span class="number">2</span>] + <span class="number">3</span>] = crc_temp &amp; <span class="number">0xFF</span>;</span><br><span class="line">	respond_data[respond_data[<span class="number">2</span>] + <span class="number">3</span> + <span class="number">1</span>] = crc_temp &gt;&gt; <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 发送回应</span></span><br><span class="line">	upper_uart_send(dev, respond_data, respond_data[<span class="number">2</span>] + <span class="number">3</span> + <span class="number">2</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 上位机发送写命令，板卡处理</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">upper_modbus_write_register</span><span class="params">(upper_uart_ptr dev, <span class="type">uint8_t</span> *data)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">uint16_t</span> register_addr = <span class="number">0</span>;</span><br><span class="line">	<span class="type">uint16_t</span> register_data = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 回应上位机的写命令（原样发回去）</span></span><br><span class="line">	upper_uart_send(dev, data, <span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 解析命令</span></span><br><span class="line">	register_addr = (data[<span class="number">2</span>] &lt;&lt; <span class="number">8</span>) | data[<span class="number">3</span>];	<span class="comment">// 目标寄存器地址</span></span><br><span class="line">	register_data = (data[<span class="number">4</span>] &lt;&lt; <span class="number">8</span>) | data[<span class="number">5</span>];	<span class="comment">// 待写入寄存器的值</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 根据地址执行动作</span></span><br><span class="line">	<span class="keyword">if</span>(register_addr == WORK_MODE_REGISTER)</span><br><span class="line">	&#123;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(register_addr == MOTOR_SPEED_CTRL_REGISTER)</span><br><span class="line">	&#123;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">void</span> upper_modbus_task(<span class="type">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">uint8_t</span> temp_recv_data[<span class="number">8</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="built_in">memset</span>(temp_recv_data, <span class="number">0</span>, <span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// modbus数据格式,最少八个字节</span></span><br><span class="line">	<span class="comment">// 设备地址(1)、功能码(1)、寄存器地址(2,高字节在前)、寄存器个数(2,高字节在前)、CRC校验(2,低字节在前)</span></span><br><span class="line">	<span class="comment">// modbus返回数据格式</span></span><br><span class="line">	<span class="comment">// 设备地址(1)、功能码(1)、返回数据长度(1)、返回数据(N)、CRC校验(2,低字节在前)</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 如果当前缓冲区数据够一帧modbus</span></span><br><span class="line">	<span class="keyword">if</span>(upper_uart_buf_len(&amp;upper_uart) &gt;= <span class="number">8</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 获取一个字节数据</span></span><br><span class="line">		<span class="keyword">if</span>(upper_uart_recv(&amp;upper_uart, &amp;(temp_recv_data[<span class="number">0</span>])) == <span class="number">1</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="comment">// 判断是否是modbus数据头(本设备ID或广播ID)</span></span><br><span class="line">			<span class="keyword">if</span>((temp_recv_data[<span class="number">0</span>] == upper_uart.board_addr) || (temp_recv_data[<span class="number">0</span>] == <span class="number">0xFF</span>))</span><br><span class="line">			&#123;</span><br><span class="line"><span class="comment">//				uart_port_printf(&amp;debug_uart, &quot;temp_recv_data[0]=%d, addr=%d \r\n&quot;, temp_recv_data[0], upper_uart.board_addr);</span></span><br><span class="line"></span><br><span class="line">				<span class="comment">// 获取紧邻的7个字节</span></span><br><span class="line">				<span class="keyword">for</span>(<span class="type">uint8_t</span> i = <span class="number">1</span>; i &lt; <span class="number">8</span>; i++)</span><br><span class="line">				&#123;</span><br><span class="line">					upper_uart_recv(&amp;upper_uart, &amp;(temp_recv_data[i]));</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				<span class="comment">// CRC校验</span></span><br><span class="line">				<span class="keyword">if</span>(modbus_crc_check(temp_recv_data) == <span class="number">0</span>)</span><br><span class="line">				&#123;</span><br><span class="line">					<span class="comment">// 上位机要读数据，这里需要返回</span></span><br><span class="line">					<span class="keyword">if</span>(temp_recv_data[<span class="number">1</span>] == <span class="number">0x03</span>)</span><br><span class="line">					&#123;</span><br><span class="line">						upper_modbus_read_register(&amp;upper_uart, temp_recv_data);</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="comment">// 上位机要写数据，这里需要处理</span></span><br><span class="line">					<span class="keyword">else</span> <span class="keyword">if</span>(temp_recv_data[<span class="number">1</span>] == <span class="number">0x06</span>)</span><br><span class="line">					&#123;</span><br><span class="line">						upper_modbus_write_register(&amp;upper_uart, temp_recv_data);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="comment">// 清空缓冲区的数据 防止循环报错</span></span><br><span class="line">                    <span class="comment">// </span></span><br><span class="line">                &#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="5-测试软件"><a href="#5-测试软件" class="headerlink" title="5. 测试软件"></a>5. 测试软件</h1><p>模拟 Modbus 协议有电脑即可，无需任何硬件。用于查看协议报文格式。</p>
+<ul>
+<li>Modbus Slave</li>
+<li>Modbus Poll</li>
+<li>Configure Virtual Serial Port Driver</li>
+</ul>
+<p>三个软件都是傻瓜式操作，安装即可。</p>
+<p>在弹出激活码的时候，把压缩包中的激活码填进去即可。</p>
+<h1 id="6-测试步骤"><a href="#6-测试步骤" class="headerlink" title="6. 测试步骤"></a>6. 测试步骤</h1><h2 id="6-1-添加虚拟串口"><a href="#6-1-添加虚拟串口" class="headerlink" title="6.1 添加虚拟串口"></a>6.1 添加虚拟串口</h2><p>打开 VSPD 软件，添加虚拟串口。</p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/VSPD%E6%B7%BB%E5%8A%A0%E4%B8%B2%E5%8F%A3.jpg" alt="VSPD添加串口"></p>
+<p>添加完成之后，就可以看到添加的串口了，可以认为这是两个连接在一起的串口。</p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/%E8%99%9A%E6%8B%9F%E4%B8%B2%E5%8F%A3.jpg" alt="虚拟串口"></p>
+<h2 id="6-2-设置主机"><a href="#6-2-设置主机" class="headerlink" title="6.2 设置主机"></a>6.2 设置主机</h2><p>打开 ModBus Poll 软件，点击<code>Setup -&gt; Read/Write Definition</code>，</p>
+<p>设置要通讯的参数，然后点击OK。</p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Poll%E9%80%9A%E8%AE%AF%E8%AE%BE%E7%BD%AE.jpg" alt="Poll通讯设置"></p>
+<p>然后点击<code>Connection -&gt; Connect</code></p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Poll%E8%BF%9E%E6%8E%A5%E4%B8%B2%E5%8F%A3.jpg" alt="Poll连接串口"></p>
+<blockquote>
+<p>连接上之后，左上角会显示连接超时，正常，毕竟从机还没连接呢。</p>
+</blockquote>
+<h2 id="6-3-设置从机"><a href="#6-3-设置从机" class="headerlink" title="6.3 设置从机"></a>6.3 设置从机</h2><p>打开 ModBus Slave 软件，点击<code>Setup -&gt; Slave Definition</code>，</p>
+<p>设置要通讯的参数，注意从机地址要和刚刚主机设置的一样，然后点击OK。</p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Slave%E9%80%9A%E8%AE%AF%E8%AE%BE%E7%BD%AE.jpg" alt="Slave通讯设置"></p>
+<p>然后点击<code>Connection -&gt; Connect</code></p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Slave%E8%BF%9E%E6%8E%A5%E4%B8%B2%E5%8F%A3.jpg" alt="Slave连接串口"></p>
+<h2 id="6-4-传输数据"><a href="#6-4-传输数据" class="headerlink" title="6.4 传输数据"></a>6.4 传输数据</h2><p>双击从机寄存器的格子，往里面填入任意值，可以看到主机这边会读取到。</p>
+<p>主机上面的 Tx&#x3D;2271，是发送了2271次；Err&#x3D;241，是失败了241次。</p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E6%95%88%E6%9E%9C.jpg" alt="数据传输效果"></p>
+<h2 id="6-5-RTU报文解析"><a href="#6-5-RTU报文解析" class="headerlink" title="6.5 RTU报文解析"></a>6.5 RTU报文解析</h2><p>在主机端，点击<code>Display communication traffic</code>可看到主机发送出去和接收到的回复报文。</p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/%E6%94%B6%E5%8F%91%E7%9A%84%E6%8A%A5%E6%96%87.jpg" alt="收发的报文"></p>
+<p>发送报文：Tx：01 03 00 00 00 04 44 09</p>
+<ul>
+<li>01：从机地址</li>
+<li>03：功能码</li>
+<li>00 00：寄存器地址</li>
+<li>00 04：读取数据个数，4个</li>
+<li>44 09：CRC校验</li>
+</ul>
+<p>接收报文：Rx：01 03 08 00 01 00 08 00 10 00 14 65 1C</p>
+<ul>
+<li>01：从机地址</li>
+<li>03：功能码</li>
+<li>08：返回的字节数（16进制），8个字节。</li>
+<li>00 01：第一个数据，1</li>
+<li>00 08：第二个数据，8</li>
+<li>00 10：第三个数据，16</li>
+<li>00 14：第四个数据，20</li>
+<li>65 1C：CRC校验</li>
+</ul>
+<p>可以看到，就是 ModbusRtu 的报文格式（在第二步中，我们设置的就是 RTU ）。</p>
+<h2 id="6-6-TCP报文解析"><a href="#6-6-TCP报文解析" class="headerlink" title="6.6 TCP报文解析"></a>6.6 TCP报文解析</h2><p>如果我们不用串口，而使用TCP进行连接。</p>
+<p>在主机端，连接时选择如下：</p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Poll%E8%BF%9E%E6%8E%A5TCP.jpg" alt="Poll连接TCP"></p>
+<p>在从机端，连接时选择如下：</p>
+<p><img src="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/Slave%E8%BF%9E%E6%8E%A5TCP.jpg" alt="Slave连接TCP"></p>
+<p>此时，数据通讯的报文如下：</p>
+<p>发送报文：Tx：04 44 00 00 00 06 01 03 9C 4A 00 04</p>
+<ul>
+<li>04 44：事务标识符，可以解释为报文的序列号，由于我们测试使用的Modbus Poll客户端是一直发送数据，所以每发送一次数据标识符就加一。服务器接收时会把这个数据原封返回。</li>
+<li>00 00：Modbus TCP协议</li>
+<li>00 06：后面有 6 字节长度的数据</li>
+<li>01：单元标识符，相当于设备的地址。01</li>
+<li>03：功能码</li>
+<li>9C 4A：寄存器地址，从这里开始读数据</li>
+<li>00 04：读取数据个数，4个</li>
+</ul>
+<p>接收报文：Rx：04 44 00 00 00 0B 01 03 08 00 01 00 08 00 10 00 14</p>
+<ul>
+<li>04 44：事务标识符，可以解释为报文的序列号，由于我们测试使用的Modbus Poll客户端是一直发送数据，所以每发送一次数据标识符就加一。服务器接收时会把这个数据原封返回。</li>
+<li>00 00：Modbus TCP协议</li>
+<li>00 0B：后面有 11 字节长度的数据</li>
+<li>01：单元标识符，相当于设备的地址。01</li>
+<li>03：功能码</li>
+<li>08：返回的字节数（16进制），8个字节</li>
+<li>00 01：第一个数据，1</li>
+<li>00 08：第二个数据，8</li>
+<li>00 10：第三个数据，16</li>
+<li>00 14：第四个数据，20</li>
+</ul>
+<blockquote>
+<p>MBAP（报文头）&#x3D; 事务标识符 + 协议表示 + 长度 + 单元表示符</p>
+<p>PDU（帧结构）&#x3D; 功能码 + 数据</p>
+</blockquote>
+<hr>
+<p>补充，如果读的功能码为01，即读线圈。</p>
+<p>请求：00 01 00 00 00 06 01 01 00 02 00 04（客户端）</p>
+<ul>
+<li>00 01：事务标识符</li>
+<li>00 00：Modbus TCP协议</li>
+<li>00 06：后面有00 06个字节数据</li>
+<li>01：单元标识符</li>
+<li>01：功能码（读线圈）</li>
+<li>00 02：开始读的数据的地址。从00 02开始读数据。</li>
+<li>00 04：读00 04个数据。</li>
+</ul>
+<p>回应：00 01 00 00 00 04 01 01 01 0E（服务器）</p>
+<ul>
+<li>00 01：事务标识符</li>
+<li>00 00：Modbus TCP协议</li>
+<li>00 04：后面有00 04个字节数据</li>
+<li>01：单元标识符</li>
+<li>01：功能码</li>
+<li>01：后面有01个字节的数据</li>
+<li>0E：表示所读地址的线圈全是2的位置是0，其余是1。说明：线圈是只有00和01两种格式，所以图中从2的位置开始读到的4位数据是：1110（二进制），转化为十六进制就是0E。</li>
+</ul>
+<hr>
+</article>
+<div class="article-footer">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文由 imhaozi 编写，采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+
+</div>
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/">Ymodem</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2020/10/01/03.%20RTOS/rtthread_nano/">rtthread_nano移植</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">imhaozi</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="toc-text">1. 简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Modbus-%E6%80%9D%E8%B7%AF"><span class="toc-text">2. Modbus 思路</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E5%AD%98%E5%82%A8%E5%8C%BA%E5%88%86%E7%B1%BB"><span class="toc-text">2.1 存储区分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E5%AD%98%E5%82%A8%E5%8C%BA%E4%BB%A3%E5%8F%B7"><span class="toc-text">2.2 存储区代号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E5%AD%98%E5%82%A8%E5%8C%BA%E8%8C%83%E5%9B%B4"><span class="toc-text">2.3 存储区范围</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-%E5%8A%9F%E8%83%BD%E7%A0%81"><span class="toc-text">2.4 功能码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-%E5%8D%8F%E8%AE%AE%E5%88%86%E7%B1%BB"><span class="toc-text">2.5 协议分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-%E6%8A%A5%E6%96%87%E6%A0%BC%E5%BC%8F"><span class="toc-text">2.6 报文格式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E5%8D%8F%E8%AE%AE%E8%A1%A5%E5%85%85"><span class="toc-text">3. 协议补充</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E4%B8%BB%E4%BB%8E%E6%A8%A1%E5%BC%8F"><span class="toc-text">3.1 主从模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-ADU%E3%80%81PDU"><span class="toc-text">3.2 ADU、PDU</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E6%89%8B%E5%86%99%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-text">4. 手写代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E5%8F%91%E9%80%81%E6%96%B9%EF%BC%88%E8%AF%BB-%E6%88%96-%E5%86%99%E7%9A%84%E4%B8%80%E6%96%B9%EF%BC%89"><span class="toc-text">4.1 发送方（读 或 写的一方）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-%E6%8E%A5%E6%94%B6%E6%96%B9%EF%BC%88%E5%88%9B%E5%BB%BA%E5%AF%84%E5%AD%98%E5%99%A8-%E8%A2%AB%E8%AF%BB%E6%88%96%E5%86%99%E7%9A%84%E4%B8%80%E6%96%B9%EF%BC%89"><span class="toc-text">4.2 接收方（创建寄存器&#x2F;被读或写的一方）</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-%E6%B5%8B%E8%AF%95%E8%BD%AF%E4%BB%B6"><span class="toc-text">5. 测试软件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-%E6%B5%8B%E8%AF%95%E6%AD%A5%E9%AA%A4"><span class="toc-text">6. 测试步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-1-%E6%B7%BB%E5%8A%A0%E8%99%9A%E6%8B%9F%E4%B8%B2%E5%8F%A3"><span class="toc-text">6.1 添加虚拟串口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2-%E8%AE%BE%E7%BD%AE%E4%B8%BB%E6%9C%BA"><span class="toc-text">6.2 设置主机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-3-%E8%AE%BE%E7%BD%AE%E4%BB%8E%E6%9C%BA"><span class="toc-text">6.3 设置从机</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-4-%E4%BC%A0%E8%BE%93%E6%95%B0%E6%8D%AE"><span class="toc-text">6.4 传输数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-5-RTU%E6%8A%A5%E6%96%87%E8%A7%A3%E6%9E%90"><span class="toc-text">6.5 RTU报文解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-6-TCP%E6%8A%A5%E6%96%87%E8%A7%A3%E6%9E%90"><span class="toc-text">6.6 TCP报文解析</span></a></li></ol></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a></div></widget>
+</div></aside><div class='float-panel'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+
+
+<script type="text/javascript">
+  window.canonical = {"originalHost":null,"officialHosts":["localhost"],"encoded":""};
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+    tag_plugins: {
+      chat: Object.assign({"api":"https://siteinfo.listentothewind.cn/api/v1"}),
+    }
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"skip_search":null,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+    loading: `https://api.iconify.design/eos-icons:three-dots-loading.svg?color=%231cd0fd`,
+  };
+  const deps = {
+    jquery: `https://gcore.jsdelivr.net/npm/jquery@3.7/dist/jquery.min.js`,
+    marked: `https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js`,
+    lazyload: `/%5Bobject%20Object%5D`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = () => {
+          utils.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) => {
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index, 1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')) {
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function () {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      const maxRetry = 3;
+      let retryCount = 0;
+
+      return new Promise((resolve, reject) => {
+        const load = () => {
+          utils.onLoading?.(el);
+
+          let timedOut = false;
+          const timeout = setTimeout(() => {
+            timedOut = true;
+            console.warn('[request] 超时:', url);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject('请求超时');
+            } else {
+              setTimeout(load, 1000);
+            }
+          }, 5000);
+
+          fetch(url).then(resp => {
+            if (timedOut) return;
+            clearTimeout(timeout);
+
+            if (!resp.ok) throw new Error('响应失败');
+            return resp;
+          }).then(data => {
+            if (timedOut) return;
+            utils.onLoadSuccess?.(el);
+            callback(data);
+            resolve(data);
+          }).catch(err => {
+            clearTimeout(timeout);
+            console.warn('[request] 错误:', err);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject(err);
+            } else {
+              setTimeout(load, 1000);
+            }
+          });
+        };
+
+        load();
+      });
+    },
+    requestWithoutLoading: (url, options = {}, maxRetry = 2, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        let retryCount = 0;
+
+        const tryRequest = () => {
+          let timedOut = false;
+          const timer = setTimeout(() => {
+            timedOut = true;
+            if (++retryCount > maxRetry) reject('timeout');
+            else tryRequest();
+          }, timeout);
+
+          fetch(url, options)
+            .then(resp => {
+              clearTimeout(timer);
+              if (!resp.ok) throw new Error('bad response');
+              resolve(resp);
+            })
+            .catch(err => {
+              clearTimeout(timer);
+              if (++retryCount > maxRetry) reject(err);
+              else setTimeout(tryRequest, 500);
+            });
+        };
+
+        tryRequest();
+      });
+    },
+    /********************** requestAnimationFrame ********************************/
+    // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+    // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+    requestAnimationFrame: (fn) => {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+      }
+      window.requestAnimationFrame(fn)
+    },
+    dark: {},
+  };
+
+  // utils.dark.mode 当前模式 dark or light
+  // utils.dark.toggle() 暗黑模式触发器
+  // utils.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  utils.dark.method = {
+    toggle: new RunItem(),
+  };
+  utils.dark = Object.assign(utils.dark, {
+    push: utils.dark.method.toggle.push,
+  });
+</script>
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+<script async src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+    callback_loaded: (el) => {
+      el.classList.add('loaded');
+      const wrapper = el.closest('.lazy-box');
+      const icon = wrapper?.querySelector('.lazy-icon');
+      if (icon) icon.remove();
+    }
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+
+  window.wrapLazyloadImages = (container) => {
+    if (typeof container === 'string') {
+      container = document.querySelector(container);
+    }
+    if (!container) return;
+    
+    const images = container.querySelectorAll('img');
+    images.forEach((img) => {
+      if (img.classList.contains('lazy')) return;
+
+      const src = img.getAttribute('src');
+      if (!src) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'lazy-box';
+
+      const newImg = img.cloneNode();
+      newImg.removeAttribute('src');
+      newImg.setAttribute('data-src', src);
+      newImg.classList.add('lazy');
+
+      const icon = document.createElement('div');
+      icon.className = 'lazy-icon';
+      if (def.loading) {
+        icon.style.backgroundImage = `url("${def.loading}")`;
+      }
+
+      wrapper.appendChild(newImg);
+      wrapper.appendChild(icon);
+
+      img.replaceWith(wrapper);
+    });
+
+    // 通知 LazyLoad 更新
+    if (window.lazyLoadInstance?.update) {
+      window.lazyLoadInstance.update();
+    }
+  }
+  
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.33.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    // applyThemeToGiscus(theme)
+  }
+
+  // FIXME: 这会导致无法使用 preferred_color_scheme 以外的主题
+  const applyThemeToGiscus = (theme) => {
+    // theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+    utils.dark.mode = newTheme === 'auto' ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : newTheme;
+    utils.dark.method.toggle.start();
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    } else {
+      utils.dark.mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    utils.dark.method.toggle.start();
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"rating":{"js":"/js/services/rating.js","api":"https://star-vote.xaox.cc/api/rating"},"vote":{"js":"/js/services/vote.js","api":"https://star-vote.xaox.cc/api/vote"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"friends_and_posts":{"js":"/js/services/friends_and_posts.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"},"voice":{"js":"/js/plugins/voice.js"},"video":{"js":"/js/plugins/video.js"},"download-file":{"js":"/js/plugins/download-file.js"},"twikoo":{"js":"/js/services/twikoo_latest_comment.js"},"waline":{"js":"/js/services/waline_latest_comment.js"},"artalk":{"js":"/js/services/artalk_latest_comment.js"},"giscus":{"js":"/js/services/giscus_latest_comment.js"},"contributors":{"edit_this_page":{"_posts/":null,"wiki/stellar/":"https://github.com/xaoxuu/hexo-theme-stellar-docs/blob/main/"},"js":"/js/services/contributors.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else if (id == 'voice') {
+        ctx.voiceAudios = document.querySelectorAll('.voice>audio');
+        if (ctx.voiceAudios?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            createVoiceDom(ctx.voiceAudios);
+          });
+        }
+      } else if (id == 'video') {
+        ctx.videos = document.querySelectorAll('.video>video');
+        if (ctx.videos?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            videoEvents(ctx.videos);
+          });
+        }
+      } else if (id == 'download-file') {
+        ctx.files = document.querySelectorAll('.file');
+        if (ctx.files?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            downloadFileEvent(ctx.files);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+
+    // chat iphone time
+    let phoneTimes = document.querySelectorAll('.chat .status-bar .time');
+
+    if (phoneTimes.length > 0) {
+      NowTime();
+      var date = new Date();
+      var sec = date.getSeconds();
+      var firstAdjustInterval = setInterval(firstAdjustTime, 1000 * (60 - sec));
+    }
+
+    function firstAdjustTime() {
+      NowTime();
+      clearInterval(firstAdjustInterval);
+      setInterval(NowTime, 1000 * 60);
+    }
+
+    function NowTime() {
+      for (let i = 0; i < phoneTimes.length; ++i) {
+        var timeSpan = phoneTimes[i];
+        var date = new Date();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+        timeSpan.innerHTML = check(hour) + ":" + check(min);
+      }
+    };
+
+    function check(val) {
+      if (val < 10) {
+        return ("0" + val);
+      }
+      return (val);
+    }
+
+    // chat quote
+    const chat_quote_obverser = new IntersectionObserver((entries, observer) => {
+      entries.filter((entry) => { return entry.isIntersecting }).sort((a, b) => a.intersectionRect.y !== b.intersectionRect.y ? a.intersectionRect.y - b.intersectionRect.y : a.intersectionRect.x - b.intersectionRect.x).forEach((entry, index) => {
+          observer.unobserve(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('quote-blink');
+            setTimeout(() => {
+              entry.target.classList.remove('quote-blink');
+            }, 1000);
+          }, Math.max(100, 16) * (index + 1));
+        });
+    });
+
+    var chatQuotes = document.querySelectorAll(".chat .talk .quote");
+    chatQuotes.forEach((quote) => {
+      quote.addEventListener('click', function () {
+        var chatCellDom = document.getElementById("quote-" + quote.getAttribute("quotedCellTag"));
+        if (chatCellDom) {
+          var chatDiv = chatCellDom.parentElement;
+          var mid = chatDiv.clientHeight / 2;
+          var offsetTop = chatCellDom.offsetTop;
+          if (offsetTop > mid - chatCellDom.clientHeight / 2) {
+            chatDiv.scrollTo({
+              top: chatCellDom.offsetTop - mid + chatCellDom.clientHeight / 2,
+              behavior: "smooth"
+            });
+          } else {
+            chatDiv.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
+          }
+          chat_quote_obverser.observe(chatCellDom);
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error), .with-fancybox .atk-content img:not([atk-emoticon])';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const memos = document.getElementsByClassName('ds-memos');
+    if (memos != undefined && memos.length > 0) {
+      needFancybox = true;
+    }
+    const fancybox = document.getElementsByClassName('with-fancybox');
+    if (fancybox != undefined && fancybox.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>

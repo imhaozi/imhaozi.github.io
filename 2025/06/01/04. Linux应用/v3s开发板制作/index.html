@@ -1,0 +1,1019 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
+  
+  
+  <meta name="generator" content="Hexo 8.1.1">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title>v3s开发板制作 - Blog</title>
+
+  
+    <meta name="description" content="制作的一个V3S的小终端，参考了荔枝派的电路和软件设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="v3s开发板制作">
+<meta property="og:url" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="制作的一个V3S的小终端，参考了荔枝派的电路和软件设计">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%961.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%962.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%963.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%964.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%8B%E8%BD%BD.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/uboot%E5%90%AF%E5%8A%A8SD%E5%8D%A1%E4%BF%AE%E6%94%B9.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/linux%E9%A1%B6%E5%B1%82makefile%E4%BF%AE%E6%94%B9.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E5%86%85%E6%A0%B8%E8%B7%AF%E5%BE%84.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/buildroot%E4%B8%8B%E8%BD%BD.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E9%80%89%E6%8B%A9.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%96%E8%AF%91%E9%80%89%E9%A1%B9.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%96%E8%AF%91%E7%BC%96%E8%AF%91%E5%99%A8%E9%85%8D%E7%BD%AE.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%96%E8%AF%91%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE.png">
+<meta property="og:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%96%E8%AF%91%E4%BF%9D%E5%AD%98%E9%85%8D%E7%BD%AE1.png">
+<meta property="article:published_time" content="2025-06-01T02:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-23T07:01:18.217Z">
+<meta property="article:author" content="imhaozi">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="V3S">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%961.png">
+  
+  
+  
+  <meta name="keywords" content="Linux,V3S">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.33.1">
+
+
+  
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+  
+
+  
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"imhaozi","sameAs":[]},"dateCreated":"2025-06-01T10:00:00+08:00","dateModified":"2025-11-23T15:01:18+08:00","datePublished":"2025-06-01T10:00:00+08:00","description":"","headline":"v3s开发板制作","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/"},"publisher":{"@type":"Organization","name":"imhaozi","sameAs":[]},"url":"http://example.com/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/","keywords":"Linux, V3S","image":[]}</script>
+  
+</head>
+<body>
+
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/avatar.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Blog</div><div class="sub normal cap">装备锻造中</div><div class="sub hover cap" style="opacity:0"> Write By imhaozi</div></a></div></header>
+
+<div class="nav-area">
+
+<nav class="menu dis-select"><a class="nav-item active" title="博客" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="文档" href="/wiki/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="关于" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/2024/10/08/05.%20%E5%BC%80%E6%BA%90%E5%BA%93/lvgl%E7%A7%BB%E6%A4%8D/"><span class="title">lvgl移植</span></a><a class="item title" href="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/"><span class="title">ros1小车diy记录</span></a><a class="item title" href="/2020/10/01/03.%20RTOS/rtthread_nano/"><span class="title">rtthread_nano移植</span></a><a class="item title" href="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/"><span class="title">v3s开发板制作</span></a><a class="item title" href="/2025/08/29/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/"><span class="title">博客搭建指南</span></a><a class="item title" href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/"><span class="title">充电桩国标协议解析</span></a><a class="item title" href="/2025/11/05/08.%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/"><span class="title">CanDBC文件制作</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/"><span class="title">Ymodem</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/"><span class="title">Modbus</span></a><a class="item title" href="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/"><span class="title">CanOpen</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/imhaozi" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/github.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://space.bilibili.com/330622220" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/bilibili.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/942ebbf1a4b91.svg"/></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/Linux%E5%BA%94%E7%94%A8/">Linux应用</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2025-06-01T02:00:00.000Z">2025-06-01</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2025-11-23T07:01:18.217Z">2025-11-23</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>v3s开发板制作</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><h1 id="1-硬件准备"><a href="#1-硬件准备" class="headerlink" title="1. 硬件准备"></a>1. 硬件准备</h1><h2 id="1-1-开发板"><a href="#1-1-开发板" class="headerlink" title="1.1 开发板"></a>1.1 开发板</h2><h2 id="1-2-SD卡格式化"><a href="#1-2-SD卡格式化" class="headerlink" title="1.2 SD卡格式化"></a>1.2 SD卡格式化</h2><p>将SD卡插入虚拟机，使用<code>gparted</code>工具将SD卡格式化。</p>
+<p>先删除所有分区。</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%961.png" alt="SD卡格式化1"></p>
+<p>创建分区1，存放内核</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%962.png" alt="SD卡格式化2"></p>
+<p>创建分区2，存放文件系统，用完剩下的所有的空间。</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%963.png" alt="SD卡格式化3"></p>
+<p>完成之后点击应用即可，分区结果如下图所示。</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%964.png" alt="SD卡格式化4"></p>
+<h1 id="2-系统开发"><a href="#2-系统开发" class="headerlink" title="2. 系统开发"></a>2. 系统开发</h1><p>系统编译在虚拟机中进行。</p>
+<p>在虚拟机中创建一个新的文件夹v3s存放所有的软件工程。</p>
+<p>系统开发一共需要三部分，<strong>uboot、linux内核、文件系统</strong>，同时因为我们在虚拟机中开发，还需要交叉编译器。</p>
+<blockquote>
+<p>参考链接：<a target="_blank" rel="noopener" href="https://wiki.sipeed.com/soft/Lichee/zh/Zero-Doc/System_Development/type.html">https://wiki.sipeed.com/soft/Lichee/zh/Zero-Doc/System_Development/type.html</a></p>
+</blockquote>
+<h2 id="2-1-交叉编译器"><a href="#2-1-交叉编译器" class="headerlink" title="2.1 交叉编译器"></a>2.1 交叉编译器</h2><p>去ARM交叉编译器的官网下载，下载地址：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/arm-linux-gnueabihf/</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%99%A8%E4%B8%8B%E8%BD%BD.png" alt="交叉编译器下载"></p>
+<p>版本：</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc-linaro-6.3.1-2017.05-x86<span class="emphasis">_64_</span>arm-linux-gnueabihf.tar.xz</span><br></pre></td></tr></table></figure>
+
+<p>下载完成之后，在v3s文件夹下新建toolchain文件夹，用于存放交叉编译工具。</p>
+<p>解压</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> toolchain/</span><br><span class="line"><span class="comment"># 解压</span></span><br><span class="line">tar xvf gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf.tar.xz</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/v3s$ cd toolchain/</span><br><span class="line">haozi@haozi:~/work/develop/v3s/toolchain$ ls</span><br><span class="line">gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf</span><br><span class="line">gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf.tar.xz</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-uboot"><a href="#2-2-uboot" class="headerlink" title="2.2 uboot"></a>2.2 uboot</h2><p>这里参考荔枝派的相关资料。</p>
+<p>软件下载：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> v3s</span><br><span class="line"><span class="comment"># 下载</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/Lichee-Pi/u-boot.git -b v3s-current</span><br></pre></td></tr></table></figure>
+
+<p>下载完成后在v3s文件夹下得到一个u-boot文件夹。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/v3s$ cd u-boot/</span><br><span class="line">haozi@haozi:~/work/develop/v3s/u-boot$ ls</span><br><span class="line">api    common     doc       fs       lib          net      snapshot.commit</span><br><span class="line">arch   config.mk  drivers   include  Licenses     post     spl</span><br><span class="line">board  configs    dts       Kbuild   MAINTAINERS  README   test</span><br><span class="line">cmd    disk       examples  Kconfig  Makefile     scripts  tools</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>参考仓库：<a target="_blank" rel="noopener" href="https://github.com/Lichee-Pi/u-boot">https://github.com/Lichee-Pi/u-boot</a></p>
+</blockquote>
+<p>得到的uboot文件结构如下：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">├── api                存放uboot提供的API接口函数</span><br><span class="line">├── arch               平台相关的部分我们只需要关心这个目录下的ARM文件夹</span><br><span class="line">│   ├──arm</span><br><span class="line">│   │   └──cpu</span><br><span class="line">│   │   │   └──armv7</span><br><span class="line">│   │   └──dts   </span><br><span class="line">│   │   │   └──*.dts   存放设备的dts,也就是设备配置相关的引脚信息</span><br><span class="line">├── board              对于不同的平台的开发板对应的代码</span><br><span class="line">├── cmd                顾名思义，大部分的命令的实现都在这个文件夹下面。</span><br><span class="line">├── common             公共的代码</span><br><span class="line">├── configs            各个板子的对应的配置文件都在里面，我们的Lichee配置也在里面</span><br><span class="line">├── disk               对磁盘的一些操作都在这个文件夹里面，例如分区等。</span><br><span class="line">├── doc                参考文档，这里面有很多跟平台等相关的使用文档。</span><br><span class="line">├── drivers            各式各样的驱动文件都在这里面</span><br><span class="line">├── dts                一种树形结构（device tree）这个应该是uboot新的语法</span><br><span class="line">├── examples           官方给出的一些样例程序</span><br><span class="line">├── fs                 文件系统，uboot会用到的一些文件系统</span><br><span class="line">├── include            头文件，所有的头文件都在这个文件夹下面</span><br><span class="line">├── lib                一些常用的库文件在这个文件夹下面  </span><br><span class="line">├── Licenses           这个其实跟编译无关了，就是一些license的声明</span><br><span class="line">├── net                网络相关的，需要用的小型网络协议栈</span><br><span class="line">├── post               上电自检程序</span><br><span class="line">├── scripts            编译脚本和Makefile文件</span><br><span class="line">├── spl                second program loader，即相当于二级uboot启动。</span><br><span class="line">├── test               小型的单元测试程序。</span><br><span class="line">└── tools              里面有很多uboot常用的工具。</span><br></pre></td></tr></table></figure>
+
+<p>下载完成后开始编译。</p>
+<p>安装依赖（一个用于编译和反编译设备树的工具）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install device-tree-compiler</span><br></pre></td></tr></table></figure>
+
+<p>编译</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> u-boot</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用默认配置</span></span><br><span class="line">make ARCH=arm CROSS_COMPILE=/home/haozi/develop/V3s/toolchain/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- LicheePi_Zero_defconfig</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译</span></span><br><span class="line"><span class="keyword">time</span> make ARCH=arm CROSS_COMPILE=/home/haozi/develop/V3s/toolchain/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf- 2&gt;&amp;1 | <span class="built_in">tee</span> build.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果报错</span></span><br><span class="line">/bin/sh: 1: ./tools/binman/binman: not found</span><br><span class="line"><span class="comment"># 则需要安装个python</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install python</span><br></pre></td></tr></table></figure>
+
+<p>等待编译完成后，在当前目录下生成了<code>u-boot-sunxi-with-spl.bin</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">haozi@haozi:~/work/develop/v3s/u-boot$ ls</span><br><span class="line">api        config.mk  examples  Licenses     scripts          u-boot              u-boot-dtb.img    u-boot-sunxi-with-spl.bin</span><br><span class="line">arch       configs    fs        MAINTAINERS  snapshot.commit  u-boot.bin          u-boot.img        u-boot.sym</span><br><span class="line">board      disk       include   Makefile     spl              u-boot.cfg          u-boot.lds</span><br><span class="line">build.log  doc        Kbuild    net          System.map       u-boot.cfg.configs  u-boot.map</span><br><span class="line">cmd        drivers    Kconfig   post         test             u-boot.dtb          u-boot-nodtb.bin</span><br><span class="line">common     dts        lib       README       tools            u-boot-dtb.bin      u-boot.srec</span><br></pre></td></tr></table></figure>
+
+
+
+<p>先确保能编译成功，然后修改以下配置，重新编译。</p>
+<p>设置U-Boot从TF卡启动，修改<code>include/configs/sun8i.h</code>这个文件，填入如下信息。</p>
+<figure class="highlight h"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> CONFIG_BOOTCOMMAND   <span class="string">&quot;setenv bootm_boot_mode sec; &quot;</span> \</span></span><br><span class="line"><span class="meta">                            <span class="string">&quot;load mmc 0:1 0x41000000 zImage; &quot;</span>  \</span></span><br><span class="line"><span class="meta">                            <span class="string">&quot;load mmc 0:1 0x41800000 sun8i-v3s-licheepi-zero-dock.dtb; &quot;</span> \</span></span><br><span class="line"><span class="meta">                            <span class="string">&quot;bootz 0x41000000 - 0x41800000;&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CONFIG_BOOTARGS      <span class="string">&quot;console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 earlyprintk rw  vt.global_cursor_default=0&quot;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>添加完成后如下图所示</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/uboot%E5%90%AF%E5%8A%A8SD%E5%8D%A1%E4%BF%AE%E6%94%B9.png" alt="uboot启动SD卡修改"></p>
+<p>然后重新执行上面的编译步骤即可。</p>
+<p>最终结果为<code>u-boot-sunxi-with-spl.bin</code>。</p>
+<p>使用<code>SD Card Formatter</code>软件，将SD卡格式化。</p>
+<p>然后将SD卡插进虚拟机，运行以下命令烧录。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">dd</span> <span class="keyword">if</span>=u-boot-sunxi-with-spl.bin of=/dev/sdb bs=1024 seek=8</span><br></pre></td></tr></table></figure>
+
+<p>然后将SD卡插入到板子，按复位运行，从串口可以看到以下信息，表示uboot正常工作。</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">U-Boot SPL 2017.01-rc2-00057-g32ab1804cd-dirty (Nov 22 2025 - 20:10:34)</span><br><span class="line">DRAM: 64 MiB</span><br><span class="line">Trying to boot from MMC1</span><br><span class="line"></span><br><span class="line">U-Boot 2017.01-rc2-00057-g32ab1804cd-dirty (Nov 22 2025 - 20:10:34 +0800) Allwinner Te</span><br><span class="line"></span><br><span class="line">CPU:   Allwinner V3s (SUN8I 1681)</span><br><span class="line">Model: Lichee Pi Zero</span><br><span class="line">DRAM:  64 MiB</span><br><span class="line">MMC:   SUNXI SD/MMC: 0</span><br><span class="line">*** Warning - bad CRC, using default environment</span><br><span class="line"></span><br><span class="line">In:    serial@01c28000</span><br><span class="line">Out:   serial@01c28000</span><br><span class="line">Err:   serial@01c28000</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">U-Boot 2017.01-rc2-00057-g32ab1804cd-dirty (Nov 22 2025 - 20:10:34 +0800) Allwinner Te</span><br><span class="line"></span><br><span class="line">CPU:   Allwinner V3s (SUN8I 1681)</span><br><span class="line">Model: Lichee Pi Zero</span><br><span class="line">DRAM:  64 MiB</span><br><span class="line">MMC:   SUNXI SD/MMC: 0</span><br><span class="line">*** Warning - bad CRC, using default environment</span><br><span class="line"></span><br><span class="line">In:    serial@01c28000</span><br><span class="line">Out:   serial@01c28000</span><br><span class="line">Err:   serial@01c28000</span><br><span class="line">Net:   No ethernet found.</span><br><span class="line">starting USB...</span><br><span class="line">No controllers found</span><br><span class="line">Hit any key to stop autoboot:  0</span><br><span class="line">reading zImage</span><br><span class="line">** Unable to read file zImage **</span><br><span class="line">reading sun8i-v3s-licheepi-zero-dock.dtb</span><br><span class="line">** Unable to read file sun8i-v3s-licheepi-zero-dock.dtb **</span><br><span class="line">=&gt;</span><br><span class="line">=&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h2 id="2-3-Kernel"><a href="#2-3-Kernel" class="headerlink" title="2.3 Kernel"></a>2.3 Kernel</h2><p>软件下载，下载后v3s文件夹下会多出一个linux文件夹</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> v3s</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载</span></span><br><span class="line">git <span class="built_in">clone</span> -b zero-5.2.y --depth 1 https://github.com/Lichee-Pi/linux.git</span><br></pre></td></tr></table></figure>
+
+<p>修改makefile配置</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> linux</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改Makefile</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改第364行</span></span><br><span class="line">ARCH		?= $(SUBARCH)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改后（第一行是修改的 后面两行是新增的）</span></span><br><span class="line">ARCH            = arm</span><br><span class="line">CROSS_COMPILE   = /home/haozi/work/develop/v3s/toolchain/gcc-linaro-6.3.1-2017.05-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-</span><br><span class="line">INSTALL_MOD_PATH = out</span><br></pre></td></tr></table></figure>
+
+<p>修改效果如下</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/linux%E9%A1%B6%E5%B1%82makefile%E4%BF%AE%E6%94%B9.png" alt="linux顶层makefile修改"></p>
+<p>编译</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> linux</span><br><span class="line"></span><br><span class="line">make licheepi_zero_defconfig</span><br><span class="line"><span class="comment"># make menuconfig   #一般不用修改，需要时单独改</span></span><br><span class="line">make -j16</span><br><span class="line">make dtbs <span class="comment">#编译设备树</span></span><br></pre></td></tr></table></figure>
+
+<p>编译完成后，在arch&#x2F;arm&#x2F;boot&#x2F;目录下生成了<code>zImage</code>，在arch&#x2F;arm&#x2F;boot&#x2F;dts&#x2F;目录下生成了<code>sun8i-v3s-licheepi-zero.dtb</code></p>
+<p>把SD卡插到虚拟机，可以看到以下路径。</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E5%86%85%E6%A0%B8%E8%B7%AF%E5%BE%84.png" alt="内核路径"></p>
+<p>然后拷贝内核文件到这个文件夹</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">find ./ -name zImage</span><br><span class="line"><span class="built_in">cp</span> ./arch/arm/boot/zImage /media/haozi/KERNEL/</span><br><span class="line"></span><br><span class="line">find ./ -name  sun8i-v3s-licheepi-zero-dock.dtb</span><br><span class="line"><span class="built_in">cp</span> ./arch/arm/boot/dts/sun8i-v3s-licheepi-zero-dock.dtb /media/haozi/KERNEL/</span><br></pre></td></tr></table></figure>
+
+<p>完成后把SD卡插到开发板验证效果，串口可以看到以下信息，uboot之后可以找到内核了（这里运行到内核后一直重启，因为还没有文件系统）。</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">U-Boot SPL 2017.01-rc2-00057-g32ab1804cd-dirty (Nov 22 2025 - 20:10:34)</span><br><span class="line">DRAM: 64 MiB</span><br><span class="line">Trying to boot from MMC1</span><br><span class="line"></span><br><span class="line">U-Boot 2017.01-rc2-00057-g32ab1804cd-dirty (Nov 22 2025 - 20:10:34 +0800) Allwinner Technology</span><br><span class="line"></span><br><span class="line">CPU:   Allwinner V3s (SUN8I 1681)</span><br><span class="line">Model: Lichee Pi Zero</span><br><span class="line">DRAM:  64 MiB</span><br><span class="line">MMC:   SUNXI SD/MMC: 0</span><br><span class="line">*** Warning - bad CRC, using default environment</span><br><span class="line"></span><br><span class="line">In:    serial@01c28000</span><br><span class="line">Out:   serial@01c28000</span><br><span class="line">Err:   serial@01c28000</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">U-Boot 2017.01-rc2-00057-g32ab1804cd-dirty (Nov 22 2025 - 20:10:34 +0800) Allwinner Technology</span><br><span class="line"></span><br><span class="line">CPU:   Allwinner V3s (SUN8I 1681)</span><br><span class="line">Model: Lichee Pi Zero</span><br><span class="line">DRAM:  64 MiB</span><br><span class="line">MMC:   SUNXI SD/MMC: 0</span><br><span class="line">*** Warning - bad CRC, using default environment</span><br><span class="line"></span><br><span class="line">In:    serial@01c28000</span><br><span class="line">Out:   serial@01c28000</span><br><span class="line">Err:   serial@01c28000</span><br><span class="line">Net:   No ethernet found.</span><br><span class="line">starting USB...</span><br><span class="line">No controllers found</span><br><span class="line">Hit any key to stop autoboot:  0</span><br><span class="line">reading zImage</span><br><span class="line">4182880 bytes read in 216 ms (18.5 MiB/s)</span><br><span class="line">reading sun8i-v3s-licheepi-zero-dock.dtb</span><br><span class="line">12100 bytes read in 27 ms (437.5 KiB/s)</span><br><span class="line">## Flattened Device Tree blob at 41800000</span><br><span class="line">   Booting using the fdt blob at 0x41800000</span><br><span class="line">   Loading Device Tree to 42dfa000, end 42dfff43 ... OK</span><br><span class="line"></span><br><span class="line">Starting kernel ...</span><br><span class="line"></span><br><span class="line">[    0.000000] Booting Linux on physical CPU 0x0</span><br><span class="line">[    0.000000] Linux version 5.2.0-licheepi-zero+ (haozi@computer) (gcc version 6.3.1 20170404 (Linaro GCC 6.3-2017.05)) #1 SMP Wed Nov 19 23:22:23 CST 2025</span><br><span class="line">[    0.000000] CPU: ARMv7 Processor [410fc075] revision 5 (ARMv7), cr=10c5387d</span><br><span class="line">[    0.000000] CPU: div instructions available: patching division code</span><br><span class="line">[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache</span><br><span class="line">[    0.000000] OF: fdt: Machine model: Lichee Pi Zero with Dock</span><br><span class="line">[    0.000000] Memory policy: Data cache writealloc</span><br><span class="line">[    0.000000] percpu: Embedded 16 pages/cpu s34508 r8192 d22836 u65536</span><br><span class="line">[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 16256</span><br><span class="line">[    0.000000] Kernel command line: console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 earlyprintk rw  vt.global_cursor_default=0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">此处省略一部分</span><br><span class="line"></span><br><span class="line">[    1.420431] 3fa0:                                     00000000 00000000 00000000 00000000</span><br><span class="line">[    1.428600] 3fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000</span><br><span class="line">[    1.436766] 3fe0: 00000000 00000000 00000000 00000000 00000013 00000000</span><br><span class="line">[    1.443384] Rebooting in 5 seconds..</span><br><span class="line"></span><br><span class="line">然后从这里自动重启。</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="2-4-buildroot"><a href="#2-4-buildroot" class="headerlink" title="2.4 buildroot"></a>2.4 buildroot</h2><p>去官网下载：<a target="_blank" rel="noopener" href="https://buildroot.org/download.html">https://buildroot.org/download.html</a></p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/buildroot%E4%B8%8B%E8%BD%BD.png" alt="buildroot下载"></p>
+<p>这个选择最下方的长期支持版本。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">haozi@computer:~/develop/V3s/buildroot$ <span class="built_in">ls</span></span><br><span class="line"><span class="built_in">arch</span>   boot     Config.<span class="keyword">in</span>         configs  DEVELOPERS  fs     Makefile         package  support  toolchain</span><br><span class="line">board  CHANGES  Config.in.legacy  COPYING  docs        linux  Makefile.legacy  README   system   utils</span><br></pre></td></tr></table></figure>
+
+<p>得到的buildroot文件结构如下：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── arch: #存放CPU架构相关的配置脚本，如arm/mips/x86,这些CPU相关的配置，在制作工具链时，编译uboot和kernel时很关键.</span><br><span class="line">├── board</span><br><span class="line">├── boot</span><br><span class="line">├── CHANGES</span><br><span class="line">├── Config.in</span><br><span class="line">├── Config.in.legacy</span><br><span class="line">├── configs: #放置开发板的一些配置参数. </span><br><span class="line">├── COPYING</span><br><span class="line">├── DEVELOPERS</span><br><span class="line">├── dl: #存放下载的源代码及应用软件的压缩包. </span><br><span class="line">├── docs: #存放相关的参考文档. </span><br><span class="line">├── fs: #放各种文件系统的源代码. </span><br><span class="line">├── linux: #存放着Linux kernel的自动构建脚本. </span><br><span class="line">├── Makefile</span><br><span class="line">├── Makefile.legacy</span><br><span class="line">├── output: #是编译出来的输出文件夹. </span><br><span class="line">│   ├── build: #存放解压后的各种软件包编译完成后的现场.</span><br><span class="line">│   ├── host: #存放着制作好的编译工具链，如gcc、arm-linux-gcc等工具.</span><br><span class="line">│   ├── images: #存放着编译好的uboot.bin, zImage, rootfs等镜像文件，可烧写到板子里, 让linux系统跑起来.</span><br><span class="line">│   ├── staging</span><br><span class="line">│   └── target: #用来制作rootfs文件系统，里面放着Linux系统基本的目录结构，以及编译好的应用库和bin可执行文件. (buildroot根据用户配置把.ko .so .bin文件安装到对应的目录下去，根据用户的配置安装指定位置)</span><br><span class="line">├── package：#下面放着应用软件的配置文件，每个应用软件的配置文件有Config.in和soft_name.mk。</span><br><span class="line">├── README</span><br><span class="line">├── support</span><br><span class="line">├── system</span><br><span class="line">├── toolchain</span><br><span class="line">└── utils               # 实用工具</span><br></pre></td></tr></table></figure>
+
+
+
+<p>安装下面依赖</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install linux-headers-$(<span class="built_in">uname</span> -r)</span><br><span class="line"><span class="built_in">sudo</span> apt-get install libncurses5-dev</span><br><span class="line"><span class="built_in">sudo</span> apt-get install wget</span><br><span class="line"><span class="built_in">sudo</span> apt-get install gcc automake autoconf libtool make</span><br></pre></td></tr></table></figure>
+
+
+
+<p>输入以下指令进入配置页面</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make menuconfig</span><br></pre></td></tr></table></figure>
+
+
+
+<p>先选择架构，V3s的芯片信息如下</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CPU</span><br><span class="line">ARM Cortex A7 @ 1.2GHz</span><br><span class="line">Support NEON Advanced SIMD instruction</span><br><span class="line">VFPv4 Floating Point Unit</span><br></pre></td></tr></table></figure>
+
+<p><code>Target options</code>可以按照如下结果配置。</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E9%80%89%E6%8B%A9.png" alt="文件系统架构选择"></p>
+<p><code>Build options</code>配置这三项</p>
+<ol>
+<li>配置文件保存位置，在重新构建时，只需要调用make <xxx_defconfig>然后make即可，不用重新配置一遍。这里配置为：<code>$(CONFIG_DIR)/configs/my_v3s_defconfig</code>。</xxx_defconfig></li>
+</ol>
+<ul>
+<li>配置下载位置，因为系统构建的时候需要从网络上抓起很多软件报的代码进行编译构建。这个一般不需要修改。 </li>
+<li>strip target binaries建议使能，这样会使文件尺寸变小。</li>
+<li>其他默认即可</li>
+</ul>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%96%E8%AF%91%E9%80%89%E9%A1%B9.png" alt="文件系统编译选项"></p>
+<p><code>Toolchain</code>按照下图中配置</p>
+<ul>
+<li>Fortran、OpenMP刚开始没勾选，但是编译报错提示需要勾选，就又加上了。</li>
+</ul>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%96%E8%AF%91%E7%BC%96%E8%AF%91%E5%99%A8%E9%85%8D%E7%BD%AE.png" alt="文件系统编译编译器配置"></p>
+<p><code>System configuration</code></p>
+<ul>
+<li>System hostname：根据需要定义一个字符串，是控制台前面的提示符xxx@vsi，这里填haozi</li>
+<li>Root password：root用户的密码</li>
+</ul>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%96%E8%AF%91%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE.png" alt="文件系统编译文件系统配置"></p>
+<p>配置完成后，点击save选项。然后退出。</p>
+<p><img src="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%BC%96%E8%AF%91%E4%BF%9D%E5%AD%98%E9%85%8D%E7%BD%AE1.png" alt="文件系统编译保存配置1"></p>
+<p>退出配置界面后，使用以下命令，将配置好的配置文件保存到文件（路径就是前面配置的）。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">make savedefconfig</span><br><span class="line"></span><br><span class="line"><span class="comment"># 可以看到多了这个文件</span></span><br><span class="line">haozi@computer:~/develop/V3s/buildroot$ <span class="built_in">ls</span> configs/ | grep <span class="string">&quot;v3s&quot;</span></span><br><span class="line">my_v3s_defconfig</span><br></pre></td></tr></table></figure>
+
+<p>编译（过程极慢，需要下载一堆东西，最好找个网靠谱的地方）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<p>编译完成后会在output&#x2F;images下生成rootfs.tar，复制解压到第二分区后就能使用了。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">find ./ -name  rootfs.tar</span><br><span class="line"><span class="built_in">cp</span> ./output/images/rootfs.tar /media/haozi/rootfs/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 解压</span></span><br><span class="line"><span class="built_in">sudo</span> tar -xvf rootfs.tar</span><br></pre></td></tr></table></figure>
+
+<p>SD卡插入开发板，串口可看到系统可以正常启动了。目前只有一个账户<code>root</code>，密码是前面配置的。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Saving 2048 bits of non-creditable seed <span class="keyword">for</span> next boot</span><br><span class="line">Starting syslogd: OK</span><br><span class="line">Starting klogd: OK</span><br><span class="line">Running sysctl: OK</span><br><span class="line">Starting network: OK</span><br><span class="line">Starting crond: OK</span><br><span class="line"></span><br><span class="line">Welcome to Buildroot</span><br><span class="line">haozi login: root</span><br><span class="line">Password:</span><br></pre></td></tr></table></figure>
+
+<p>验证是否可用</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看内核版本</span></span><br><span class="line"><span class="built_in">uname</span> -a</span><br><span class="line"><span class="comment"># 查看 CPU 信息</span></span><br><span class="line"><span class="built_in">cat</span> /proc/cpuinfo</span><br><span class="line"><span class="comment"># 查看内存</span></span><br><span class="line">free -h</span><br><span class="line"><span class="comment"># 查看存储空间</span></span><br><span class="line"><span class="built_in">df</span> -h</span><br></pre></td></tr></table></figure>
+
+<p>测试结果如下</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># pwd</span></span><br><span class="line">/root</span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># uname -a</span></span><br><span class="line">Linux haozi 5.2.0-licheepi-zero+ <span class="comment">#1 SMP Wed Nov 19 23:22:23 CST 2025 armv7l GNU/Linux</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># cat /proc/cpuinfo</span></span><br><span class="line">processor       : 0</span><br><span class="line">model name      : ARMv7 Processor rev 5 (v7l)</span><br><span class="line">BogoMIPS        : 48.00</span><br><span class="line">Features        : half thumb fastmult vfp edsp neon vfpv3 tls vfpv4 idiva idivt vfpd32 lpae evtstrm</span><br><span class="line">CPU implementer : 0x41</span><br><span class="line">CPU architecture: 7</span><br><span class="line">CPU variant     : 0x0</span><br><span class="line">CPU part        : 0xc07</span><br><span class="line">CPU revision    : 5</span><br><span class="line"></span><br><span class="line">Hardware        : Allwinner sun8i Family</span><br><span class="line">Revision        : 0000</span><br><span class="line">Serial          : 12c00001887825cd</span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># free -h</span></span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:          54.8M        6.6M       44.7M       40.0K        3.4M       45.0M</span><br><span class="line">Swap:             0           0           0</span><br><span class="line"><span class="comment"># df -h</span></span><br><span class="line">Filesystem                Size      Used Available Use% Mounted on</span><br><span class="line">/dev/root                 3.5G     16.7M      3.3G   0% /</span><br><span class="line">devtmpfs                 26.9M         0     26.9M   0% /dev</span><br><span class="line">tmpfs                    27.4M         0     27.4M   0% /dev/shm</span><br><span class="line">tmpfs                    27.4M     20.0K     27.4M   0% /tmp</span><br><span class="line">tmpfs                    27.4M     20.0K     27.4M   0% /run</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="3-系统修改"><a href="#3-系统修改" class="headerlink" title="3. 系统修改"></a>3. 系统修改</h1><p>系统虽然跑起来了，但是设备都还没办法运行，需要进行配置，主要是针对内核的。</p>
+</article>
+<div class="article-footer">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文由 imhaozi 编写，采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+
+</div>
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2025/08/29/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/">博客搭建指南</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/">充电桩国标协议解析</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">imhaozi</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E7%A1%AC%E4%BB%B6%E5%87%86%E5%A4%87"><span class="toc-text">1. 硬件准备</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E5%BC%80%E5%8F%91%E6%9D%BF"><span class="toc-text">1.1 开发板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-SD%E5%8D%A1%E6%A0%BC%E5%BC%8F%E5%8C%96"><span class="toc-text">1.2 SD卡格式化</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91"><span class="toc-text">2. 系统开发</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%99%A8"><span class="toc-text">2.1 交叉编译器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-uboot"><span class="toc-text">2.2 uboot</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-Kernel"><span class="toc-text">2.3 Kernel</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-buildroot"><span class="toc-text">2.4 buildroot</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E7%B3%BB%E7%BB%9F%E4%BF%AE%E6%94%B9"><span class="toc-text">3. 系统修改</span></a></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a></div></widget>
+</div></aside><div class='float-panel'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+
+
+<script type="text/javascript">
+  window.canonical = {"originalHost":null,"officialHosts":["localhost"],"encoded":""};
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+    tag_plugins: {
+      chat: Object.assign({"api":"https://siteinfo.listentothewind.cn/api/v1"}),
+    }
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"skip_search":null,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+    loading: `https://api.iconify.design/eos-icons:three-dots-loading.svg?color=%231cd0fd`,
+  };
+  const deps = {
+    jquery: `https://gcore.jsdelivr.net/npm/jquery@3.7/dist/jquery.min.js`,
+    marked: `https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js`,
+    lazyload: `/%5Bobject%20Object%5D`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = () => {
+          utils.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) => {
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index, 1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')) {
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function () {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      const maxRetry = 3;
+      let retryCount = 0;
+
+      return new Promise((resolve, reject) => {
+        const load = () => {
+          utils.onLoading?.(el);
+
+          let timedOut = false;
+          const timeout = setTimeout(() => {
+            timedOut = true;
+            console.warn('[request] 超时:', url);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject('请求超时');
+            } else {
+              setTimeout(load, 1000);
+            }
+          }, 5000);
+
+          fetch(url).then(resp => {
+            if (timedOut) return;
+            clearTimeout(timeout);
+
+            if (!resp.ok) throw new Error('响应失败');
+            return resp;
+          }).then(data => {
+            if (timedOut) return;
+            utils.onLoadSuccess?.(el);
+            callback(data);
+            resolve(data);
+          }).catch(err => {
+            clearTimeout(timeout);
+            console.warn('[request] 错误:', err);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject(err);
+            } else {
+              setTimeout(load, 1000);
+            }
+          });
+        };
+
+        load();
+      });
+    },
+    requestWithoutLoading: (url, options = {}, maxRetry = 2, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        let retryCount = 0;
+
+        const tryRequest = () => {
+          let timedOut = false;
+          const timer = setTimeout(() => {
+            timedOut = true;
+            if (++retryCount > maxRetry) reject('timeout');
+            else tryRequest();
+          }, timeout);
+
+          fetch(url, options)
+            .then(resp => {
+              clearTimeout(timer);
+              if (!resp.ok) throw new Error('bad response');
+              resolve(resp);
+            })
+            .catch(err => {
+              clearTimeout(timer);
+              if (++retryCount > maxRetry) reject(err);
+              else setTimeout(tryRequest, 500);
+            });
+        };
+
+        tryRequest();
+      });
+    },
+    /********************** requestAnimationFrame ********************************/
+    // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+    // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+    requestAnimationFrame: (fn) => {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+      }
+      window.requestAnimationFrame(fn)
+    },
+    dark: {},
+  };
+
+  // utils.dark.mode 当前模式 dark or light
+  // utils.dark.toggle() 暗黑模式触发器
+  // utils.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  utils.dark.method = {
+    toggle: new RunItem(),
+  };
+  utils.dark = Object.assign(utils.dark, {
+    push: utils.dark.method.toggle.push,
+  });
+</script>
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+<script async src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+    callback_loaded: (el) => {
+      el.classList.add('loaded');
+      const wrapper = el.closest('.lazy-box');
+      const icon = wrapper?.querySelector('.lazy-icon');
+      if (icon) icon.remove();
+    }
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+
+  window.wrapLazyloadImages = (container) => {
+    if (typeof container === 'string') {
+      container = document.querySelector(container);
+    }
+    if (!container) return;
+    
+    const images = container.querySelectorAll('img');
+    images.forEach((img) => {
+      if (img.classList.contains('lazy')) return;
+
+      const src = img.getAttribute('src');
+      if (!src) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'lazy-box';
+
+      const newImg = img.cloneNode();
+      newImg.removeAttribute('src');
+      newImg.setAttribute('data-src', src);
+      newImg.classList.add('lazy');
+
+      const icon = document.createElement('div');
+      icon.className = 'lazy-icon';
+      if (def.loading) {
+        icon.style.backgroundImage = `url("${def.loading}")`;
+      }
+
+      wrapper.appendChild(newImg);
+      wrapper.appendChild(icon);
+
+      img.replaceWith(wrapper);
+    });
+
+    // 通知 LazyLoad 更新
+    if (window.lazyLoadInstance?.update) {
+      window.lazyLoadInstance.update();
+    }
+  }
+  
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.33.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    // applyThemeToGiscus(theme)
+  }
+
+  // FIXME: 这会导致无法使用 preferred_color_scheme 以外的主题
+  const applyThemeToGiscus = (theme) => {
+    // theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+    utils.dark.mode = newTheme === 'auto' ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : newTheme;
+    utils.dark.method.toggle.start();
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    } else {
+      utils.dark.mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    utils.dark.method.toggle.start();
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"rating":{"js":"/js/services/rating.js","api":"https://star-vote.xaox.cc/api/rating"},"vote":{"js":"/js/services/vote.js","api":"https://star-vote.xaox.cc/api/vote"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"friends_and_posts":{"js":"/js/services/friends_and_posts.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"},"voice":{"js":"/js/plugins/voice.js"},"video":{"js":"/js/plugins/video.js"},"download-file":{"js":"/js/plugins/download-file.js"},"twikoo":{"js":"/js/services/twikoo_latest_comment.js"},"waline":{"js":"/js/services/waline_latest_comment.js"},"artalk":{"js":"/js/services/artalk_latest_comment.js"},"giscus":{"js":"/js/services/giscus_latest_comment.js"},"contributors":{"edit_this_page":{"_posts/":null,"wiki/stellar/":"https://github.com/xaoxuu/hexo-theme-stellar-docs/blob/main/"},"js":"/js/services/contributors.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else if (id == 'voice') {
+        ctx.voiceAudios = document.querySelectorAll('.voice>audio');
+        if (ctx.voiceAudios?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            createVoiceDom(ctx.voiceAudios);
+          });
+        }
+      } else if (id == 'video') {
+        ctx.videos = document.querySelectorAll('.video>video');
+        if (ctx.videos?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            videoEvents(ctx.videos);
+          });
+        }
+      } else if (id == 'download-file') {
+        ctx.files = document.querySelectorAll('.file');
+        if (ctx.files?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            downloadFileEvent(ctx.files);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+
+    // chat iphone time
+    let phoneTimes = document.querySelectorAll('.chat .status-bar .time');
+
+    if (phoneTimes.length > 0) {
+      NowTime();
+      var date = new Date();
+      var sec = date.getSeconds();
+      var firstAdjustInterval = setInterval(firstAdjustTime, 1000 * (60 - sec));
+    }
+
+    function firstAdjustTime() {
+      NowTime();
+      clearInterval(firstAdjustInterval);
+      setInterval(NowTime, 1000 * 60);
+    }
+
+    function NowTime() {
+      for (let i = 0; i < phoneTimes.length; ++i) {
+        var timeSpan = phoneTimes[i];
+        var date = new Date();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+        timeSpan.innerHTML = check(hour) + ":" + check(min);
+      }
+    };
+
+    function check(val) {
+      if (val < 10) {
+        return ("0" + val);
+      }
+      return (val);
+    }
+
+    // chat quote
+    const chat_quote_obverser = new IntersectionObserver((entries, observer) => {
+      entries.filter((entry) => { return entry.isIntersecting }).sort((a, b) => a.intersectionRect.y !== b.intersectionRect.y ? a.intersectionRect.y - b.intersectionRect.y : a.intersectionRect.x - b.intersectionRect.x).forEach((entry, index) => {
+          observer.unobserve(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('quote-blink');
+            setTimeout(() => {
+              entry.target.classList.remove('quote-blink');
+            }, 1000);
+          }, Math.max(100, 16) * (index + 1));
+        });
+    });
+
+    var chatQuotes = document.querySelectorAll(".chat .talk .quote");
+    chatQuotes.forEach((quote) => {
+      quote.addEventListener('click', function () {
+        var chatCellDom = document.getElementById("quote-" + quote.getAttribute("quotedCellTag"));
+        if (chatCellDom) {
+          var chatDiv = chatCellDom.parentElement;
+          var mid = chatDiv.clientHeight / 2;
+          var offsetTop = chatCellDom.offsetTop;
+          if (offsetTop > mid - chatCellDom.clientHeight / 2) {
+            chatDiv.scrollTo({
+              top: chatCellDom.offsetTop - mid + chatCellDom.clientHeight / 2,
+              behavior: "smooth"
+            });
+          } else {
+            chatDiv.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
+          }
+          chat_quote_obverser.observe(chatCellDom);
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error), .with-fancybox .atk-content img:not([atk-emoticon])';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const memos = document.getElementsByClassName('ds-memos');
+    if (memos != undefined && memos.length > 0) {
+      needFancybox = true;
+    }
+    const fancybox = document.getElementsByClassName('with-fancybox');
+    if (fancybox != undefined && fancybox.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>

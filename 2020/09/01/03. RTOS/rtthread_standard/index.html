@@ -1,0 +1,1074 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
+  
+  
+  <meta name="generator" content="Hexo 8.1.1">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title>rtthread使用 - Blog</title>
+
+  
+    <meta name="description" content="RT-Thread系统外设使用记录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rtthread使用">
+<meta property="og:url" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="RT-Thread系统外设使用记录">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.1.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.2.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.3.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.4.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.5.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.6.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.7.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.8.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.9.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.10.jpg">
+<meta property="og:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.11.jpg">
+<meta property="article:published_time" content="2020-09-01T01:01:00.000Z">
+<meta property="article:modified_time" content="2025-11-13T02:00:38.571Z">
+<meta property="article:author" content="imhaozi">
+<meta property="article:tag" content="RT-Thread">
+<meta property="article:tag" content="RTOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/1.1.jpg">
+  
+  
+  
+  <meta name="keywords" content="RTOS,RT-Thread">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.33.1">
+
+
+  
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+  
+
+  
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"imhaozi","sameAs":[]},"dateCreated":"2020-09-01T09:01:00+08:00","dateModified":"2025-11-13T10:00:38+08:00","datePublished":"2020-09-01T09:01:00+08:00","description":"","headline":"rtthread使用","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/"},"publisher":{"@type":"Organization","name":"imhaozi","sameAs":[]},"url":"http://example.com/2020/09/01/03.%20RTOS/rtthread_standard/","keywords":"RTOS, RT-Thread","image":[]}</script>
+  
+</head>
+<body>
+
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/avatar.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Blog</div><div class="sub normal cap">装备锻造中</div><div class="sub hover cap" style="opacity:0"> Write By imhaozi</div></a></div></header>
+
+<div class="nav-area">
+
+<nav class="menu dis-select"><a class="nav-item active" title="博客" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="文档" href="/wiki/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="关于" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/2024/10/08/05.%20%E5%BC%80%E6%BA%90%E5%BA%93/lvgl%E7%A7%BB%E6%A4%8D/"><span class="title">lvgl移植</span></a><a class="item title" href="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/"><span class="title">ros1小车diy记录</span></a><a class="item title" href="/2020/10/01/03.%20RTOS/rtthread_nano/"><span class="title">rtthread_nano移植</span></a><a class="item title" href="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/"><span class="title">v3s开发板制作</span></a><a class="item title" href="/2025/08/29/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/"><span class="title">博客搭建指南</span></a><a class="item title" href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/"><span class="title">充电桩国标协议解析</span></a><a class="item title" href="/2025/11/05/08.%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/"><span class="title">CanDBC文件制作</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/"><span class="title">Ymodem</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/"><span class="title">Modbus</span></a><a class="item title" href="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/"><span class="title">CanOpen</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/imhaozi" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/github.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://space.bilibili.com/330622220" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/bilibili.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/942ebbf1a4b91.svg"/></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/RTOS/">RTOS</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2020-09-01T01:01:00.000Z">2020-09-01</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2025-11-13T02:00:38.571Z">2025-11-13</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>rtthread使用</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><ul>
+<li>开发平台：RT-Thread Studio</li>
+<li>开发板：潘多拉 STM32L475VET6、战舰板 STM32F103ZET6</li>
+<li>RTThread版本：4.0.3</li>
+<li>芯片包版本：0.1.9（F1、F4、L4的都是）</li>
+</ul>
+<h1 id="一-创建工程及时钟"><a href="#一-创建工程及时钟" class="headerlink" title="一. 创建工程及时钟"></a>一. 创建工程及时钟</h1><h2 id="1-1-创建工程"><a href="#1-1-创建工程" class="headerlink" title="1.1 创建工程"></a>1.1 创建工程</h2><p>文件 -&gt; 新建 -&gt; RT-Thread 项目。</p>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.1.jpg" alt="1.1"></p>
+<p>创建工程后，直接编译，无报错和警告</p>
+<blockquote>
+<p>如果这个时候直接编译不通过的，在包管理器中降低芯片包的版本，不要用最新的，最新的更多会适配高版本的rtthread，比如为了适配4.1.1而新发的芯片包。（L4芯片的就有这个问题）</p>
+</blockquote>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.2.jpg" alt="1.2"></p>
+<p>下载至开发板</p>
+<p>打开串口助手可以看到内容输出。</p>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.3.jpg" alt="1.3"></p>
+<h2 id="1-2-时钟分析"><a href="#1-2-时钟分析" class="headerlink" title="1.2 时钟分析"></a>1.2 时钟分析</h2><p>根据提示，默认使用的是内部时钟，如果需要修改，请修改<code>drv_clk.c</code>文件。</p>
+<p>分析一下，根据启动文件，可以梳理一下启动过程。</p>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.4.jpg" alt="1.4"></p>
+<p>从这里启动</p>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.5.jpg" alt="1.5"></p>
+<p>然后在 rt-thread -&gt; src -&gt; components.c 文件中能看到包含<code>int entry(void)</code>在内的所有初始化函数。</p>
+<p>从<code>int entry(void);</code>函数中进入<code>rtthread_startup();</code>函数，再从中进入<code>rt_hw_board_init();</code>函数，再从中进入<code>hw_board_init(BSP_CLOCK_SOURCE, BSP_CLOCK_SOURCE_FREQ_MHZ, BSP_CLOCK_SYSTEM_FREQ_MHZ);</code>函数。</p>
+<blockquote>
+<p>这里面传入的参数是定义在 board.h 文件中的，默认如下：</p>
+<p>&#x2F;<em>————————– CLOCK CONFIG BEGIN ————————–</em>&#x2F;</p>
+<p>#define BSP_CLOCK_SOURCE                  (“HSI”)<br>#define BSP_CLOCK_SOURCE_FREQ_MHZ         ((int32_t)0)<br>#define BSP_CLOCK_SYSTEM_FREQ_MHZ         ((int32_t)80)</p>
+<p>&#x2F;<em>————————– CLOCK CONFIG END ————————–</em>&#x2F;</p>
+<p>但是，继续往下翻下去，发现传入的这几个参数根本没用。</p>
+</blockquote>
+<p>再从中进去<code>clk_init(clock_src, clock_src_freq, clock_target_freq);</code>函数。这个函数就定义在<code>drv_clk.c</code>文件中。</p>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.6.jpg" alt="1.6"></p>
+<p>该函数又调用了<code>system_clock_config(target_freq);</code>函数，该函数内容如下，这里的时钟配置为默认使用的内部高速时钟。</p>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.7.jpg" alt="1.7"></p>
+<p>可以看出，最后这里是时钟初始化的地方。需要修改时钟只需要修改此函数即可。</p>
+<blockquote>
+<p>可以看出，board.h中的那几个宏定义在传参的过程中，最后也没传过来。（即 没用）</p>
+</blockquote>
+<h2 id="1-3-时钟配置"><a href="#1-3-时钟配置" class="headerlink" title="1.3 时钟配置"></a>1.3 时钟配置</h2><p>最简单的配置时钟的方法还是，使用cubemx生成一个。</p>
+<p>从左侧打开cubemx窗口，然后配置上调试接口、时钟树、<strong>串口</strong>，然后选择makefile，直接生成工程，其他的都没有改动。生成完毕之后，<strong>然后关闭cubemx界面（后续都是关闭界面之后才生效，就不再写了）</strong>，在左边可以看到cubemx文件夹。</p>
+<blockquote>
+<p>注意：</p>
+<ol>
+<li>串口的配置，打开就行，具体的参数可以不用管其实。</li>
+<li>如果没看到这个文件夹，就鼠标在工程栏选中工程，然后右键刷新一下。</li>
+</ol>
+</blockquote>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.8.jpg" alt="1.8"></p>
+<p>生成完成之后还会有提示有个文件被重命名了。</p>
+<blockquote>
+<p>如果没弹出来，注意cubemx界面是否关掉了。一定要关掉才可以。</p>
+<p>点击cubemx的时候，有时候会不小心点到多次，打开了两个cubemx界面，都要关掉才行。</p>
+</blockquote>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.9.jpg" alt="1.9"></p>
+<p>因为cubemx根据你的配置重新生成了一份配置文件，所以原有的那一份就给你换了个名字做备份。<strong>而且后续每次使用cubemx生成代码后，该文件中的宏定义会自动打开，就不用手动打开了</strong>。</p>
+<blockquote>
+<p>为什么在上面的配置中需要勾选串口，是因为，默认的配置文件中是打开了串口的定义的，但是使用cubemx重新生成的话，不勾选串口，生成的配置文件中不会自动添加使用串口的宏定义。</p>
+</blockquote>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.10.jpg" alt="1.10"></p>
+<p>另外，再次打开上面提到的<code>drv_clk.c</code>文件查看<code>clk_init</code>函数。</p>
+<p>可以发现使用cubemx生成之后，这个函数被自动更改了，提示我们这个函数现在使用的是cubemx生成的内容了。而且此时跟随<code>SystemClock_Config();</code>函数定义的位置，可以发现，它会跳到cubemx生成的那个<code>main.c</code>文件中的时钟初始化部分，即调用的是新生成的时钟初始化函数。</p>
+<p><img src="/2020/09/01/03.%20RTOS/rtthread_standard/1.11.jpg" alt="1.11"></p>
+<p>而且，在cubemx生成的main.c文件中的main函数中，在定义的前面自动加了**__WEAK**标识。</p>
+<p>然后，点击编译，应该也是可以通过的，无错误无警告。</p>
+<blockquote>
+<p>如果有串口相关错误：检查cubemx是否打开了串口一的配置（SHELL默认用的串口一，但是实际上随便勾选一个串口，让cubemx把串口的头文件打开就行了，具体的引脚初始化函数其实没用到）</p>
+</blockquote>
+<h1 id="二-设备框架使用"><a href="#二-设备框架使用" class="headerlink" title="二. 设备框架使用"></a>二. 设备框架使用</h1><p>以下并不一定是按照从简单到麻烦的顺序来的。</p>
+<h2 id="2-1-PIN设备"><a href="#2-1-PIN设备" class="headerlink" title="2.1 PIN设备"></a>2.1 PIN设备</h2><p>pin设备默认是开启的，直接使用即可。</p>
+<h3 id="2-1-1-LED闪烁"><a href="#2-1-1-LED闪烁" class="headerlink" title="2.1.1 LED闪烁"></a>2.1.1 LED闪烁</h3><p>在工程中新建一个文件夹，在文件夹中新建一个<code>.c</code>文件，添加以下内容。</p>
+<p>编译下载后，在Shell窗口输入<code>led_thread_test</code>命令，可以看到两个LED闪烁。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 程序清单：这是一个 pin 设备使用例程</span></span><br><span class="line"><span class="comment"> * 例程导出了 led_thread_test 命令到控制终端</span></span><br><span class="line"><span class="comment"> * 命令调用格式：led_thread_test</span></span><br><span class="line"><span class="comment"> * 程序功能：运行后两个led闪烁，闪烁时间间隔分别为1s和2s</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtdevice.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;drv_common.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 线程函数体需要传入的参数</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">rt_uint32_t</span> flash_ms;</span><br><span class="line">    <span class="type">rt_uint8_t</span> led_index;</span><br><span class="line">&#125;Parameter_struct;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 线程相关参数</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_PRIORITY         25</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_STACK_SIZE       512</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_TIMESLICE        5</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// LED引脚定义</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LED0_PIN    GET_PIN(B, 5)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LED1_PIN    GET_PIN(E, 5)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// LED编号</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LED0    0</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LED1    1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义LED0的参数结构体</span></span><br><span class="line">Parameter_struct Parameter0_struct =</span><br><span class="line">&#123;</span><br><span class="line">    .flash_ms = <span class="number">1000</span>,</span><br><span class="line">    .led_index = LED0,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义LED1的参数结构体</span></span><br><span class="line">Parameter_struct Parameter1_struct =</span><br><span class="line">&#123;</span><br><span class="line">    .flash_ms = <span class="number">2000</span>,</span><br><span class="line">    .led_index = LED1,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* led_test：动态创建线程</span></span><br><span class="line"><span class="comment"> * 1. 定义一个 线程结构体指针      这里命名为：led_thread</span></span><br><span class="line"><span class="comment"> * 2. 编写一个 线程函数体          这里命名为：led_thread_entry</span></span><br><span class="line"><span class="comment"> * 3. 调用 rt_thread_create 创建一个线程</span></span><br><span class="line"><span class="comment"> * 4. 调用 rt_thread_startup 启动线程</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">static</span> <span class="type">rt_thread_t</span> led_thread = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief   LED闪烁线程函数体</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param   flash_ms     闪烁间隔时间，单位毫秒</span></span><br><span class="line"><span class="comment"> * @param   led_index    led编号，0/1</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @return  none</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @note    static防止和其他文件中的重名；此线程不会终止。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">led_thread_entry</span> <span class="params">(<span class="type">void</span> *parameter)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 接收传过来的参数</span></span><br><span class="line">    Parameter_struct *in_parameter = (Parameter_struct *)parameter;</span><br><span class="line">    <span class="comment">// rt_kprintf(&quot;in_flash_ms = %d, in_led_index = %d \n&quot;, in_parameter-&gt;flash_ms, in_parameter-&gt;led_index);</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 反转使用</span></span><br><span class="line">    <span class="type">rt_uint32_t</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 判断LED编号</span></span><br><span class="line">        <span class="keyword">switch</span>(in_parameter-&gt;led_index)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> LED0:</span><br><span class="line">                rt_kprintf(<span class="string">&quot;led0 flash \n&quot;</span>);</span><br><span class="line">                rt_pin_write(LED0_PIN, count % <span class="number">2</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> LED1:</span><br><span class="line">                rt_kprintf(<span class="string">&quot;led1 flash \n&quot;</span>);</span><br><span class="line">                rt_pin_write(LED1_PIN, count % <span class="number">2</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                rt_kprintf(<span class="string">&quot;please enter the correct LED index.(0/1) \n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        count++;</span><br><span class="line">        rt_thread_mdelay(in_parameter-&gt;flash_ms);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">led_thread_test</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// LED模式初始化</span></span><br><span class="line">    rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);</span><br><span class="line">    rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);</span><br><span class="line">    rt_pin_write(LED0_PIN, <span class="number">1</span>);</span><br><span class="line">    rt_pin_write(LED1_PIN, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* led0：动态创建线程 start */</span></span><br><span class="line">    <span class="keyword">if</span>(Parameter0_struct.flash_ms != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        led_thread = rt_thread_create(<span class="string">&quot;led0_th&quot;</span>,                        <span class="comment">// name</span></span><br><span class="line">                                        led_thread_entry,               <span class="comment">// 函数体入口</span></span><br><span class="line">                                        (<span class="type">void</span>*)&amp;Parameter0_struct,      <span class="comment">// 函数体 参数</span></span><br><span class="line">                                        THREAD_STACK_SIZE,              <span class="comment">// 分配内存大小</span></span><br><span class="line">                                        THREAD_PRIORITY,                <span class="comment">// 优先级</span></span><br><span class="line">                                        THREAD_TIMESLICE);              <span class="comment">// 时间片大小</span></span><br><span class="line">        <span class="comment">/* 如果获得线程控制块，启动这个线程 */</span></span><br><span class="line">        <span class="keyword">if</span> (led_thread != RT_NULL)</span><br><span class="line">            rt_thread_startup(led_thread);    <span class="comment">// 启动线程</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 输出错误码</span></span><br><span class="line">            rt_kprintf(<span class="string">&quot;led0 flash thread is failed...the error code is %ld \r\n&quot;</span>, led_thread-&gt;error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* led0：over  */</span></span><br><span class="line"></span><br><span class="line">    led_thread = RT_NULL;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* led1：动态创建线程 start */</span></span><br><span class="line">    <span class="keyword">if</span>(Parameter1_struct.flash_ms != <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        led_thread = rt_thread_create(<span class="string">&quot;led1_th&quot;</span>,                        <span class="comment">// name</span></span><br><span class="line">                                        led_thread_entry,               <span class="comment">// 函数体入口</span></span><br><span class="line">                                        (<span class="type">void</span>*)&amp;Parameter1_struct,      <span class="comment">// 函数体 参数</span></span><br><span class="line">                                        THREAD_STACK_SIZE,              <span class="comment">// 分配内存大小</span></span><br><span class="line">                                        THREAD_PRIORITY,                <span class="comment">// 优先级</span></span><br><span class="line">                                        THREAD_TIMESLICE);              <span class="comment">// 时间片大小</span></span><br><span class="line">        <span class="comment">/* 如果获得线程控制块，启动这个线程 */</span></span><br><span class="line">        <span class="keyword">if</span> (led_thread != RT_NULL)</span><br><span class="line">            rt_thread_startup(led_thread);    <span class="comment">// 启动线程</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 输出错误码</span></span><br><span class="line">            rt_kprintf(<span class="string">&quot;led1 flash thread is failed...the error code is %ld \r\n&quot;</span>, led_thread-&gt;error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* led1：over  */</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> RT_EOK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">MSH_CMD_EXPORT(led_thread_test, led thread test);</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-1-2-按键中断"><a href="#2-1-2-按键中断" class="headerlink" title="2.1.2 按键中断"></a>2.1.2 按键中断</h3><p>在工程中新建一个文件夹，在文件夹中新建一个<code>.c</code>文件，添加以下内容。</p>
+<p>编译下载后，在Shell窗口输入<code>key_irq_test</code>命令，然后按下按键，对应LED亮起。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 程序清单：这是一个 PIN 设备绑定中断使用例程</span></span><br><span class="line"><span class="comment"> * 例程导出了 key_irq_test 命令到控制终端</span></span><br><span class="line"><span class="comment"> * 命令调用格式：key_irq_test</span></span><br><span class="line"><span class="comment"> * 程序功能：通过按键控制led亮灭</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtdevice.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;drv_common.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// KEY引脚定义</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> KEY0_PIN    GET_PIN(E, 4)   <span class="comment">// RIGHT</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> KEY2_PIN    GET_PIN(E, 2)   <span class="comment">// LEFT</span></span></span><br><span class="line"><span class="comment">// LED引脚定义</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LED0_PIN    GET_PIN(B, 5)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LED1_PIN    GET_PIN(E, 5)</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">led0_on</span><span class="params">(<span class="type">void</span> *args)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt_kprintf(<span class="string">&quot;led0 on, led1 off!\n&quot;</span>);</span><br><span class="line">    rt_pin_write(LED0_PIN, PIN_LOW);</span><br><span class="line">    rt_pin_write(LED1_PIN, PIN_HIGH);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">led1_on</span><span class="params">(<span class="type">void</span> *args)</span></span><br><span class="line">&#123;</span><br><span class="line">    rt_kprintf(<span class="string">&quot;led0 off, led1 on!\n&quot;</span>);</span><br><span class="line">    rt_pin_write(LED0_PIN, PIN_HIGH);</span><br><span class="line">    rt_pin_write(LED1_PIN, PIN_LOW);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">key_irq_test</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/* LED引脚为输出模式 */</span></span><br><span class="line">    rt_pin_mode(LED0_PIN, PIN_MODE_OUTPUT);</span><br><span class="line">    rt_pin_mode(LED1_PIN, PIN_MODE_OUTPUT);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 默认高电平 */</span></span><br><span class="line">    rt_pin_write(LED0_PIN, PIN_HIGH);</span><br><span class="line">    rt_pin_write(LED1_PIN, PIN_HIGH);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 按键0引脚为输入模式 */</span></span><br><span class="line">    rt_pin_mode(KEY0_PIN, PIN_MODE_INPUT_PULLUP);</span><br><span class="line">    <span class="comment">/* 绑定中断，下降沿模式，回调函数名为led0_on */</span></span><br><span class="line">    rt_pin_attach_irq(KEY0_PIN, PIN_IRQ_MODE_FALLING, led0_on, RT_NULL);</span><br><span class="line">    <span class="comment">/* 使能中断 */</span></span><br><span class="line">    rt_pin_irq_enable(KEY0_PIN, PIN_IRQ_ENABLE);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 按键2引脚为输入模式 */</span></span><br><span class="line">    rt_pin_mode(KEY2_PIN, PIN_MODE_INPUT_PULLUP);</span><br><span class="line">    <span class="comment">/* 绑定中断，下降沿模式，回调函数名为led1_on */</span></span><br><span class="line">    rt_pin_attach_irq(KEY2_PIN, PIN_IRQ_MODE_FALLING, led1_on, RT_NULL);</span><br><span class="line">    <span class="comment">/* 使能中断 */</span></span><br><span class="line">    rt_pin_irq_enable(KEY2_PIN, PIN_IRQ_ENABLE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 导出到 msh 命令列表中 */</span></span><br><span class="line">MSH_CMD_EXPORT(key_irq_test, key irq test);</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-串口设备"><a href="#2-2-串口设备" class="headerlink" title="2.2 串口设备"></a>2.2 串口设备</h2><p><strong>目标：串口二接收串口助手发来的数据，并且将数据重新发送出去。</strong></p>
+<blockquote>
+<p>此设备的开启步骤在<code>board.h</code>中是有描述的。</p>
+</blockquote>
+<p>第一步：在 RT-Thread Settings 中 -&gt; 组件 -&gt; 设备驱动程序 -&gt; 使用UART设备驱动程序 -&gt; 使能串口DMA模式，勾选上。</p>
+<blockquote>
+<p>使用UART设备驱动程序 默认是打开的，因为串口一用于SHELL窗口了。这里只要把下面的DMA点开即可。</p>
+</blockquote>
+<p>第二步：在 board.h 中，添加如下宏定义。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 新增 串口2 设备</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_USING_UART2</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_UART2_TX_PIN       <span class="string">&quot;PA2&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_UART2_RX_PIN       <span class="string">&quot;PA3&quot;</span></span></span><br><span class="line"><span class="comment">// 串口2 使用接收DMA</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_UART2_RX_USING_DMA</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>此时如果直接编译，然后在Shell窗口输入list_device命令，就已经能看到uart2设备了。</p>
+</blockquote>
+<p>第三步：编写测试代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 程序清单：这是一个串口设备 DMA 接收使用例程</span></span><br><span class="line"><span class="comment"> * 例程导出了 uart2_dma_test 命令到控制终端</span></span><br><span class="line"><span class="comment"> * 命令调用格式：uart2_dma_test</span></span><br><span class="line"><span class="comment"> * 程序功能：运行后通过串口输出字符串&quot;usart2 test is running!&quot;，之后，串口会将接收到的数据重新发送出去。</span></span><br><span class="line"><span class="comment"> * 此功能需要做出的适配如下：1. 在board.h串口部分添加如下宏定义</span></span><br><span class="line"><span class="comment"> * #define BSP_USING_UART2</span></span><br><span class="line"><span class="comment"> * #define BSP_UART2_TX_PIN       &quot;PA2&quot;</span></span><br><span class="line"><span class="comment"> * #define BSP_UART2_RX_PIN       &quot;PA3&quot;</span></span><br><span class="line"><span class="comment"> * #define BSP_UART2_RX_USING_DMA</span></span><br><span class="line"><span class="comment"> * 2.在rt-thread settings-组件-设备驱动程序-串口中打开DMA设置</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 串口接收消息结构</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rx_msg</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">rt_device_t</span> dev;</span><br><span class="line">    <span class="type">rt_size_t</span> size;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//  串口设备名称</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TEST_UART_NAME       <span class="string">&quot;uart2&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 串口设备句柄</span></span><br><span class="line"><span class="type">static</span> <span class="type">rt_device_t</span> usart_serial;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 消息队列控制块</span></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">rt_messagequeue</span> <span class="title">usart_rx_mq</span>;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 接收数据回调函数 */</span></span><br><span class="line"><span class="comment">// 若串口以 DMA 接收模式打开，当 DMA 完成一批数据的接收后会调用此回调函数。</span></span><br><span class="line"><span class="comment">// dev 是设备句柄</span></span><br><span class="line"><span class="comment">// size 是缓冲区中接收到的数据长度</span></span><br><span class="line"><span class="type">static</span> <span class="type">rt_err_t</span> <span class="title function_">uart_input</span><span class="params">(<span class="type">rt_device_t</span> dev, <span class="type">rt_size_t</span> size)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rx_msg</span> <span class="title">msg</span>;</span></span><br><span class="line">    <span class="type">rt_err_t</span> result;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 把接收消息的对象 和 消息的大小放到msg结构体</span></span><br><span class="line">    msg.dev = dev;</span><br><span class="line">    msg.size = size;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 把包装好的msg发送到消息队列</span></span><br><span class="line">    result = rt_mq_send(&amp;usart_rx_mq, &amp;msg, <span class="keyword">sizeof</span>(msg));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果放满了输出提示信息</span></span><br><span class="line">    <span class="keyword">if</span> ( result == -RT_EFULL)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">/* 消息队列满 */</span></span><br><span class="line">        rt_kprintf(<span class="string">&quot;message queue full！\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 串口线程函数体</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">serial_thread_entry</span><span class="params">(<span class="type">void</span> *parameter)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rx_msg</span> <span class="title">msg</span>;</span></span><br><span class="line">    <span class="type">rt_err_t</span> result;</span><br><span class="line">    <span class="type">rt_uint32_t</span> rx_length;</span><br><span class="line"></span><br><span class="line">    <span class="type">static</span> <span class="type">char</span> rx_buffer[RT_SERIAL_RB_BUFSZ + <span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 循环接收消息</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 将msg中的内容清零</span></span><br><span class="line">        rt_memset(&amp;msg, <span class="number">0</span>, <span class="keyword">sizeof</span>(msg));</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* 从消息队列中读取消息 放到msg中，采用一直等待的方式 */</span></span><br><span class="line">        result = rt_mq_recv(&amp;usart_rx_mq, &amp;msg, <span class="keyword">sizeof</span>(msg), RT_WAITING_FOREVER);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (result == RT_EOK)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">/* 从串口读取 msg.size个字节的数据，并放到rx_buffer中  */</span></span><br><span class="line">            rx_length = rt_device_read(msg.dev, <span class="number">0</span>, rx_buffer, msg.size);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 最后补 \0</span></span><br><span class="line">            rx_buffer[rx_length] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/* 通过串口设备 serial 输出读取到的消息  */</span></span><br><span class="line">            rt_device_write(usart_serial, <span class="number">0</span>, rx_buffer, rx_length);</span><br><span class="line"></span><br><span class="line">            <span class="comment">/* 打印数据 */</span></span><br><span class="line">            rt_kprintf(<span class="string">&quot;%s\n&quot;</span>, rx_buffer);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">uart2_dma_test</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">rt_err_t</span> ret = RT_EOK;</span><br><span class="line"></span><br><span class="line">    <span class="type">static</span> <span class="type">char</span> msg_pool[<span class="number">256</span>];</span><br><span class="line"></span><br><span class="line">    <span class="type">char</span> str[] = <span class="string">&quot;usart2 test is running!\r\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 步骤1 通过串口名字找到串口句柄, 名称定义在最上边。</span></span><br><span class="line">    usart_serial = rt_device_find(TEST_UART_NAME);</span><br><span class="line">    <span class="keyword">if</span> (!usart_serial)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 未找到输出提示</span></span><br><span class="line">        rt_kprintf(TEST_UART_NAME);</span><br><span class="line">        rt_kprintf(<span class="string">&quot;not find!\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> RT_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 步骤2 设置串口初始化参数 这里跳过</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 步骤3 以DMA接收及轮询发送方式打开串口设备</span></span><br><span class="line">    rt_device_open(usart_serial, RT_DEVICE_FLAG_DMA_RX);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 步骤4 设置串口接收回调函数</span></span><br><span class="line">    <span class="comment">// 3.1 初始化消息队列（回调函数中需要使用）</span></span><br><span class="line">    rt_mq_init(&amp;usart_rx_mq,</span><br><span class="line">                <span class="string">&quot;usart_rx_mq&quot;</span>,</span><br><span class="line">                msg_pool,                 <span class="comment">/* 存放消息的缓冲区 */</span></span><br><span class="line">                <span class="keyword">sizeof</span>(<span class="keyword">struct</span> rx_msg),    <span class="comment">/* 一条消息的最大长度 */</span></span><br><span class="line">                <span class="keyword">sizeof</span>(msg_pool),         <span class="comment">/* 存放消息的缓冲区大小 */</span></span><br><span class="line">                RT_IPC_FLAG_FIFO);        <span class="comment">/* 如果有多个线程等待，按照先来先得到的方法分配消息 */</span></span><br><span class="line">    <span class="comment">// 3.2 设置接收回调函数</span></span><br><span class="line">    rt_device_set_rx_indicate(usart_serial, uart_input);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 步骤4 创建并启动 串口线程</span></span><br><span class="line">    <span class="comment">// 发送开始了的提示信息</span></span><br><span class="line">    rt_device_write(usart_serial, <span class="number">0</span>, str, (<span class="keyword">sizeof</span>(str) - <span class="number">1</span>));</span><br><span class="line">    <span class="comment">// 创建 serial 线程</span></span><br><span class="line">    <span class="type">rt_thread_t</span> thread = rt_thread_create(<span class="string">&quot;serial&quot;</span>, serial_thread_entry, RT_NULL, <span class="number">1024</span>, <span class="number">25</span>, <span class="number">10</span>);</span><br><span class="line">    <span class="comment">// 创建成功则启动线程</span></span><br><span class="line">    <span class="keyword">if</span> (thread != RT_NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_thread_startup(thread);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        ret = RT_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 导出到 msh 命令列表中 */</span></span><br><span class="line">MSH_CMD_EXPORT(uart2_dma_test, uart2 device dma test);</span><br></pre></td></tr></table></figure>
+
+<p>编译运行后，在SHELL窗口（串口一）输入<code>uart2_dma_test</code>命令，然后在串口二中发送信息，串口二会将收到的信息重新发送。</p>
+<p><strong>如果想要使用串口一，需要做出的改动如下：</strong></p>
+<ol>
+<li>board.c中的宏定义</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_USING_UART1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_UART1_TX_PIN       <span class="string">&quot;PA9&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_UART1_RX_PIN       <span class="string">&quot;PA10&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_UART1_RX_USING_DMA</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p>在 RT-Thread Settings 中 -&gt; 组件 -&gt; shell命令中，将其关闭。</p>
+</li>
+<li><p>将上述程序中的<code>#define TEST_UART_NAME       &quot;uart2&quot;</code>，2 改为 1。</p>
+</li>
+<li><p>其余的函数名、命令名改不改都行，不影响运行，要能分辨就行。</p>
+</li>
+</ol>
+<p><strong>关于串口发送DMA</strong></p>
+<p>经测试，在部分芯片包中貌似不支持发送DMA。（理由未知）</p>
+<p>在潘多拉STM32L475VET6中，增加<code>#define BSP_UART2_TX_USING_DMA</code>宏定义会报错。</p>
+<p>而在电子料架板卡STM32F407VET6中，增加<code>#define BSP_UART2_TX_USING_DMA</code>宏定义就可以正常编译通过。</p>
+<h2 id="2-3-CAN（需要改驱动）"><a href="#2-3-CAN（需要改驱动）" class="headerlink" title="2.3 CAN（需要改驱动）"></a>2.3 CAN（需要改驱动）</h2><p><strong>目标：使用CAN接口发送和接收数据。</strong></p>
+<blockquote>
+<p>此设备的开启步骤在<code>board.h</code>中没有相关描述。但是有BUG。</p>
+</blockquote>
+<p><strong>硬件配置</strong></p>
+<ul>
+<li>硬件设备：CANelyst-Ⅱ，设备的CAN_L与开发板的L连接，设备的CAN_H与开发板的H连接。</li>
+<li>软件：USB_CAN TOOL，切记切记要安装驱动，否则会一直显示未找到设备。</li>
+</ul>
+<blockquote>
+<p>可以先按照软件上方目录 -&gt; 设备操作 -&gt; USBCAN测试工具中的操作指引，将硬件两个端口连起来，测试硬件是否正常运行，然后在搞软件。</p>
+<p>常见问题：</p>
+<ol>
+<li>设备一直未找到（无法连接）。打开电脑设备管理器看CAN设备是否正常识别，如果未识别，说明没安装驱动。安装驱动方法参考：软件上方目录 -&gt; 帮助 -&gt; 帮助文档 -&gt; 2. USB驱动安装与卸载说明书.pdf</li>
+</ol>
+</blockquote>
+<p><strong>程序</strong></p>
+<p>第一步：在 RT-Thread Settings 中 -&gt; 组件 -&gt; 设备驱动程序 -&gt; CAN设备驱动程序，勾选上 -&gt; 使能CAN硬件过滤器，也先勾选上。</p>
+<blockquote>
+<p>硬件过滤器：作用未知，等了解了过来写上。</p>
+</blockquote>
+<p>第二步：添加驱动程序。在RT-Thread Studio 软件的安装目录下：D:\RT-ThreadStudio\repo\Extract\RT-Thread_Source_Code\RT-Thread\4.0.3\bsp\stm32\libraries\HAL_Drivers\</p>
+<p>找到<code>drv_can.c</code>放到我们工程的drivers文件夹，找到<code>drv_can.h</code>文件放到我们工程的drivers\include文件夹。</p>
+<p>第三步：添加以下宏定义到<code>board.h</code>文件中，这里使用 CAN1 进行测试。注意：下面这部分宏定义都是自己添加的，默认是没有关于CAN接口的宏定义的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*-------------------------- CAN CONFIG BEGIN --------------------------*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_USING_CAN</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_USING_CAN1</span></span><br><span class="line"><span class="comment">/*#define BSP_USING_CAN2*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*-------------------------- CAN CONFIG END --------------------------*/</span></span><br></pre></td></tr></table></figure>
+
+<p>第四步：从左侧窗口打开cubemx，勾选上CAN接口，引脚是对的就可以，参数配置可以不用管。然后关闭cubemx界面，生成代码后刷新左侧目录界面。即可在cubemx文件夹中的<code>stm32f1xx_hal_msp.c</code>文件中看到CAN的引脚初始化代码。</p>
+<blockquote>
+<p>此时如果直接编译，然后在Shell窗口输入list_device命令，就已经能看到can1设备了。</p>
+</blockquote>
+<p>第五步：编写测试代码，程序运行后，打开CAN-USB软件并连接设备，波特率设置1000k，然后在Shell窗口输入can_test命令，即可从CAN-USB软件中看到开发板发送的消息。也可以使用CAN-USB软件发送消息，在Shell窗口可看到接收的消息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 程序清单：这是一个 CAN 设备使用例程</span></span><br><span class="line"><span class="comment"> * 例程导出了 can_test 命令到控制终端</span></span><br><span class="line"><span class="comment"> * 命令调用格式：can_test can1</span></span><br><span class="line"><span class="comment"> * 命令解释：命令第二个参数是要使用的 CAN 设备名称，为空则使用默认的 CAN 设备</span></span><br><span class="line"><span class="comment"> * 程序功能：通过 CAN 设备发送一帧，并创建一个线程接收数据然后打印输出。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;rtdevice.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CAN_DEV_NAME       <span class="string">&quot;can1&quot;</span>      <span class="comment">/* CAN 设备名称 */</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">rt_semaphore</span> <span class="title">rx_sem</span>;</span>     <span class="comment">/* 用于接收消息的信号量 */</span></span><br><span class="line"><span class="type">static</span> <span class="type">rt_device_t</span> can_dev;            <span class="comment">/* CAN 设备句柄 */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 接收数据回调函数 */</span></span><br><span class="line"><span class="type">static</span> <span class="type">rt_err_t</span> <span class="title function_">can_rx_call</span><span class="params">(<span class="type">rt_device_t</span> dev, <span class="type">rt_size_t</span> size)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/* CAN 接收到数据后产生中断，调用此回调函数，然后发送接收信号量 */</span></span><br><span class="line">    rt_sem_release(&amp;rx_sem);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> RT_EOK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">can_rx_thread</span><span class="params">(<span class="type">void</span> *parameter)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">    <span class="type">rt_err_t</span> res;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rt_can_msg</span> <span class="title">rxmsg</span> =</span> &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 设置接收回调函数 */</span></span><br><span class="line">    rt_device_set_rx_indicate(can_dev, can_rx_call);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> RT_CAN_USING_HDR</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rt_can_filter_item</span> <span class="title">items</span>[5] =</span></span><br><span class="line">    &#123;</span><br><span class="line">        RT_CAN_FILTER_ITEM_INIT(<span class="number">0x100</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0x700</span>, RT_NULL, RT_NULL), <span class="comment">/* std,match ID:0x100~0x1ff，hdr 为 - 1，设置默认过滤表 */</span></span><br><span class="line">        RT_CAN_FILTER_ITEM_INIT(<span class="number">0x300</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0x700</span>, RT_NULL, RT_NULL), <span class="comment">/* std,match ID:0x300~0x3ff，hdr 为 - 1 */</span></span><br><span class="line">        RT_CAN_FILTER_ITEM_INIT(<span class="number">0x211</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0x7ff</span>, RT_NULL, RT_NULL), <span class="comment">/* std,match ID:0x211，hdr 为 - 1 */</span></span><br><span class="line">        RT_CAN_FILTER_STD_INIT(<span class="number">0x486</span>, RT_NULL, RT_NULL),                  <span class="comment">/* std,match ID:0x486，hdr 为 - 1 */</span></span><br><span class="line">        &#123;<span class="number">0x555</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0x7ff</span>, <span class="number">7</span>,&#125;                                       <span class="comment">/* std,match ID:0x555，hdr 为 7，指定设置 7 号过滤表 */</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rt_can_filter_config</span> <span class="title">cfg</span> =</span> &#123;<span class="number">5</span>, <span class="number">1</span>, items&#125;; <span class="comment">/* 一共有 5 个过滤表 */</span></span><br><span class="line">    <span class="comment">/* 设置硬件过滤表 */</span></span><br><span class="line">    res = rt_device_control(can_dev, RT_CAN_CMD_SET_FILTER, &amp;cfg);</span><br><span class="line">    RT_ASSERT(res == RT_EOK);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">/* hdr 值为 - 1，表示直接从 uselist 链表读取数据 */</span></span><br><span class="line">        rxmsg.hdr = <span class="number">-1</span>;</span><br><span class="line">        <span class="comment">/* 阻塞等待接收信号量 */</span></span><br><span class="line">        rt_sem_take(&amp;rx_sem, RT_WAITING_FOREVER);</span><br><span class="line">        <span class="comment">/* 从 CAN 读取一帧数据 */</span></span><br><span class="line">        rt_device_read(can_dev, <span class="number">0</span>, &amp;rxmsg, <span class="keyword">sizeof</span>(rxmsg));</span><br><span class="line">        <span class="comment">/* 打印数据 ID 及内容 */</span></span><br><span class="line">        rt_kprintf(<span class="string">&quot;ID:%x&quot;</span>, rxmsg.id);</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            rt_kprintf(<span class="string">&quot;%2x&quot;</span>, rxmsg.data[i]);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        rt_kprintf(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">can_test</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rt_can_msg</span> <span class="title">msg</span> =</span> &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="type">rt_err_t</span> res;</span><br><span class="line">    <span class="type">rt_size_t</span>  size;</span><br><span class="line">    <span class="type">rt_thread_t</span> thread;</span><br><span class="line">    <span class="type">char</span> can_name[RT_NAME_MAX];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (argc == <span class="number">2</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_strncpy(can_name, argv[<span class="number">1</span>], RT_NAME_MAX);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        rt_strncpy(can_name, CAN_DEV_NAME, RT_NAME_MAX);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 查找 CAN 设备 */</span></span><br><span class="line">    can_dev = rt_device_find(can_name);</span><br><span class="line">    <span class="keyword">if</span> (!can_dev)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_kprintf(<span class="string">&quot;find %s failed!\n&quot;</span>, can_name);</span><br><span class="line">        <span class="keyword">return</span> RT_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 初始化 CAN 接收信号量 */</span></span><br><span class="line">    rt_sem_init(&amp;rx_sem, <span class="string">&quot;rx_sem&quot;</span>, <span class="number">0</span>, RT_IPC_FLAG_FIFO);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 以中断接收及中断发送方式打开 CAN 设备 */</span></span><br><span class="line">    res = rt_device_open(can_dev, RT_DEVICE_FLAG_INT_TX | RT_DEVICE_FLAG_INT_RX);</span><br><span class="line">    RT_ASSERT(res == RT_EOK);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 创建数据接收线程 */</span></span><br><span class="line">    thread = rt_thread_create(<span class="string">&quot;can_rx&quot;</span>, can_rx_thread, RT_NULL, <span class="number">1024</span>, <span class="number">25</span>, <span class="number">10</span>);</span><br><span class="line">    <span class="keyword">if</span> (thread != RT_NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_thread_startup(thread);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        rt_kprintf(<span class="string">&quot;create can_rx thread failed!\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    msg.id = <span class="number">0x78</span>;              <span class="comment">/* ID 为 0x78 */</span></span><br><span class="line">    msg.ide = RT_CAN_STDID;     <span class="comment">/* 标准格式 */</span></span><br><span class="line">    msg.rtr = RT_CAN_DTR;       <span class="comment">/* 数据帧 */</span></span><br><span class="line">    msg.len = <span class="number">8</span>;                <span class="comment">/* 数据长度为 8 */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 待发送的 8 字节数据 */</span></span><br><span class="line">    msg.data[<span class="number">0</span>] = <span class="number">0x00</span>;</span><br><span class="line">    msg.data[<span class="number">1</span>] = <span class="number">0x11</span>;</span><br><span class="line">    msg.data[<span class="number">2</span>] = <span class="number">0x22</span>;</span><br><span class="line">    msg.data[<span class="number">3</span>] = <span class="number">0x33</span>;</span><br><span class="line">    msg.data[<span class="number">4</span>] = <span class="number">0x44</span>;</span><br><span class="line">    msg.data[<span class="number">5</span>] = <span class="number">0x55</span>;</span><br><span class="line">    msg.data[<span class="number">6</span>] = <span class="number">0x66</span>;</span><br><span class="line">    msg.data[<span class="number">7</span>] = <span class="number">0x77</span>;</span><br><span class="line">    <span class="comment">/* 发送一帧 CAN 数据 */</span></span><br><span class="line">    size = rt_device_write(can_dev, <span class="number">0</span>, &amp;msg, <span class="keyword">sizeof</span>(msg));</span><br><span class="line">    <span class="keyword">if</span> (size == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_kprintf(<span class="string">&quot;can dev write data failed!\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 更改后再发送十次</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">rt_uint8_t</span> send_ind = <span class="number">0</span>; send_ind &lt; <span class="number">10</span>; send_ind++)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_thread_mdelay(<span class="number">1000</span>);</span><br><span class="line"></span><br><span class="line">        msg.data[<span class="number">0</span>] = msg.data[<span class="number">0</span>] + <span class="number">0x01</span>;</span><br><span class="line">        msg.data[<span class="number">1</span>] = msg.data[<span class="number">1</span>] + <span class="number">0x01</span>;</span><br><span class="line">        msg.data[<span class="number">2</span>] = msg.data[<span class="number">2</span>] + <span class="number">0x01</span>;</span><br><span class="line">        msg.data[<span class="number">3</span>] = msg.data[<span class="number">3</span>] + <span class="number">0x01</span>;</span><br><span class="line">        msg.data[<span class="number">4</span>] = msg.data[<span class="number">4</span>] + <span class="number">0x01</span>;</span><br><span class="line">        msg.data[<span class="number">5</span>] = msg.data[<span class="number">5</span>] + <span class="number">0x01</span>;</span><br><span class="line">        msg.data[<span class="number">6</span>] = msg.data[<span class="number">6</span>] + <span class="number">0x01</span>;</span><br><span class="line">        msg.data[<span class="number">7</span>] = msg.data[<span class="number">7</span>] + <span class="number">0x01</span>;</span><br><span class="line">        <span class="comment">/* 发送一帧 CAN 数据 */</span></span><br><span class="line">        size = rt_device_write(can_dev, <span class="number">0</span>, &amp;msg, <span class="keyword">sizeof</span>(msg));</span><br><span class="line">        <span class="keyword">if</span> (size == <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            rt_kprintf(<span class="string">&quot;can dev write data failed!\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 导出到 msh 命令列表中 */</span></span><br><span class="line">MSH_CMD_EXPORT(can_test, can device sample);</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>另外：上述程序使用F1的开发板没有出现问题，但是使用其他板卡（F407VET6）上一直发送失败。</p>
+<p>问题和解决办法如下：<a target="_blank" rel="noopener" href="https://club.rt-thread.org/ask/article/5cedb728813e6fd8.html">https://club.rt-thread.org/ask/article/5cedb728813e6fd8.html</a></p>
+<p>但是相比于上面文章，多更改了关于波特率表的设置，自己测试一下波特率250和500k的需不需要改。</p>
+<p><strong>修改后的CAN驱动文件在文件夹中附上了。</strong></p>
+</blockquote>
+<h2 id="2-4-ADC"><a href="#2-4-ADC" class="headerlink" title="2.4 ADC"></a>2.4 ADC</h2><p><strong>目标：串口打印ADC的值。</strong></p>
+<blockquote>
+<p>此设备的开启步骤在<code>board.h</code>中是有描述的。</p>
+</blockquote>
+<p>第一步：在 RT-Thread Settings 中 -&gt; 组件 -&gt; 设备驱动程序 -&gt;  使用ADC设备驱动程序，勾选上。</p>
+<p>第二步：在<code>board.h</code>中打开<code>#define BSP_USING_ADC1</code>宏定义。</p>
+<blockquote>
+<p>这里测试使用的引脚为PA1（ADC1的通道1）。</p>
+</blockquote>
+<p>第三步：从左侧窗口打开cubemx，勾选上ADC1的CH1，确认一下引脚是不是对的，参数配置可以不用管。ADC打开了，时钟树配置界面ADC的时钟也要配置一下，不能超过14Mhz（ADC的需求）。然后关闭cubemx界面，生成代码后刷新左侧目录界面。即可在cubemx文件夹中的<code>stm32f1xx_hal_msp.c</code>文件中看到ADC的引脚初始化代码。</p>
+<blockquote>
+<p>此时如果直接编译，然后在Shell窗口输入list_device命令，就已经能看到adc1设备了。</p>
+</blockquote>
+<p>第四步：编写测试代码，程序运行后，在Shell窗口输入adc_vol_test命令，即可以在Shell窗口看到连续发送50次的ADC采样值和电压值。在此过程中改变PA1接触的地方，可以看到电压值的改变。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 程序清单： ADC 设备使用例程</span></span><br><span class="line"><span class="comment"> * 例程导出了 adc_vol_test 命令到控制终端</span></span><br><span class="line"><span class="comment"> * 命令调用格式：adc_vol_test</span></span><br><span class="line"><span class="comment"> * 程序功能：通过 ADC 设备采样电压值并转换为数值。</span></span><br><span class="line"><span class="comment"> *           示例代码参考电压为3.3V,转换位数为12位。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtdevice.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ADC_DEV_NAME        <span class="string">&quot;adc1&quot;</span>      <span class="comment">/* ADC 设备名称 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ADC_DEV_CHANNEL     1           <span class="comment">/* ADC 通道 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> REFER_VOLTAGE       330         <span class="comment">/* 参考电压 3.3V,数据精度乘以100保留2位小数*/</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CONVERT_BITS        (1 &lt;&lt; 12)   <span class="comment">/* 转换位数为12位 */</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">adc_vol_test</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">rt_adc_device_t</span> adc_dev;</span><br><span class="line">    <span class="type">rt_uint32_t</span> value, vol;</span><br><span class="line">    <span class="type">rt_err_t</span> ret = RT_EOK;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 查找设备 */</span></span><br><span class="line">    adc_dev = (<span class="type">rt_adc_device_t</span>)rt_device_find(ADC_DEV_NAME);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (adc_dev == RT_NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_kprintf(<span class="string">&quot;adc test run failed! can&#x27;t find %s device!\n&quot;</span>, ADC_DEV_NAME);</span><br><span class="line">        <span class="keyword">return</span> RT_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 使能设备 */</span></span><br><span class="line">    ret = rt_adc_enable(adc_dev, ADC_DEV_CHANNEL);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 连续采集并发送50次</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">rt_uint16_t</span> times = <span class="number">0</span>; times &lt;= <span class="number">50</span>; times++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">/* 读取采样值 */</span></span><br><span class="line">        value = rt_adc_read(adc_dev, ADC_DEV_CHANNEL);</span><br><span class="line">        <span class="comment">/* 转换为对应电压值 */</span></span><br><span class="line">        vol = value * REFER_VOLTAGE / CONVERT_BITS;</span><br><span class="line">        <span class="comment">// 输出</span></span><br><span class="line">        rt_kprintf(<span class="string">&quot;the value is :%d, the voltage is :%d.%02d \n&quot;</span>, value, vol / <span class="number">100</span>, vol % <span class="number">100</span>);</span><br><span class="line">        <span class="comment">// 等待一下下再开启下一轮</span></span><br><span class="line">        rt_thread_mdelay(<span class="number">500</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 关闭通道 */</span></span><br><span class="line">    ret = rt_adc_disable(adc_dev, ADC_DEV_CHANNEL);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 导出到 msh 命令列表中 */</span></span><br><span class="line">MSH_CMD_EXPORT(adc_vol_test, adc voltage convert test);</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-5-IIC"><a href="#2-5-IIC" class="headerlink" title="2.5 IIC"></a>2.5 IIC</h2><p><strong>目标：实现对24C02的读写功能。</strong></p>
+<blockquote>
+<p>此设备的开启步骤在<code>board.h</code>中是有描述的。</p>
+</blockquote>
+<p>第一步：在 RT-Thread Settings 中 -&gt; 组件 -&gt; 设备驱动程序 -&gt;  使用GPIO模拟I2C，勾选上。</p>
+<p>第二步：在<code>board.h</code>中打开<code>#define BSP_USING_I2C1</code>宏定义，并修改对应的引脚。注意这里的引脚是用的软件模拟，跟硬件IIC没关系，所以引脚用哪个写哪个。这里如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_USING_I2C1</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> BSP_USING_I2C1</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_I2C1_SCL_PIN    GET_PIN(B, 6)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BSP_I2C1_SDA_PIN    GET_PIN(B, 7)</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>此时如果直接编译，然后在Shell窗口输入list_device命令，就已经能看到i2c1设备了。</p>
+</blockquote>
+<p>第三步：编写24C02驱动代码及测试代码。</p>
+<p>C文件</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;drv_iic_24c02.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_TAG               <span class="string">&quot;AT24C02&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> LOG_LVL               LOG_LVL_DBG</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtdbg.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* I2C总 线 设 备 句 柄 */</span></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">rt_i2c_bus_device</span> *<span class="title">i2c_bus</span> =</span> RT_NULL;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief   读AT24C02中addr地址的数据</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param   addr   读取的地址（0-255）</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @return  RT_EOK：正常；RT_ERROR：不正常。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">uint8_t</span> <span class="title function_">at24c02_read_byte</span><span class="params">(<span class="type">uint8_t</span> addr)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rt_i2c_msg</span> <span class="title">msg</span>;</span></span><br><span class="line">    <span class="type">uint8_t</span> buffer[<span class="number">2</span>];</span><br><span class="line">    <span class="type">uint8_t</span> data;</span><br><span class="line"></span><br><span class="line">    msg.addr = AT24C02_I2C_ADDR;</span><br><span class="line">    msg.flags = RT_I2C_WR;</span><br><span class="line">    buffer[<span class="number">0</span>] = addr;</span><br><span class="line">    msg.buf = buffer;</span><br><span class="line">    msg.len = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// 发送要读数据的地址</span></span><br><span class="line">    rt_i2c_transfer(i2c_bus, &amp;msg, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    msg.flags = RT_I2C_RD;</span><br><span class="line">    msg.buf = &amp;data;</span><br><span class="line">    <span class="comment">// 读数据</span></span><br><span class="line">    rt_i2c_transfer(i2c_bus, &amp;msg, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> data;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief   AT24C02写一个字节数据</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param   addr   写入的地址（0-255）</span></span><br><span class="line"><span class="comment"> * @param   data   写入的数据</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @return  RT_EOK：正常；RT_ERROR：不正常。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">rt_err_t</span> <span class="title function_">at24c02_write_byte</span><span class="params">(<span class="type">uint8_t</span> addr, <span class="type">uint8_t</span> data)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rt_i2c_msg</span> <span class="title">msg</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="type">uint8_t</span> buffer[<span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">    buffer[<span class="number">0</span>] = addr;</span><br><span class="line">    buffer[<span class="number">1</span>] = data;</span><br><span class="line"></span><br><span class="line">    msg.addr = AT24C02_I2C_ADDR;</span><br><span class="line">    msg.flags = RT_I2C_WR;</span><br><span class="line">    msg.buf = buffer;</span><br><span class="line">    msg.len = <span class="number">2</span>;</span><br><span class="line">    <span class="comment">// 发送要写数据的地址、写的数据</span></span><br><span class="line">    <span class="keyword">if</span>(rt_i2c_transfer(i2c_bus, &amp;msg, <span class="number">1</span>) != <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> RT_ERROR;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> RT_EOK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief   检查AT24C02设备是否正常</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param   check   任意传入一个数（1字节），每次检查不要一样。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @return  RT_EOK：正常；RT_ERROR：不正常。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">static</span> <span class="type">rt_err_t</span> <span class="title function_">at24c02_check</span><span class="params">(<span class="type">uint8_t</span> check)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint8_t</span> temp;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取最后一个字节的数据</span></span><br><span class="line">    temp = at24c02_read_byte(AT24C02_SIZE - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span>(temp != check)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 把数据写入最后一个字节的位置</span></span><br><span class="line">        at24c02_write_byte(AT24C02_SIZE - <span class="number">1</span>, check);</span><br><span class="line">        rt_thread_mdelay(<span class="number">5</span>);    <span class="comment">// wait 5ms</span></span><br><span class="line">        <span class="comment">// 再次读取</span></span><br><span class="line">        temp = at24c02_read_byte(AT24C02_SIZE - <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span>(temp != check)</span><br><span class="line">            <span class="keyword">return</span> RT_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> RT_EOK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief   初始化AT24C02</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param   void</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @return  none</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">rt_err_t</span> <span class="title function_">at24c02_init</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 查找I2C总线设备，获取I2C总线设备句柄</span></span><br><span class="line">    i2c_bus = (<span class="keyword">struct</span> rt_i2c_bus_device *)rt_device_find(AT24C02_I2C_BUS_NAME);</span><br><span class="line">    <span class="keyword">if</span> (i2c_bus == RT_NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        LOG_D(<span class="string">&quot;can&#x27;t find device! \n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> RT_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 检查AT24C02</span></span><br><span class="line">    <span class="keyword">if</span>(at24c02_check(AT24C02_CHECK_VALUE) != RT_EOK)</span><br><span class="line">    &#123;</span><br><span class="line">        LOG_D(<span class="string">&quot;at24c02 check fail! \n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> RT_ERROR;</span><br><span class="line">    &#125;</span><br><span class="line">    LOG_D(<span class="string">&quot;at24c02 check ok! \n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> RT_EOK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>头文件</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> APPLICATIONS_ICODE_IIC_24C02_SUPPORT_DRV_IIC_24C02_H_</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> APPLICATIONS_ICODE_IIC_24C02_SUPPORT_DRV_IIC_24C02_H_</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;drv_soft_i2c.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> AT24C02_I2C_BUS_NAME    <span class="string">&quot;i2c1&quot;</span>      <span class="comment">// 挂载IIC1上，PB6、PB7</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> AT24C02_I2C_ADDR        0x50        <span class="comment">// AT24C02从机地址(原有的是0xA0)</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> AT24C02_SIZE            256         <span class="comment">// AT24C02大小，共256字节</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> AT24C02_CHECK_VALUE     0x5a</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 24C02是2K，A0/A1/A2均为0，根据数据手册地址应该为，1 0 1 0 0 0 0 R/W；</span></span><br><span class="line"><span class="comment"> * 即</span></span><br><span class="line"><span class="comment"> * 写：R/W=0，1 0 1 0 0 0 0 0，即0xA0；</span></span><br><span class="line"><span class="comment"> * 读：R/W=1，1 0 1 0 0 0 0 1，即0xA1；</span></span><br><span class="line"><span class="comment"> * 但是：对于7位地址模式，rt_i2c_transfer函数调用了bus-&gt;ops-&gt;master_xfer(bus, msgs, num);</span></span><br><span class="line"><span class="comment"> * 这个函数为：i2c_bit_xfer，这个函数又调用了i2c_bit_send_address。</span></span><br><span class="line"><span class="comment"> * 这个函数对于七位地址的处理为 addr1 = msg-&gt;addr &lt;&lt; 1;</span></span><br><span class="line"><span class="comment"> * 即 左移了一位。我们原有的 0xA0 左移之后就不对了。</span></span><br><span class="line"><span class="comment"> * 因此，这里将我们的0xA0提前右移一位 变成0x50，然后再发送就可以了。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"></span><br><span class="line"><span class="type">rt_err_t</span> <span class="title function_">at24c02_init</span><span class="params">()</span>;    <span class="comment">// 初始化AT24C02</span></span><br><span class="line"><span class="type">uint8_t</span> <span class="title function_">at24c02_read_byte</span><span class="params">(<span class="type">uint8_t</span> addr)</span>;</span><br><span class="line"><span class="type">rt_err_t</span> <span class="title function_">at24c02_write_byte</span><span class="params">(<span class="type">uint8_t</span> addr, <span class="type">uint8_t</span> data)</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* APPLICATIONS_ICODE_IIC_24C02_SUPPORT_DRV_IIC_24C02_H_ */</span></span></span><br></pre></td></tr></table></figure>
+
+<p>测试代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;drv_iic_24c02.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">iic_at24c02_test</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">rt_uint8_t</span> *read_write_read_buf = RT_NULL;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 申请一段内存（256个字节）</span></span><br><span class="line">    read_write_read_buf = (<span class="type">rt_uint8_t</span> *)rt_malloc(AT24C02_SIZE);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化 at24c02</span></span><br><span class="line">    at24c02_init();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 擦除(即全部填充为0)</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">rt_uint16_t</span> addr = <span class="number">0</span>; addr &lt; AT24C02_SIZE; addr++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(RT_EOK == at24c02_write_byte(addr, <span class="number">0</span>))</span><br><span class="line">            rt_kprintf(<span class="string">&quot;address %x erase OK.\n&quot;</span>, addr);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            rt_kprintf(<span class="string">&quot;address %x erase Failed.\n&quot;</span>, addr);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 连续读255字节的数据</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">rt_uint16_t</span> addr = <span class="number">0</span>; addr &lt; AT24C02_SIZE; addr++)</span><br><span class="line">    &#123;</span><br><span class="line">        read_write_read_buf[addr] = at24c02_read_byte(addr);</span><br><span class="line">        rt_kprintf(<span class="string">&quot;the data at address %x is %d.\n&quot;</span>, addr, read_write_read_buf[addr]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 连续写</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">rt_uint16_t</span> addr = <span class="number">0</span>; addr &lt; AT24C02_SIZE; addr++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(RT_EOK == at24c02_write_byte(addr, addr))</span><br><span class="line">            rt_kprintf(<span class="string">&quot;address %x write OK.\n&quot;</span>, addr);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            rt_kprintf(<span class="string">&quot;address %x write Failed.\n&quot;</span>, addr);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 再次连续读255字节的数据</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">rt_uint16_t</span> addr = <span class="number">0</span>; addr &lt; AT24C02_SIZE; addr++)</span><br><span class="line">    &#123;</span><br><span class="line">        read_write_read_buf[addr] = at24c02_read_byte(addr);</span><br><span class="line">        rt_kprintf(<span class="string">&quot;the data at address %x is %d.\n&quot;</span>, addr, read_write_read_buf[addr]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 释放申请的内存</span></span><br><span class="line">    rt_free(read_write_read_buf);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> RT_EOK;</span><br><span class="line">&#125;</span><br><span class="line">MSH_CMD_EXPORT(iic_at24c02_test, iic at24c02 read write test);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>程序运行后，在Shell窗口输入<code>iic_at24c02_test</code>命令，即可看到程序首先将芯片数据全部擦除，然后读取，读取之后写入，并再次读取查看是否是写入的数据。</p>
+<h2 id="2-6-SPI-DFS"><a href="#2-6-SPI-DFS" class="headerlink" title="2.6 SPI + DFS"></a>2.6 SPI + DFS</h2><p><strong>目标：直接上文件系统。</strong></p>
+<blockquote>
+<p>这里用的潘多拉的板子，存储使用SD卡，接口是SPI。</p>
+</blockquote>
+<p>第一步：在 RT-Thread Settings 中 -&gt; 组件 -&gt; 设备驱动程序 -&gt;  使用 SPI 总线&#x2F;设备驱动程序，勾选上。</p>
+<p>第二步：在<code>board.h</code>中打开<code>#define BSP_USING_SPI1</code>宏定义，根据自己实际使用的SPI接口设置即可。</p>
+<p>第三步：从左侧窗口打开cubemx，SPI1，确认一下引脚是不是对的，参数配置可以不用管，然后关闭cubemx界面，生成代码后刷新左侧目录界面。即可在cubemx文件夹中的<code>stm32l4xx_hal_msp.c</code>文件中看到SPI的引脚初始化代码。</p>
+<p>到了这里SPI就可以使用了。</p>
+<p>第四步：在 RT-Thread Settings 中 -&gt; 组件 -&gt; 设备驱动程序 -&gt;  使用 SPI 总线&#x2F;设备驱动程序 -&gt; 使用 SPI SD&#x2F;TF 卡驱动程序，勾选上。</p>
+<p>勾选上保存之后，就能在 rt-thread -&gt; components 中看到 dfs 文件夹。这个文件夹中的文件定义了系统挂载、打开文件、创建文件夹等等接口。</p>
+<h2 id="2-7-PWM（需要改驱动）"><a href="#2-7-PWM（需要改驱动）" class="headerlink" title="2.7 PWM（需要改驱动）"></a>2.7 PWM（需要改驱动）</h2><p><strong>目标：PWM实现呼吸灯。</strong></p>
+<blockquote>
+<p>此设备的开启步骤在<code>board.h</code>中是有描述的。但是<strong>不全</strong>，而且有BUG。</p>
+</blockquote>
+<p>第一步：在 RT-Thread Settings 中 -&gt; 组件 -&gt; 设备驱动程序 -&gt;  使用 PWM 设备驱动程序，勾选上。</p>
+<p>第二步：在<code>board.h</code>中打开<code>#define BSP_USING_PWM3</code>宏定义，并添加使用的通道宏定义<code>#define BSP_USING_PWM3_CH2</code>。</p>
+<blockquote>
+<p>这里测试使用的引脚为PB5（TIM3的通道2）。根据自己使用的定时器和通道进行修改上述宏定义。</p>
+<p>另外，通道宏定义board.h里面没写，要自己添加上。</p>
+</blockquote>
+<p>第三步：从左侧窗口打开cubemx，勾选上TIM3的CH2，确认一下引脚是不是对的，参数配置可以不用管，然后关闭cubemx界面，生成代码后刷新左侧目录界面。即可在cubemx文件夹中的<code>stm32f1xx_hal_msp.c</code>文件中看到TIM的引脚初始化代码，一共有两个函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">HAL_TIM_Base_MspInit</span><span class="params">(TIM_HandleTypeDef* htim_base)</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">HAL_TIM_MspPostInit</span><span class="params">(TIM_HandleTypeDef* htim)</span></span><br></pre></td></tr></table></figure>
+
+<p>第四步：<strong>修改drv_pwm.c</strong></p>
+<p>在<code>drv_pwm.c</code>文件中的<code>static rt_err_t stm32_hw_pwm_init(struct stm32_pwm *device)</code>函数中，添加定时器的初始化。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">rt_err_t</span> <span class="title function_">stm32_hw_pwm_init</span><span class="params">(<span class="keyword">struct</span> stm32_pwm *device)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">rt_err_t</span> result = RT_EOK;</span><br><span class="line">    TIM_HandleTypeDef *tim = RT_NULL;</span><br><span class="line">    TIM_OC_InitTypeDef oc_config = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    TIM_MasterConfigTypeDef master_config = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    TIM_ClockConfigTypeDef clock_config = &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">    RT_ASSERT(device != RT_NULL);</span><br><span class="line"></span><br><span class="line">    tim = (TIM_HandleTypeDef *)&amp;device-&gt;tim_handle;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* configure the timer to pwm mode */</span></span><br><span class="line">    tim-&gt;Init.Prescaler = <span class="number">0</span>;</span><br><span class="line">    tim-&gt;Init.CounterMode = TIM_COUNTERMODE_UP;</span><br><span class="line">    tim-&gt;Init.Period = <span class="number">0</span>;</span><br><span class="line">    tim-&gt;Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(SOC_SERIES_STM32F1) || defined(SOC_SERIES_STM32L4)</span></span><br><span class="line">    tim-&gt;Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 以下是自己添加的</span></span><br><span class="line">    <span class="comment">// 注意这里是定时器的初始化 别看混了!!!</span></span><br><span class="line">    <span class="keyword">if</span> (HAL_TIM_Base_Init(tim) != HAL_OK)</span><br><span class="line">    &#123;</span><br><span class="line">        LOG_E(<span class="string">&quot;%s tim init failed&quot;</span>, device-&gt;name);</span><br><span class="line">        result = -RT_ERROR;</span><br><span class="line">        <span class="keyword">goto</span> __exit;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 以上是自己添加的</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (HAL_TIM_PWM_Init(tim) != HAL_OK)</span><br><span class="line">    &#123;</span><br><span class="line">        LOG_E(<span class="string">&quot;%s pwm init failed&quot;</span>, device-&gt;name);</span><br><span class="line">        result = -RT_ERROR;</span><br><span class="line">        <span class="keyword">goto</span> __exit;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>第五步：添加测试例程</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 程序清单：这是一个 PWM 设备使用例程</span></span><br><span class="line"><span class="comment"> * 例程导出了 pwm_thread_test 命令到控制终端</span></span><br><span class="line"><span class="comment"> * 命令调用格式：pwm_thread_test</span></span><br><span class="line"><span class="comment"> * 程序功能：通过 PWM 设备控制 LED 灯的亮度，可以看到LED不停的由暗变到亮，然后又从亮变到暗。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtdevice.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PWM_DEV_NAME        <span class="string">&quot;pwm3&quot;</span>  <span class="comment">/* PWM设备名称 */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PWM_DEV_CHANNEL     2       <span class="comment">/* PWM通道 */</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rt_device_pwm</span> *<span class="title">pwm_dev</span>;</span>      <span class="comment">/* PWM设备句柄 */</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">rt_thread_t</span> pwm_thread = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 线程相关参数</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_PRIORITY         25</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_STACK_SIZE       512</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_TIMESLICE        5</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">pwm_led_thread_entry</span><span class="params">(<span class="type">void</span> *parameter)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">rt_uint32_t</span> period, pulse, dir;</span><br><span class="line"></span><br><span class="line">    period = <span class="number">500000</span>;    <span class="comment">/* 周期为0.5ms，单位为纳秒ns */</span></span><br><span class="line">    dir = <span class="number">1</span>;            <span class="comment">/* PWM脉冲宽度值的增减方向 */</span></span><br><span class="line">    pulse = <span class="number">0</span>;          <span class="comment">/* PWM脉冲宽度值，单位为纳秒ns */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 查找设备 */</span></span><br><span class="line">    pwm_dev = (<span class="keyword">struct</span> rt_device_pwm *)rt_device_find(PWM_DEV_NAME);</span><br><span class="line">    <span class="keyword">if</span> (pwm_dev == RT_NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_kprintf(<span class="string">&quot;pwm sample run failed! can&#x27;t find %s device!\n&quot;</span>, PWM_DEV_NAME);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 设置PWM周期和脉冲宽度默认值 */</span></span><br><span class="line">    rt_pwm_set(pwm_dev, PWM_DEV_CHANNEL, period, pulse);</span><br><span class="line">    <span class="comment">/* 使能设备 */</span></span><br><span class="line">    rt_pwm_enable(pwm_dev, PWM_DEV_CHANNEL);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        rt_thread_mdelay(<span class="number">50</span>);</span><br><span class="line">        <span class="keyword">if</span> (dir)</span><br><span class="line">        &#123;</span><br><span class="line">            pulse += <span class="number">5000</span>;      <span class="comment">/* 从0值开始每次增加5000ns */</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            pulse -= <span class="number">5000</span>;      <span class="comment">/* 从最大值开始每次减少5000ns */</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (pulse &gt;= period)</span><br><span class="line">        &#123;</span><br><span class="line">            dir = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (<span class="number">0</span> == pulse)</span><br><span class="line">        &#123;</span><br><span class="line">            dir = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* 设置PWM周期和脉冲宽度 */</span></span><br><span class="line">        rt_pwm_set(pwm_dev, PWM_DEV_CHANNEL, period, pulse);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span> <span class="title function_">pwm_thread_test</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    pwm_thread = rt_thread_create(<span class="string">&quot;pwm_th&quot;</span>,                        <span class="comment">// name</span></span><br><span class="line">                                    pwm_led_thread_entry,           <span class="comment">// 函数体入口</span></span><br><span class="line">                                    RT_NULL,                        <span class="comment">// 函数体 参数</span></span><br><span class="line">                                    THREAD_STACK_SIZE,              <span class="comment">// 分配内存大小</span></span><br><span class="line">                                    THREAD_PRIORITY,                <span class="comment">// 优先级</span></span><br><span class="line">                                    THREAD_TIMESLICE);              <span class="comment">// 时间片大小</span></span><br><span class="line">    <span class="comment">/* 如果获得线程控制块，启动这个线程 */</span></span><br><span class="line">    <span class="keyword">if</span> (pwm_thread != RT_NULL)</span><br><span class="line">        rt_thread_startup(pwm_thread);    <span class="comment">// 启动线程</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 输出错误码</span></span><br><span class="line">        rt_kprintf(<span class="string">&quot;pwm led thread is failed...the error code is %ld \r\n&quot;</span>, pwm_thread-&gt;error);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> RT_EOK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 导出到 msh 命令列表中 */</span></span><br><span class="line">MSH_CMD_EXPORT(pwm_thread_test, pwm thread test);</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-8-网口"><a href="#2-8-网口" class="headerlink" title="2.8 网口"></a>2.8 网口</h2></article>
+<div class="article-footer">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文由 imhaozi 编写，采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+
+</div>
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2020/10/01/03.%20RTOS/rtthread_nano/">rtthread_nano移植</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2017/01/01/01.%20%E7%BC%96%E7%A8%8B%E8%AF%AD%E6%B3%95/c/">C语言</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">imhaozi</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80-%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B%E5%8F%8A%E6%97%B6%E9%92%9F"><span class="toc-text">一. 创建工程及时钟</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B"><span class="toc-text">1.1 创建工程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E6%97%B6%E9%92%9F%E5%88%86%E6%9E%90"><span class="toc-text">1.2 时钟分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E6%97%B6%E9%92%9F%E9%85%8D%E7%BD%AE"><span class="toc-text">1.3 时钟配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C-%E8%AE%BE%E5%A4%87%E6%A1%86%E6%9E%B6%E4%BD%BF%E7%94%A8"><span class="toc-text">二. 设备框架使用</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-PIN%E8%AE%BE%E5%A4%87"><span class="toc-text">2.1 PIN设备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-LED%E9%97%AA%E7%83%81"><span class="toc-text">2.1.1 LED闪烁</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-2-%E6%8C%89%E9%94%AE%E4%B8%AD%E6%96%AD"><span class="toc-text">2.1.2 按键中断</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E4%B8%B2%E5%8F%A3%E8%AE%BE%E5%A4%87"><span class="toc-text">2.2 串口设备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-CAN%EF%BC%88%E9%9C%80%E8%A6%81%E6%94%B9%E9%A9%B1%E5%8A%A8%EF%BC%89"><span class="toc-text">2.3 CAN（需要改驱动）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-ADC"><span class="toc-text">2.4 ADC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-IIC"><span class="toc-text">2.5 IIC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-SPI-DFS"><span class="toc-text">2.6 SPI + DFS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-7-PWM%EF%BC%88%E9%9C%80%E8%A6%81%E6%94%B9%E9%A9%B1%E5%8A%A8%EF%BC%89"><span class="toc-text">2.7 PWM（需要改驱动）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-8-%E7%BD%91%E5%8F%A3"><span class="toc-text">2.8 网口</span></a></li></ol></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a></div></widget>
+</div></aside><div class='float-panel'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+
+
+<script type="text/javascript">
+  window.canonical = {"originalHost":null,"officialHosts":["localhost"],"encoded":""};
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+    tag_plugins: {
+      chat: Object.assign({"api":"https://siteinfo.listentothewind.cn/api/v1"}),
+    }
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"skip_search":null,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+    loading: `https://api.iconify.design/eos-icons:three-dots-loading.svg?color=%231cd0fd`,
+  };
+  const deps = {
+    jquery: `https://gcore.jsdelivr.net/npm/jquery@3.7/dist/jquery.min.js`,
+    marked: `https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js`,
+    lazyload: `/%5Bobject%20Object%5D`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = () => {
+          utils.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) => {
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index, 1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')) {
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function () {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      const maxRetry = 3;
+      let retryCount = 0;
+
+      return new Promise((resolve, reject) => {
+        const load = () => {
+          utils.onLoading?.(el);
+
+          let timedOut = false;
+          const timeout = setTimeout(() => {
+            timedOut = true;
+            console.warn('[request] 超时:', url);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject('请求超时');
+            } else {
+              setTimeout(load, 1000);
+            }
+          }, 5000);
+
+          fetch(url).then(resp => {
+            if (timedOut) return;
+            clearTimeout(timeout);
+
+            if (!resp.ok) throw new Error('响应失败');
+            return resp;
+          }).then(data => {
+            if (timedOut) return;
+            utils.onLoadSuccess?.(el);
+            callback(data);
+            resolve(data);
+          }).catch(err => {
+            clearTimeout(timeout);
+            console.warn('[request] 错误:', err);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject(err);
+            } else {
+              setTimeout(load, 1000);
+            }
+          });
+        };
+
+        load();
+      });
+    },
+    requestWithoutLoading: (url, options = {}, maxRetry = 2, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        let retryCount = 0;
+
+        const tryRequest = () => {
+          let timedOut = false;
+          const timer = setTimeout(() => {
+            timedOut = true;
+            if (++retryCount > maxRetry) reject('timeout');
+            else tryRequest();
+          }, timeout);
+
+          fetch(url, options)
+            .then(resp => {
+              clearTimeout(timer);
+              if (!resp.ok) throw new Error('bad response');
+              resolve(resp);
+            })
+            .catch(err => {
+              clearTimeout(timer);
+              if (++retryCount > maxRetry) reject(err);
+              else setTimeout(tryRequest, 500);
+            });
+        };
+
+        tryRequest();
+      });
+    },
+    /********************** requestAnimationFrame ********************************/
+    // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+    // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+    requestAnimationFrame: (fn) => {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+      }
+      window.requestAnimationFrame(fn)
+    },
+    dark: {},
+  };
+
+  // utils.dark.mode 当前模式 dark or light
+  // utils.dark.toggle() 暗黑模式触发器
+  // utils.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  utils.dark.method = {
+    toggle: new RunItem(),
+  };
+  utils.dark = Object.assign(utils.dark, {
+    push: utils.dark.method.toggle.push,
+  });
+</script>
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+<script async src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+    callback_loaded: (el) => {
+      el.classList.add('loaded');
+      const wrapper = el.closest('.lazy-box');
+      const icon = wrapper?.querySelector('.lazy-icon');
+      if (icon) icon.remove();
+    }
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+
+  window.wrapLazyloadImages = (container) => {
+    if (typeof container === 'string') {
+      container = document.querySelector(container);
+    }
+    if (!container) return;
+    
+    const images = container.querySelectorAll('img');
+    images.forEach((img) => {
+      if (img.classList.contains('lazy')) return;
+
+      const src = img.getAttribute('src');
+      if (!src) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'lazy-box';
+
+      const newImg = img.cloneNode();
+      newImg.removeAttribute('src');
+      newImg.setAttribute('data-src', src);
+      newImg.classList.add('lazy');
+
+      const icon = document.createElement('div');
+      icon.className = 'lazy-icon';
+      if (def.loading) {
+        icon.style.backgroundImage = `url("${def.loading}")`;
+      }
+
+      wrapper.appendChild(newImg);
+      wrapper.appendChild(icon);
+
+      img.replaceWith(wrapper);
+    });
+
+    // 通知 LazyLoad 更新
+    if (window.lazyLoadInstance?.update) {
+      window.lazyLoadInstance.update();
+    }
+  }
+  
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.33.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    // applyThemeToGiscus(theme)
+  }
+
+  // FIXME: 这会导致无法使用 preferred_color_scheme 以外的主题
+  const applyThemeToGiscus = (theme) => {
+    // theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+    utils.dark.mode = newTheme === 'auto' ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : newTheme;
+    utils.dark.method.toggle.start();
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    } else {
+      utils.dark.mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    utils.dark.method.toggle.start();
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"rating":{"js":"/js/services/rating.js","api":"https://star-vote.xaox.cc/api/rating"},"vote":{"js":"/js/services/vote.js","api":"https://star-vote.xaox.cc/api/vote"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"friends_and_posts":{"js":"/js/services/friends_and_posts.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"},"voice":{"js":"/js/plugins/voice.js"},"video":{"js":"/js/plugins/video.js"},"download-file":{"js":"/js/plugins/download-file.js"},"twikoo":{"js":"/js/services/twikoo_latest_comment.js"},"waline":{"js":"/js/services/waline_latest_comment.js"},"artalk":{"js":"/js/services/artalk_latest_comment.js"},"giscus":{"js":"/js/services/giscus_latest_comment.js"},"contributors":{"edit_this_page":{"_posts/":null,"wiki/stellar/":"https://github.com/xaoxuu/hexo-theme-stellar-docs/blob/main/"},"js":"/js/services/contributors.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else if (id == 'voice') {
+        ctx.voiceAudios = document.querySelectorAll('.voice>audio');
+        if (ctx.voiceAudios?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            createVoiceDom(ctx.voiceAudios);
+          });
+        }
+      } else if (id == 'video') {
+        ctx.videos = document.querySelectorAll('.video>video');
+        if (ctx.videos?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            videoEvents(ctx.videos);
+          });
+        }
+      } else if (id == 'download-file') {
+        ctx.files = document.querySelectorAll('.file');
+        if (ctx.files?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            downloadFileEvent(ctx.files);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+
+    // chat iphone time
+    let phoneTimes = document.querySelectorAll('.chat .status-bar .time');
+
+    if (phoneTimes.length > 0) {
+      NowTime();
+      var date = new Date();
+      var sec = date.getSeconds();
+      var firstAdjustInterval = setInterval(firstAdjustTime, 1000 * (60 - sec));
+    }
+
+    function firstAdjustTime() {
+      NowTime();
+      clearInterval(firstAdjustInterval);
+      setInterval(NowTime, 1000 * 60);
+    }
+
+    function NowTime() {
+      for (let i = 0; i < phoneTimes.length; ++i) {
+        var timeSpan = phoneTimes[i];
+        var date = new Date();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+        timeSpan.innerHTML = check(hour) + ":" + check(min);
+      }
+    };
+
+    function check(val) {
+      if (val < 10) {
+        return ("0" + val);
+      }
+      return (val);
+    }
+
+    // chat quote
+    const chat_quote_obverser = new IntersectionObserver((entries, observer) => {
+      entries.filter((entry) => { return entry.isIntersecting }).sort((a, b) => a.intersectionRect.y !== b.intersectionRect.y ? a.intersectionRect.y - b.intersectionRect.y : a.intersectionRect.x - b.intersectionRect.x).forEach((entry, index) => {
+          observer.unobserve(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('quote-blink');
+            setTimeout(() => {
+              entry.target.classList.remove('quote-blink');
+            }, 1000);
+          }, Math.max(100, 16) * (index + 1));
+        });
+    });
+
+    var chatQuotes = document.querySelectorAll(".chat .talk .quote");
+    chatQuotes.forEach((quote) => {
+      quote.addEventListener('click', function () {
+        var chatCellDom = document.getElementById("quote-" + quote.getAttribute("quotedCellTag"));
+        if (chatCellDom) {
+          var chatDiv = chatCellDom.parentElement;
+          var mid = chatDiv.clientHeight / 2;
+          var offsetTop = chatCellDom.offsetTop;
+          if (offsetTop > mid - chatCellDom.clientHeight / 2) {
+            chatDiv.scrollTo({
+              top: chatCellDom.offsetTop - mid + chatCellDom.clientHeight / 2,
+              behavior: "smooth"
+            });
+          } else {
+            chatDiv.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
+          }
+          chat_quote_obverser.observe(chatCellDom);
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error), .with-fancybox .atk-content img:not([atk-emoticon])';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const memos = document.getElementsByClassName('ds-memos');
+    if (memos != undefined && memos.length > 0) {
+      needFancybox = true;
+    }
+    const fancybox = document.getElementsByClassName('with-fancybox');
+    if (fancybox != undefined && fancybox.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>

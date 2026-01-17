@@ -1,0 +1,1167 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
+  
+  
+  <meta name="generator" content="Hexo 8.1.1">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title>CanOpen - Blog</title>
+
+  
+    <meta name="description" content="CanOpen协议，调试电机时绝大多数电机采用的通信协议都是CanOpen，这里对CanOpen协议做个简单的记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CanOpen">
+<meta property="og:url" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="CanOpen协议，调试电机时绝大多数电机采用的通信协议都是CanOpen，这里对CanOpen协议做个简单的记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E6%8E%A5%E7%BA%BF%E6%96%B9%E5%BC%8F.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E4%BF%A1%E5%8F%B7%E7%94%B5%E5%B9%B3.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E6%A0%BC%E5%BC%8F.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/EDS%E6%96%87%E4%BB%B6%E7%A4%BA%E4%BE%8B.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%92%8CSDO%E7%9A%84%E9%A2%84%E5%AE%9A%E4%B9%89%E8%BF%9E%E6%8E%A5ID%E5%88%86%E9%85%8D.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/SDO%E9%80%9A%E8%AE%AF%E5%8E%9F%E5%88%99.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E5%BF%AB%E9%80%9FSDO%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8B%E8%BD%BD%E5%8D%8F%E8%AE%AE.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BC%A0%E5%8D%8F%E8%AE%AE.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BD%8D%E6%9C%BA%E6%8E%A5%E6%94%B6%E5%88%B0%E7%9A%84PDO.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E9%80%9A%E8%AE%AF%E5%8F%82%E6%95%B0.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%9C%A8%E5%AF%B9%E8%B1%A1%E5%AD%97%E5%85%B8%E7%9A%84%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E6%8A%A5%E6%96%87%E5%92%8C%E7%89%B9%E6%AE%8A%E5%8D%8F%E8%AE%AE%E6%8A%A5%E6%96%87.jpg">
+<meta property="og:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E7%AE%A1%E7%90%86%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2%E5%9B%BE.jpg">
+<meta property="article:published_time" content="2023-06-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-11-13T02:00:38.627Z">
+<meta property="article:author" content="imhaozi">
+<meta property="article:tag" content="Can">
+<meta property="article:tag" content="CanOpen">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E6%8E%A5%E7%BA%BF%E6%96%B9%E5%BC%8F.jpg">
+  
+  
+  
+  <meta name="keywords" content="Can,CanOpen">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.33.1">
+
+
+  
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+  
+
+  
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"imhaozi","sameAs":[]},"dateCreated":"2023-07-01T00:00:00+08:00","dateModified":"2025-11-13T10:00:38+08:00","datePublished":"2023-07-01T00:00:00+08:00","description":"","headline":"CanOpen","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/"},"publisher":{"@type":"Organization","name":"imhaozi","sameAs":[]},"url":"http://example.com/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/","keywords":"Can, CanOpen","image":[]}</script>
+  
+</head>
+<body>
+
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/avatar.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Blog</div><div class="sub normal cap">装备锻造中</div><div class="sub hover cap" style="opacity:0"> Write By imhaozi</div></a></div></header>
+
+<div class="nav-area">
+
+<nav class="menu dis-select"><a class="nav-item active" title="博客" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="文档" href="/wiki/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="关于" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/2024/10/08/05.%20%E5%BC%80%E6%BA%90%E5%BA%93/lvgl%E7%A7%BB%E6%A4%8D/"><span class="title">lvgl移植</span></a><a class="item title" href="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/"><span class="title">ros1小车diy记录</span></a><a class="item title" href="/2020/10/01/03.%20RTOS/rtthread_nano/"><span class="title">rtthread_nano移植</span></a><a class="item title" href="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/"><span class="title">v3s开发板制作</span></a><a class="item title" href="/2025/08/29/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/"><span class="title">博客搭建指南</span></a><a class="item title" href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/"><span class="title">充电桩国标协议解析</span></a><a class="item title" href="/2025/11/05/08.%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/"><span class="title">CanDBC文件制作</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/"><span class="title">Ymodem</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/"><span class="title">Modbus</span></a><a class="item title" href="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/"><span class="title">CanOpen</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/imhaozi" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/github.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://space.bilibili.com/330622220" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/bilibili.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/942ebbf1a4b91.svg"/></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/">通信协议</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2023-06-30T16:00:00.000Z">2023-07-01</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2025-11-13T02:00:38.627Z">2025-11-13</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>CanOpen</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><h1 id="1-CAN协议"><a href="#1-CAN协议" class="headerlink" title="1. CAN协议"></a>1. CAN协议</h1><ul>
+<li>和串口、I2C、SPI、485、232等通讯协议一样，CAN也是种传送数据的方式。</li>
+</ul>
+<h2 id="1-1-物理接线"><a href="#1-1-物理接线" class="headerlink" title="1.1 物理接线"></a>1.1 物理接线</h2><ul>
+<li>CAN通信需要两根线，<code>CAN_H</code>、<code>CAN_L</code>，两根线采用双绞线的方式缠绕。</li>
+<li>每个通讯节点的<code>CAN_H</code>接在一起，<code>CAN_L</code>接在一起。</li>
+<li>两端接两个120欧的电阻。</li>
+</ul>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E6%8E%A5%E7%BA%BF%E6%96%B9%E5%BC%8F.jpg" alt="CAN接线方式"></p>
+<h2 id="1-2-信号传输"><a href="#1-2-信号传输" class="headerlink" title="1.2 信号传输"></a>1.2 信号传输</h2><ul>
+<li>线上的电位采用差分信号进行判别，抗干扰能力强。</li>
+<li>电平判断<ul>
+<li>CAN_H - CAN_L &lt; 0.5V 时候为隐性的，逻辑信号表现为”逻辑1”- 高电平。</li>
+<li>CAN_H - CAN_L &gt; 0.9V 时候为显性的，逻辑信号表现为”逻辑0”- 低电平。</li>
+</ul>
+</li>
+</ul>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E4%BF%A1%E5%8F%B7%E7%94%B5%E5%B9%B3.jpg" alt="CAN信号电平"></p>
+<blockquote>
+<p>CAN总线在电平传输上，具有仲裁判断逻辑，优先级为：显性（低电平）&gt;隐形（高电平）！</p>
+</blockquote>
+<h2 id="1-3-协议规定"><a href="#1-3-协议规定" class="headerlink" title="1.3 协议规定"></a>1.3 协议规定</h2><p>CAN规定了5种不同的数据帧（发送一次数据就是一帧数据，类似于串口发送一个字节数据？）。</p>
+<ul>
+<li><strong>数据帧（重要）</strong>：向接受单元传送数据用的。</li>
+<li>遥控帧：向远端节点请求数据用的。</li>
+<li>错误帧：当检测出错误是向其他单元通知错误。</li>
+<li>过载帧：接收单元通知其未做好准备。</li>
+<li>帧间隔：用于将数据帧和遥控真与前面的分离开。</li>
+</ul>
+<blockquote>
+<p>主要掌握数据帧，遥控帧基本上已经不用了。其他的先知道即可。 </p>
+</blockquote>
+<p>对于数据帧和遥控帧，帧结构都由以下7个段组成。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E7%BB%93%E6%9E%84.jpg" alt="帧结构"></p>
+<p>该结构有两种格式：<strong>标准格式</strong>和<strong>扩展格式</strong>。可以看出，两种格式的区别仅在于仲裁段和控制段不同。</p>
+<p>每个段都有自己的格式，用户需要关注的段为：<strong>仲裁段</strong>、<strong>数据段</strong>。更具体的说是，<strong>仲裁段的 ID</strong>和<strong>数据段</strong>。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/CAN%E5%B8%A7%E6%A0%BC%E5%BC%8F.jpg" alt="CAN帧格式"></p>
+<p>仲裁段有一套仲裁机制，当总线上的各个节点同时发送设备时，根据ID优先级判断哪个节点的信息有效。<strong>ID 越小，优先级越高</strong>。</p>
+<blockquote>
+<p>更具体的仲裁机制还需要根据不同的段做出不同的反应，比如退出竞争、产生错误等。这里就不详细说了，有兴趣的可以再去详细了解。</p>
+</blockquote>
+<p>数据段中是每次要发送的数据，其长度为 0-8 个字节。</p>
+<p>作为写应用的，我们只需要关注这两部分即可。</p>
+<p>比如 RT-Thread 中的 CAN 发送函数（<a target="_blank" rel="noopener" href="https://www.rt-thread.org/document/site/#/rt-thread-version/rt-thread-standard/programming-manual/device/can/can?id=can-%e8%ae%be%e5%a4%87%e4%bd%bf%e7%94%a8%e7%a4%ba%e4%be%8b">来源</a>）。需要我们注意的有<code>ID</code>、<code>格式</code>、<code>帧类型</code>、<code>数据</code>、<code>长度</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rt_can_msg</span> <span class="title">msg</span> =</span> &#123;<span class="number">0</span>&#125;;</span><br><span class="line"></span><br><span class="line">msg.id = <span class="number">0x78</span>;              <span class="comment">/* ID 为 0x78 */</span></span><br><span class="line">msg.ide = RT_CAN_STDID;     <span class="comment">/* 标准格式 */</span></span><br><span class="line">msg.rtr = RT_CAN_DTR;       <span class="comment">/* 数据帧 */</span></span><br><span class="line">msg.len = <span class="number">8</span>;                <span class="comment">/* 数据长度为 8 */</span></span><br><span class="line"><span class="comment">/* 待发送的 8 字节数据 */</span></span><br><span class="line">msg.data[<span class="number">0</span>] = <span class="number">0x00</span>;</span><br><span class="line">msg.data[<span class="number">1</span>] = <span class="number">0x11</span>;</span><br><span class="line">msg.data[<span class="number">2</span>] = <span class="number">0x22</span>;</span><br><span class="line">msg.data[<span class="number">3</span>] = <span class="number">0x33</span>;</span><br><span class="line">msg.data[<span class="number">4</span>] = <span class="number">0x44</span>;</span><br><span class="line">msg.data[<span class="number">5</span>] = <span class="number">0x55</span>;</span><br><span class="line">msg.data[<span class="number">6</span>] = <span class="number">0x66</span>;</span><br><span class="line">msg.data[<span class="number">7</span>] = <span class="number">0x77</span>;</span><br><span class="line"><span class="comment">/* 发送一帧 CAN 数据 */</span></span><br><span class="line">size = rt_device_write(can_dev, <span class="number">0</span>, &amp;msg, <span class="keyword">sizeof</span>(msg));</span><br></pre></td></tr></table></figure>
+
+<p>而相关的内容，API 都已经封装好了，就不用我们管了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">rt_can_msg</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">rt_uint32_t</span> id  : <span class="number">29</span>;</span><br><span class="line">    <span class="type">rt_uint32_t</span> ide : <span class="number">1</span>;</span><br><span class="line">    <span class="type">rt_uint32_t</span> rtr : <span class="number">1</span>;</span><br><span class="line">    <span class="type">rt_uint32_t</span> rsv : <span class="number">1</span>;</span><br><span class="line">    <span class="type">rt_uint32_t</span> len : <span class="number">8</span>;</span><br><span class="line">    <span class="type">rt_uint32_t</span> priv : <span class="number">8</span>;</span><br><span class="line">    <span class="type">rt_int32_t</span> hdr : <span class="number">8</span>;</span><br><span class="line">    <span class="type">rt_uint32_t</span> reserved : <span class="number">8</span>;</span><br><span class="line">    <span class="type">rt_uint8_t</span> data[<span class="number">8</span>];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">rt_can_msg</span> *<span class="title">rt_can_msg_t</span>;</span></span><br></pre></td></tr></table></figure>
+
+<p>接收也是一样的封装好了，我们只需要取出我们需要的 ID 和数据即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 从 CAN 读取一帧数据 */</span></span><br><span class="line">rt_device_read(can_dev, <span class="number">0</span>, &amp;rxmsg, <span class="keyword">sizeof</span>(rxmsg));</span><br><span class="line"><span class="comment">/* 打印数据 ID 及内容 */</span></span><br><span class="line">rt_kprintf(<span class="string">&quot;ID:%x&quot;</span>, rxmsg.id);</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">    rt_kprintf(<span class="string">&quot;%2x&quot;</span>, rxmsg.data[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，CAN 的使用需要了解的应该就够了。</p>
+<blockquote>
+<p>如果想了解的更详细，别人的文章，上面有水印的图就是他的。<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/538834760">知乎文章</a></p>
+</blockquote>
+<h1 id="2-CANopen概念"><a href="#2-CANopen概念" class="headerlink" title="2. CANopen概念"></a>2. CANopen概念</h1><p>从上面可以看出，CAN 总线确定了一种数据传输的物理和数据方式。即，用什么设备传输数据、怎么传输数据、格式是什么。</p>
+<p>但是，在我们写应用的时候，数据传输时每个人对于 ID 或者数据都有自己的规定，不统一。即，在这个层面上缺乏一个统一的标准去规定不同<strong>ID</strong>和<strong>数据</strong>的含义是什么。</p>
+<p>因此，CANopen做的就是这个工作。</p>
+<h2 id="2-1-通信特点"><a href="#2-1-通信特点" class="headerlink" title="2.1 通信特点"></a>2.1 通信特点</h2><p>CANopen规定的报文特点：</p>
+<ul>
+<li>报文传输采用 CAN <strong>标准帧</strong>格式。即 11bit 的 ID 域，以尽量减小传输时间；</li>
+<li>网络控制报文均采用数据最小字节数。比如心跳报文，只有1个字节数据；</li>
+<li>实时更新的<strong>过程数据无需接收方报文应答</strong>。即采用生产消费模型，降低总线负载；</li>
+<li>需要接收方确认的配置参数一般都是采用快速单字传输。即1个报文最多传送1个32字节的参数变量，避免了分帧引起的实时性降低。</li>
+</ul>
+<blockquote>
+<p>规定上述特点的原因是，CAN通信具有可以突发发送的实时性优势，但是多个节点下，突发具有较大的冲突可能性。因此，上述特点可以尽可能保证实时性。</p>
+</blockquote>
+<p>CANopen 协议通常分为用户应用层、<strong>对象字典</strong>以及<strong>通信</strong>三个部分。</p>
+<ul>
+<li>用户应用层：用户根据实际的需求编写的应用对象。</li>
+<li>对象字典：最核心的部分，描述了应用对象和 CANopen 报文之间的关系。</li>
+<li>通信：很重要的部分，定义了 CANopen 协议通信规则以及与CAN控制器驱动之间对应关系，掌握这部分才能让我们写自己的应用对象。</li>
+</ul>
+<p>前面我们说了，CAN通信中，我们需要关注的就是<code>CAN-ID</code>和<code>DATA</code>。</p>
+<p>在CANopen中也是一样的，我们需要知道这两部分是怎么设置的，分别有什么含义。</p>
+<h2 id="2-2-对象字典-OD"><a href="#2-2-对象字典-OD" class="headerlink" title="2.2 对象字典(OD)"></a>2.2 对象字典(OD)</h2><p>CANopen 对象字典（OD: Object Dictionary）是 CANopen 协议最为核心的概念。</p>
+<p>对象字典就是一个有序的对象组，描述了对应 CANopen 节点的所有参数，包括通讯数据的存放位置也列入其索引，这个表变成可以传递形式就叫做<strong>EDS文件</strong>（电子数据文档 Electronic Data Sheet）。</p>
+<p>其中，每个对象采用一个 16 位的索引值来寻址，这个索引值通常被称为<strong>索引</strong>，其范围在<strong>0x0000</strong>到<strong>0xFFFF</strong>之间。为了避免数据大量时无索引可分配，所以在某些索引下也定义了一个8 位的索引值，这个索引值通常被称为<strong>子索引</strong>，其范围是<strong>0x00</strong>到<strong>0xFF</strong>之间。每个索引内具体的参数，最大用<strong>32</strong>位的变量来表示，四个字节。</p>
+<p>如下图是某遵循 CANopen 协议的电机的 EDS 文件。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/EDS%E6%96%87%E4%BB%B6%E7%A4%BA%E4%BE%8B.jpg" alt="EDS文件示例"></p>
+<blockquote>
+<p>EDS 文件是每个节点都有的，采用字典的形式保存了该节点的参数等信息。其他节点可以通过索引等信息访问或者修改这些信息。</p>
+</blockquote>
+<p>理解：</p>
+<p>对于某个设备而言，预定义了各个节点通信需要收发的信息都有什么，表现形式上就是如上图的一个表格。<strong>每一行就是一个对象</strong>，每个对象中存放的是什么内容可以自定（有些条目是固定的）。CANopen的收发就是在收发这些对象。</p>
+<h2 id="2-3-数据传输-PDO、SDO"><a href="#2-3-数据传输-PDO、SDO" class="headerlink" title="2.3 数据传输(PDO、SDO)"></a>2.3 数据传输(PDO、SDO)</h2><h3 id="2-3-1-对象分类"><a href="#2-3-1-对象分类" class="headerlink" title="2.3.1 对象分类"></a>2.3.1 对象分类</h3><p>说数据传输之前先说两种数据收发模型：</p>
+<ul>
+<li>生产消费模型：生产者向外发送数据，不指定对象，消费者消费数据。即，&#x3D;&#x3D;生产者并不会得到回复&#x3D;&#x3D;。</li>
+<li>服务器客户端模型：客户端向服务器发送数据请求，服务器回复请求的数据。即，&#x3D;&#x3D;客户端会得到数据回复&#x3D;&#x3D;。其中，从服务器读取的动作是<strong>上传</strong>，向服务器写入的动作是<strong>下载</strong>（可以看出该动作是相对于服务器而言的）。</li>
+</ul>
+<p>在 CANopen 中配置信息或应用信息的传输是通过两种对象进行传输的：<strong>过程数据对象 PDO</strong>（Process data object）、<strong>服务数据对象 SDO</strong>（Service data object），其中：</p>
+<ul>
+<li>PDO：属于过程数据，即单向传输，无需接收节点回应 CAN 报文来确认，即，生产消费模型。</li>
+<li>SDO：属于服务数据，有指定被接收节点的地址（Node-ID），并且需要指定的接收节点回应 CAN 报文来确认已经接，如果超时没有确认，则发送节点将会重新发送原报文。即服务器客户端模型。</li>
+</ul>
+<blockquote>
+<p>即，把上面的那些对象分为两类，PDO、SDO，第一类表示发过去无需回复。第二类表示发送过去之后需要接收方进行回复的对象。</p>
+</blockquote>
+<p>对于 PDO 对象：由于需要区分每个 CANopen 节点的输入和输出，所以 PDO 分为 TPDO（发送PDO）和 RPDO（接收PDO），发送和接收是以 CANopen 从站节点为参考（如果CAN主站就相反）。TPDO 和 RPDO 分别有4个数据对象，每种数据对象就是1条CAN报文封装，这些都是数据收发的容器。</p>
+<ul>
+<li>TPDO1（发送PDO）：从站主动传输TXPDO数据给主站，从站发送。</li>
+<li>RPDO1（接收PDO）：主站主动传输RxPDO数据给从站，从站接收。</li>
+<li>TPDO2</li>
+<li>RPDO2</li>
+<li>TPDO3</li>
+<li>RPDO3</li>
+<li>TPDO4</li>
+<li>RPDO5</li>
+</ul>
+<p>可以看到这个RT是站在从站的角度看的。</p>
+<blockquote>
+<p>另外，不同类别对象的索引，是有规定的，不是随便定的。</p>
+</blockquote>
+<h3 id="2-3-2-对象编号"><a href="#2-3-2-对象编号" class="headerlink" title="2.3.2 对象编号"></a>2.3.2 对象编号</h3><p>CANopen 预定义了强制性的缺省标识符（CAN-ID）分配表，该分配表是基于11 位CAN-ID 的标准帧格式。将其划分为<strong>4 位的功能码（Function-ID）<strong>和</strong>7 位的节点号（Node-ID）</strong>。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%92%8CSDO%E7%9A%84%E9%A2%84%E5%AE%9A%E4%B9%89%E8%BF%9E%E6%8E%A5ID%E5%88%86%E9%85%8D.jpg" alt="PDO和SDO的预定义连接ID分配"></p>
+<p>从这张图中，要搞清楚一个概念。</p>
+<ul>
+<li><p>节点号：一个网络中的每个节点都有一个自己的编号，用 7bit 表示，即，一个网络中最多能有127个通讯节点（0不行）。</p>
+</li>
+<li><p>通信对象编号（COB-ID）：在 CANopen 中就是 CAN-ID，可以看出，节点号被包含在 COB-ID 中。</p>
+</li>
+</ul>
+<h1 id="3-数据通信"><a href="#3-数据通信" class="headerlink" title="3. 数据通信"></a>3. 数据通信</h1><p>前面提到，不管是CAN还是CANopen需要我们关注的都是<code>CAN-ID</code>和<code>DATA</code>。</p>
+<h2 id="3-1-服务数据对象SDO"><a href="#3-1-服务数据对象SDO" class="headerlink" title="3.1 服务数据对象SDO"></a>3.1 服务数据对象SDO</h2><p>特性：SDO 主要用于 CANopen 主站对从节点的参数配置。<strong>服务确认是</strong>SDO的最大的特点，为每个消息都生成一个应答，确保数据传输的准确性。</p>
+<p>在收发 SDO 对象时比较简单固定。一般在 CANopen 网络中，只有 NMT 主机能发起 SDO 通讯，进行节点参数配置或者关键性参数的传递。当然从节点也可以对其他从节点发起SDO通讯。</p>
+<blockquote>
+<p>NMT主机后面会介绍，这里只需要知道，主机（主动方）可以发起SDO通讯就行了。</p>
+</blockquote>
+<h3 id="3-1-1-ID设置"><a href="#3-1-1-ID设置" class="headerlink" title="3.1.1 ID设置"></a>3.1.1 ID设置</h3><ul>
+<li><p>发送方（客户端）：发送 CAN-ID 为<code>600h + Node-ID</code>的报文，其中 Node-ID 为接收方（服务器）的节点地址，数据长度均为8字节；</p>
+</li>
+<li><p>接收方（服务器）：成功接收后，回应 CAN-ID 为<code>580h + Node-ID</code>的报文。这里的 Node-ID 也是是接收方（刚刚的发送方）的节点地址，数据长度均为8字节。</p>
+</li>
+</ul>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/SDO%E9%80%9A%E8%AE%AF%E5%8E%9F%E5%88%99.jpg" alt="SDO通讯原则"></p>
+<p>如下图中的最后两行，为 CANopen 预定义报文的 SDO 报文中的 ID 分类。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg" alt="PDO与SDO的CAN-ID定义"></p>
+<h3 id="3-1-2-数据设置"><a href="#3-1-2-数据设置" class="headerlink" title="3.1.2 数据设置"></a>3.1.2 数据设置</h3><p>在发送数据时分为两类，<code>快速SDO协议</code>、<code>普通SDO协议</code>。</p>
+<p><strong>快速SDO协议</strong>（常用）</p>
+<p>最常用最常见的 SDO 协议是快速 SDO，快速，就是1次来回就搞定。前提是读取和写入的值不能大于 32 位。如图所示，为快速 SDO 协议的示意图。命令中直接包含了要读写的索引、子索引、数据。可谓直接命中。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E5%BF%AB%E9%80%9FSDO%E7%A4%BA%E6%84%8F%E5%9B%BE.jpg" alt="快速SDO示意图"></p>
+<p>通过快速 SDO，可以直接对 CANopen 节点的对象字典中的值进行读取和修改，所以在做参数配置之外，也经常作为关键性数据传输之用。比如 CANopen 控制机器人的电机转动角度时，就使用 SDO 来传输，保证可靠。</p>
+<hr>
+<p>举个例子，保利时电机将电机设置为转矩模式。</p>
+<p>需要发送的数据为：</p>
+<ul>
+<li>ID：<code>0x00 00 06 02</code>，其中0x2是要发送给（接收方）的节点号。（可以对照3.1.1小节的图）</li>
+<li>DATA：<code>0x2F 60 60 00 04 00 00 00</code>，其中0x2F为命令符，0x60 60为索引，0x00为子索引，0x04 00 00 00为要发送的数据。</li>
+</ul>
+<p>接收到的回复为：</p>
+<ul>
+<li>ID：<code>0x00 00 05 82</code>，其中0x2表示是谁给出的回复。（参考2.3小节最后）</li>
+<li>DATA：<code>0x60 60 60 00 00 00 00 00</code>，其中0x60表示成功，0x60 60为索引，0x00为子索引，0x00 00 00 00为回复的数据。</li>
+</ul>
+<p>这就是一个发送SDO对象的案例。这里更改的对象为：索引为0x60 60，子索引为0x00，对象含义为电机的运行模式。</p>
+<hr>
+<p><strong>普通SDO协议</strong>（了解）</p>
+<p>当需要传输的值超过 32 位时，就不能使用快速 SDO 传输。必须使用普通 SDO 进行分帧传输。在应用中较少用到。<br>普通 SDO 协议难点在于分包逻辑与 CS 命令符的变化。依然难以记忆。<br>当然普通 SDO 的 CAN 帧 ID 与快速 SDO 相同，依然发送方（客户端）发送的报文CAN-ID为<code>600h + Node-ID</code>，接收方（服务器）成功接收后，回应CAN-ID为<code>580h + Node-ID</code>的报文。</p>
+<p><strong>下载协议download protocol</strong></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8B%E8%BD%BD%E5%8D%8F%E8%AE%AE.jpg" alt="下载协议"></p>
+<p><strong>上传协议upload protocol</strong></p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BC%A0%E5%8D%8F%E8%AE%AE.jpg" alt="上传协议"></p>
+<h2 id="3-2-过程数据对象PDO"><a href="#3-2-过程数据对象PDO" class="headerlink" title="3.2 过程数据对象PDO"></a>3.2 过程数据对象PDO</h2><p>PDO 属于过程数据，用来传输实时数据，即单向传输，无需接收节点回应 CAN 报文来确认，属于“生产消费”模型 PDO。数据长度被限制为1~8 字节。最多只要1帧就可以把一条信息或者一个变量传递结束。</p>
+<p>但是PDO的收发不只是简单的设置ID和DATA的问题，这个相对来说有点麻烦。</p>
+<h3 id="3-2-1-ID设置"><a href="#3-2-1-ID设置" class="headerlink" title="3.2.1 ID设置"></a>3.2.1 ID设置</h3><ul>
+<li>发送方：根据自己属于哪一类对象 PDO 对象决定自己的 ID。比如，发送 CAN-ID 为<code>180h + Node-ID</code>的报文，其中 Node-ID 为发送方（自己）的节点地址，用于告诉是谁发送出去的。数据长度 1 - 8 字节。</li>
+</ul>
+<p>如下图中的前面 8 行，为 CANopen 预定义报文的 PDO 报文中的 ID 分类。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E4%B8%8ESDO%E7%9A%84CAN-ID%E5%AE%9A%E4%B9%89.jpg" alt="PDO与SDO的CAN-ID定义"></p>
+<p>当然，如果某个节点需要传递的资源特别多，则有出现例如 TPDO5 之类的数据对象，而它们的 CAN-ID 定义就需要打破预定义的规则，比如我们可以定义Node-ID为1的节点中 TPDO5 是 182h，这里的 PDO 的 COB-ID 中的低 7 位不再是表示 Node-ID。其实所有的 PDO 的 COB-ID 与 Node-ID 无必然规则上的联系。</p>
+<hr>
+<p>也举个例子，保利时电机驱动器接通后，会一直循环上报编码器位置。</p>
+<p>上位机接收到的数据为：</p>
+<ul>
+<li>ID：<code>0x01 82</code>，其中0x2是驱动器自己的节点号。（0x01 80 可以对照到上图中的TPDO1）。</li>
+<li>DATA：<code>0x2F 60 60 00</code>，为编码器的读数。</li>
+</ul>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/%E4%B8%8A%E4%BD%8D%E6%9C%BA%E6%8E%A5%E6%94%B6%E5%88%B0%E7%9A%84PDO.jpg" alt="上位机接收到的PDO"></p>
+<p>这就是一个上位机接收PDO对象的案例。这里主要是为了看这个ID，数据先不用在意，等会看后面。</p>
+<hr>
+<h3 id="3-2-2-传输方式"><a href="#3-2-2-传输方式" class="headerlink" title="3.2.2 传输方式"></a>3.2.2 传输方式</h3><p>PDO的两种传输方式：同步传输和异步传输。如图所示，1、2为异步传输，3、4为同步传输。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E4%BC%A0%E8%BE%93%E5%BD%A2%E5%BC%8F.jpg" alt="PDO的传输形式"></p>
+<p>上面的例子中，就是用的第一种异步传输的方式。</p>
+<h3 id="3-2-3-数据设置"><a href="#3-2-3-数据设置" class="headerlink" title="3.2.3 数据设置"></a>3.2.3 数据设置</h3><p>PDO 的通信数据中，定义了该设备所使用的 COB-ID、传输类型、定时周期等。</p>
+<p>其中，RPDO通讯参数位于对象字典索引的 1400h to 15FFh，TPDO通讯参数位于对象字典索引的 1800h to 19FFh。</p>
+<blockquote>
+<p>前面说过，不同类别对象的索引，是有规定的，不是随便定的。这里就看到了。</p>
+</blockquote>
+<p>每条索引代表一个PDO的通信参数集，其中的子索引分别指向具体的各种参数。如表所示。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E7%9A%84%E9%80%9A%E8%AE%AF%E5%8F%82%E6%95%B0.jpg" alt="PDO的通讯参数"></p>
+<ul>
+<li>Number of entries 参数条目数量：即本索引中有几条参数；</li>
+<li>COB-ID：即这个PDO发出或者接收的对应CAN帧ID；</li>
+<li>发送类型：即这个PDO发送或者接收的传输形式，通常使用循环同步和异步 制造商特定事件较多；</li>
+<li>Inhibit time生产禁止约束时间(1&#x2F;10ms)：约束PDO发送的最小间隔，避免导致总线负载剧烈增加，比如数字量输入过快，导致状态改变发送的TPDO频繁发送，总线负载加大，所以需要一个约束时间来进行“滤波”，这个时间单位为0.1ms；</li>
+<li>Event timer事件定时器触发的时间(单位ms)：定时发送的PDO，它的定时时间，如果这个时间为0，则这个PDO为事件改变发送。</li>
+<li>SYNC start value同步起始值：同步传输的PDO，收到诺干个同步包后，才进行发送，这个同步起始值就是同步包数量。比如设置为2，即收到2个同步包后才进行发送。</li>
+</ul>
+<h3 id="3-2-4-PDO映射参数（难）"><a href="#3-2-4-PDO映射参数（难）" class="headerlink" title="3.2.4 PDO映射参数（难）"></a>3.2.4 PDO映射参数（难）</h3><p>PDO 对象并不是和 SDO 一样直接看着表使用<code>ID + DATA</code>发送出去的。</p>
+<p>PDO 所携带的实时数据类型和内容是由设备对象字典中所规定的该 PDO 映射结构决定。</p>
+<p>PDO映射参数，包含了一个对象字典中的对象列表，这些对象映射到相应的PDO，其中包括数据的长度（单位，位），对于生产者和消费者都必须要知道这个映射参数，才能够正确的解释PDO内容。就是将通信参数、应用数据和具体CAN报文中数据联系起来。</p>
+<ul>
+<li>RPDO 通讯参数 1400h to 15FFh，映射参数 1600h to 17FFh，数据存放为 2000h 之后厂商自定义区域；</li>
+<li>TPDO 通讯参数 1800h to 19FFh，映射参数 1A00h to 1BFFh，数据存放为 2000h 之后厂商自定义区域。</li>
+</ul>
+<p>有点懵逼哈，整个例子，看下图。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/PDO%E5%9C%A8%E5%AF%B9%E8%B1%A1%E5%AD%97%E5%85%B8%E7%9A%84%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB.jpg" alt="PDO在对象字典的映射关系"></p>
+<p>解释一下这张图：</p>
+<ul>
+<li>第一个表：从 Index 索引可以看出这是个 TPDO 对象。子索引和对应的对象内容，定义了该对象的ID、发送类型等。</li>
+<li>第二个表：从 Index 索引可以看出，这是上面那个 TPDO 对象的映射对象。<ul>
+<li>子索引 01h 的内容为 0x2000 01 08，表示索引为 0x1800 的 TPDO 对象的前 8 位值为：索引为2000h、子索引为 0x01 的对象的值。</li>
+<li>子索引 02h 的内容为 0x2003 03 10，表示索引为 0x1800 的 TPDO 对象的接着 16 位值为：索引为2003h、子索引为 0x03 的对象的值。（注意，低位在前）</li>
+<li>子索引 03h 的内容为 0x2003 01 08，表示索引为 0x1800 的 TPDO 对象的接着 8 位值为：索引为2003h、子索引为 0x01 的对象的值。</li>
+</ul>
+</li>
+<li>第三个表，从 Index 可以看出，这里是厂商自定义区域。</li>
+<li>第四个表，我们实际发送的内容<ul>
+<li>ID：0x181。（从第一个表看）</li>
+<li>DATA：就是按照上面映射得到的值。</li>
+</ul>
+</li>
+</ul>
+<p>另外，前面说对象的索引不是能随便定义的。</p>
+<ul>
+<li>分配对象：索引为0x1cxx</li>
+<li>映射对象：索引为0x16xx、0x1Axx</li>
+<li>应用对象：索引为0x6xxx、0x7xxx</li>
+</ul>
+<p>比如，3.1小节的案例中，发送的对象的索引为0x6060，就是一个应用对象。这里的映射对象的索引也是确定的。</p>
+<h3 id="3-2-5-设置步骤"><a href="#3-2-5-设置步骤" class="headerlink" title="3.2.5 设置步骤"></a>3.2.5 设置步骤</h3><p>PDO报文用来传输有实时性要求的过程数据，传输类型可以是事件类型、同步传输、周期传输。PDO报文基于生产者消费者模式，所以使用之前需要先配置好生产者和消费者，这些在映射参数（1600h+n）和通信参数（1400h+n）里面完成。具体分以下三步完成。注：n 为设备地址。</p>
+<p><strong>接收型 RPDO</strong></p>
+<ol>
+<li><p>在索引<code>1400h + n</code>，子索引 01 确定的变量里写入<code>COB-ID</code>(4字节)</p>
+</li>
+<li><p>在索引<code>1400h + n</code>，子索引 02 里面写入传输类型<code>t</code>（1字节）t &#x3D; 1–240，表示设备每收到 t 个同步报文发送一次 PDO；t &#x3D; 253，表示每收到一个远程（RTR &#x3D; 1）PDO 请求后方可发送；t &#x3D; 254，表示事件触发传输模式（制造商特定事件）；t &#x3D; 255，事件触发传输模式（设备子协议CiA 401特定事件），即利用设备自身内部的定时器，定时发送一条 PDO 报文。</p>
+</li>
+<li><p>在索引<code>1600h + n</code>下面定义映射关系，子索引 00：定义其后面的总子索引数目，在该例子中为2；</p>
+</li>
+<li><p>在索引<code>1600h + n</code>下面定义映射关系，子索引 01：写入第一个变量的映射地址，按以下格式写：</p>
+<p>索引（2字节）- 子索引（1字节）- 数据类型（1字节）。例如将1号通道的模拟量值定义为映射变量，它的索引为6401h，子索引为01，数据类型为2字节16位，代号为10h，连起来即64010110h；</p>
+</li>
+<li><p>在索引<code>1600h + n</code>下面定义映射关系，子索引 02：这里定义 1-8 通道的数字量输入（索引6000h：01）为映射变量，故其内容为60000108h。至此已完成配置。</p>
+</li>
+</ol>
+<p><strong>发送型 PDO</strong></p>
+<ol>
+<li>在索引<code>1800h + n</code>，子索引 01 写入 COB-ID；</li>
+<li>在其对应子索引 02 写入传输类型，同 RPDO；</li>
+<li>在索引<code>1A00h + n</code>配置映射，具体同 RPDO。</li>
+</ol>
+<h1 id="4-补充"><a href="#4-补充" class="headerlink" title="4. 补充"></a>4. 补充</h1><p>这也是很关键的部分，但是为了防止影响理解上面的PDO、SDO，后说这部分。</p>
+<h2 id="4-1-NMT网络管理"><a href="#4-1-NMT网络管理" class="headerlink" title="4.1 NMT网络管理"></a>4.1 NMT网络管理</h2><p>在 CAN 通讯中，所有节点通信地位平等，运行时允许自行发送报文。</p>
+<p>但，CANopen 网络为了稳定可靠可控。在一个通讯网络中需要设置：</p>
+<ul>
+<li>一个网络管理主机<strong>NMT-Master（Network Management-Master）</strong>。一般是 CANopen 网络中具备监控的 PLC 或者 PC。也称为 CANopen 主站。</li>
+<li>剩下的一个或多个为从机<strong>NMT-slaves</strong>。</li>
+</ul>
+<p>NMT主机和NMT从机之间通讯的报文就称为<strong>NMT网络管理报文</strong>。管理报文负责层管理、网络管理和ID分配服务。例如，初始化、配置和网络管理（其中包括节点保护）。</p>
+<p>另外，为了<strong>协调各个节点的同步、心跳、时间、错误提示</strong>等通讯控制，CANopen还定义了一系列<strong>特殊协议</strong>（Special protocols）报文。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E6%8A%A5%E6%96%87%E5%92%8C%E7%89%B9%E6%AE%8A%E5%8D%8F%E8%AE%AE%E6%8A%A5%E6%96%87.jpg" alt="NMT报文和特殊协议报文"></p>
+<p>上图中，绿色底纹的常用。</p>
+<p>每个<strong>CANopen从节点</strong>的 CANopen 协议栈中，必须具备 NMT 管理的相应代码。这是节点具备 CANopen 协议的最基本的要素。</p>
+<h2 id="4-2-NMT节点状态"><a href="#4-2-NMT节点状态" class="headerlink" title="4.2 NMT节点状态"></a>4.2 NMT节点状态</h2><p>NMT管理涉及到一个CANopen节点从上电开始的6钟状态，包括：</p>
+<ol>
+<li>初始化（Initializing）：节点上电后对功能部件包括 CAN 控制器进行初始化；</li>
+<li>应用层复位(Application Reset）：节点中的应用程序复位(开始），比如开关量输出模拟量输出模拟量输出的初始值；</li>
+<li>通讯复位（Communication reset）：节点的 CANopen 通讯复位（开始），从这个时刻，此节点就可以进行  CANopen 通讯了；</li>
+<li>预操作状态（Pre-operational）：节点的 CANopen 通讯处于操作就绪状态，此时此节点不能进行 PDO 通信，而可以进行 SDO 进行参数配置和 NMT 网络管理的操作；</li>
+<li>操作状态（operational）：节点收到 NMT 主机发来的启动命令后，CANopen 通讯被激活，PDO 通信启动后，按照对象字典里面规定的规则进行传输，同样 SDO 也可以对节点进行数据传输和参数修改；</li>
+<li>停止状态（Stopped）：节点收到 NMT 主机发来的停止命令后，节点的 PDO 通信被停止，但 SDO 和 NMT 网络管理依然可以对节点进行操作；</li>
+</ol>
+<p>除了初始化状态，NMT 主机通过 NMT 命令可以让网络中任意一个的 CANopen 节点进行其他5种状态的切换。当然 CANopen 节点也可以程序自动完成这些状态的切换。</p>
+<p><img src="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/NMT%E7%AE%A1%E7%90%86%E7%8A%B6%E6%80%81%E8%BD%AC%E6%8D%A2%E5%9B%BE.jpg" alt="NMT管理状态转换图"></p>
+<h2 id="4-3-NMT节点报文"><a href="#4-3-NMT节点报文" class="headerlink" title="4.3 NMT节点报文"></a>4.3 NMT节点报文</h2><ul>
+<li>节点上线报文：任何一个 CANopen 从站上线后，为了提示主站它已经加入网络（便于热插拔），或者避免与其他从站 Node-ID 冲突。这个从站必须发出<strong>节点上线报文（boot-up）</strong>，节点上线报文的<strong>ID为 700h + Node-ID</strong>，<strong>数据为1个字节0</strong>。生产者为 CANopen 从站。</li>
+</ul>
+<blockquote>
+<p>简单来说，一个从节点上线需要先发送个报文，告诉主机我上线了。</p>
+</blockquote>
+<ul>
+<li>心跳报文：为了监控 CANopen 节点是否在线与目前的节点状态。从站需要定时发送状态报文（心跳报文）。ID与节点上线报文相同为<strong>700h + Node-ID</strong>，<strong>数据为1个字节</strong>，代表节点目前的状态，04h为停止状态，05h为操作状态，7Fh为预操作状。</li>
+</ul>
+<blockquote>
+<p>CANopen 从站按其对象字典中 1017h 中填写的心跳生产时间（ms）进行心跳报文的发送，而 CANopen 主站（NMT主站）则会按其 1016h 中填写的心跳消费时间进行检查，假设超过诺干次心跳消费时间没有收到从站的心跳报文，则认为从站已经离线或者损坏。</p>
+</blockquote>
+<ul>
+<li><p>节点守护：在早期 CANopen 应用中，可以通过轮询模式监视从站状态的节点守护模式，它与心跳报文模式二者不能并存。通过节点守护，MNT主机可以检查每个节点的当前状态。很少用了。</p>
+</li>
+<li><p>NMT节点状态切换命令：NMT网络管理中，最核心的就是NMT节点状态切换命令，这是NMT主站所进行网络管理的“命令”报文。</p>
+<ul>
+<li>CAN-ID 均为 000h，具备最高的 CAN 优先级。数据为2个字节：<ul>
+<li>第1个字节代表命令类型：<ul>
+<li>01h 为启动命令（让节点进入操作状态）；</li>
+<li>02h 为停止命令（让节点进入停止状态）；</li>
+<li>80h 为进入预操作状态（让节点进入预操作状态）；</li>
+<li>81h 为复位节点应用层（让节点的应用恢复初始状态，比如列车门都恢复打开状态）；</li>
+<li>82h 为复位节点通讯（让节点的 CAN 和 CANopen 通讯重新初始化，一般用于总线收到干扰，导致节点总线错误被动，或者总线关闭时）。</li>
+</ul>
+</li>
+<li>第二个字节代表被控制的节点 Node-ID，如果要对整个网络所有节点同时进行控制，则这个数值为0即可。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>另外还有</p>
+<ul>
+<li>同步协议（Syncprotocol）</li>
+<li>时间戳协议（Time-stamp protocol）：CAN-ID 为 100h，数据长度为 6，数据为当前时刻与1984年1月1日0时的时间差。</li>
+<li>紧急报文协议（Emergency protocol）：其 CAN-ID 存储在 1014h 的索引中，一般会定义为<code>0x080 + Node-ID</code>，数据包含8个字节。</li>
+</ul>
+</article>
+<div class="article-footer">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文由 imhaozi 编写，采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+
+</div>
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/2024/01/01/04.%20Linux%E5%BA%94%E7%94%A8/ros2/">ros2学习笔记</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/">Ymodem</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">imhaozi</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-CAN%E5%8D%8F%E8%AE%AE"><span class="toc-text">1. CAN协议</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E7%89%A9%E7%90%86%E6%8E%A5%E7%BA%BF"><span class="toc-text">1.1 物理接线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E4%BF%A1%E5%8F%B7%E4%BC%A0%E8%BE%93"><span class="toc-text">1.2 信号传输</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E5%8D%8F%E8%AE%AE%E8%A7%84%E5%AE%9A"><span class="toc-text">1.3 协议规定</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-CANopen%E6%A6%82%E5%BF%B5"><span class="toc-text">2. CANopen概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E9%80%9A%E4%BF%A1%E7%89%B9%E7%82%B9"><span class="toc-text">2.1 通信特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E5%AF%B9%E8%B1%A1%E5%AD%97%E5%85%B8-OD"><span class="toc-text">2.2 对象字典(OD)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93-PDO%E3%80%81SDO"><span class="toc-text">2.3 数据传输(PDO、SDO)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-1-%E5%AF%B9%E8%B1%A1%E5%88%86%E7%B1%BB"><span class="toc-text">2.3.1 对象分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-2-%E5%AF%B9%E8%B1%A1%E7%BC%96%E5%8F%B7"><span class="toc-text">2.3.2 对象编号</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%95%B0%E6%8D%AE%E9%80%9A%E4%BF%A1"><span class="toc-text">3. 数据通信</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E6%9C%8D%E5%8A%A1%E6%95%B0%E6%8D%AE%E5%AF%B9%E8%B1%A1SDO"><span class="toc-text">3.1 服务数据对象SDO</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-1-ID%E8%AE%BE%E7%BD%AE"><span class="toc-text">3.1.1 ID设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-2-%E6%95%B0%E6%8D%AE%E8%AE%BE%E7%BD%AE"><span class="toc-text">3.1.2 数据设置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E8%BF%87%E7%A8%8B%E6%95%B0%E6%8D%AE%E5%AF%B9%E8%B1%A1PDO"><span class="toc-text">3.2 过程数据对象PDO</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-1-ID%E8%AE%BE%E7%BD%AE"><span class="toc-text">3.2.1 ID设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-2-%E4%BC%A0%E8%BE%93%E6%96%B9%E5%BC%8F"><span class="toc-text">3.2.2 传输方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-3-%E6%95%B0%E6%8D%AE%E8%AE%BE%E7%BD%AE"><span class="toc-text">3.2.3 数据设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-4-PDO%E6%98%A0%E5%B0%84%E5%8F%82%E6%95%B0%EF%BC%88%E9%9A%BE%EF%BC%89"><span class="toc-text">3.2.4 PDO映射参数（难）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-5-%E8%AE%BE%E7%BD%AE%E6%AD%A5%E9%AA%A4"><span class="toc-text">3.2.5 设置步骤</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E8%A1%A5%E5%85%85"><span class="toc-text">4. 补充</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-NMT%E7%BD%91%E7%BB%9C%E7%AE%A1%E7%90%86"><span class="toc-text">4.1 NMT网络管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-NMT%E8%8A%82%E7%82%B9%E7%8A%B6%E6%80%81"><span class="toc-text">4.2 NMT节点状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-NMT%E8%8A%82%E7%82%B9%E6%8A%A5%E6%96%87"><span class="toc-text">4.3 NMT节点报文</span></a></li></ol></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a></div></widget>
+</div></aside><div class='float-panel'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+
+
+<script type="text/javascript">
+  window.canonical = {"originalHost":null,"officialHosts":["localhost"],"encoded":""};
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+    tag_plugins: {
+      chat: Object.assign({"api":"https://siteinfo.listentothewind.cn/api/v1"}),
+    }
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"skip_search":null,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+    loading: `https://api.iconify.design/eos-icons:three-dots-loading.svg?color=%231cd0fd`,
+  };
+  const deps = {
+    jquery: `https://gcore.jsdelivr.net/npm/jquery@3.7/dist/jquery.min.js`,
+    marked: `https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js`,
+    lazyload: `/%5Bobject%20Object%5D`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = () => {
+          utils.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) => {
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index, 1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')) {
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function () {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      const maxRetry = 3;
+      let retryCount = 0;
+
+      return new Promise((resolve, reject) => {
+        const load = () => {
+          utils.onLoading?.(el);
+
+          let timedOut = false;
+          const timeout = setTimeout(() => {
+            timedOut = true;
+            console.warn('[request] 超时:', url);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject('请求超时');
+            } else {
+              setTimeout(load, 1000);
+            }
+          }, 5000);
+
+          fetch(url).then(resp => {
+            if (timedOut) return;
+            clearTimeout(timeout);
+
+            if (!resp.ok) throw new Error('响应失败');
+            return resp;
+          }).then(data => {
+            if (timedOut) return;
+            utils.onLoadSuccess?.(el);
+            callback(data);
+            resolve(data);
+          }).catch(err => {
+            clearTimeout(timeout);
+            console.warn('[request] 错误:', err);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject(err);
+            } else {
+              setTimeout(load, 1000);
+            }
+          });
+        };
+
+        load();
+      });
+    },
+    requestWithoutLoading: (url, options = {}, maxRetry = 2, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        let retryCount = 0;
+
+        const tryRequest = () => {
+          let timedOut = false;
+          const timer = setTimeout(() => {
+            timedOut = true;
+            if (++retryCount > maxRetry) reject('timeout');
+            else tryRequest();
+          }, timeout);
+
+          fetch(url, options)
+            .then(resp => {
+              clearTimeout(timer);
+              if (!resp.ok) throw new Error('bad response');
+              resolve(resp);
+            })
+            .catch(err => {
+              clearTimeout(timer);
+              if (++retryCount > maxRetry) reject(err);
+              else setTimeout(tryRequest, 500);
+            });
+        };
+
+        tryRequest();
+      });
+    },
+    /********************** requestAnimationFrame ********************************/
+    // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+    // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+    requestAnimationFrame: (fn) => {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+      }
+      window.requestAnimationFrame(fn)
+    },
+    dark: {},
+  };
+
+  // utils.dark.mode 当前模式 dark or light
+  // utils.dark.toggle() 暗黑模式触发器
+  // utils.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  utils.dark.method = {
+    toggle: new RunItem(),
+  };
+  utils.dark = Object.assign(utils.dark, {
+    push: utils.dark.method.toggle.push,
+  });
+</script>
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+<script async src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+    callback_loaded: (el) => {
+      el.classList.add('loaded');
+      const wrapper = el.closest('.lazy-box');
+      const icon = wrapper?.querySelector('.lazy-icon');
+      if (icon) icon.remove();
+    }
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+
+  window.wrapLazyloadImages = (container) => {
+    if (typeof container === 'string') {
+      container = document.querySelector(container);
+    }
+    if (!container) return;
+    
+    const images = container.querySelectorAll('img');
+    images.forEach((img) => {
+      if (img.classList.contains('lazy')) return;
+
+      const src = img.getAttribute('src');
+      if (!src) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'lazy-box';
+
+      const newImg = img.cloneNode();
+      newImg.removeAttribute('src');
+      newImg.setAttribute('data-src', src);
+      newImg.classList.add('lazy');
+
+      const icon = document.createElement('div');
+      icon.className = 'lazy-icon';
+      if (def.loading) {
+        icon.style.backgroundImage = `url("${def.loading}")`;
+      }
+
+      wrapper.appendChild(newImg);
+      wrapper.appendChild(icon);
+
+      img.replaceWith(wrapper);
+    });
+
+    // 通知 LazyLoad 更新
+    if (window.lazyLoadInstance?.update) {
+      window.lazyLoadInstance.update();
+    }
+  }
+  
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.33.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    // applyThemeToGiscus(theme)
+  }
+
+  // FIXME: 这会导致无法使用 preferred_color_scheme 以外的主题
+  const applyThemeToGiscus = (theme) => {
+    // theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+    utils.dark.mode = newTheme === 'auto' ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : newTheme;
+    utils.dark.method.toggle.start();
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    } else {
+      utils.dark.mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    utils.dark.method.toggle.start();
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"rating":{"js":"/js/services/rating.js","api":"https://star-vote.xaox.cc/api/rating"},"vote":{"js":"/js/services/vote.js","api":"https://star-vote.xaox.cc/api/vote"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"friends_and_posts":{"js":"/js/services/friends_and_posts.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"},"voice":{"js":"/js/plugins/voice.js"},"video":{"js":"/js/plugins/video.js"},"download-file":{"js":"/js/plugins/download-file.js"},"twikoo":{"js":"/js/services/twikoo_latest_comment.js"},"waline":{"js":"/js/services/waline_latest_comment.js"},"artalk":{"js":"/js/services/artalk_latest_comment.js"},"giscus":{"js":"/js/services/giscus_latest_comment.js"},"contributors":{"edit_this_page":{"_posts/":null,"wiki/stellar/":"https://github.com/xaoxuu/hexo-theme-stellar-docs/blob/main/"},"js":"/js/services/contributors.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else if (id == 'voice') {
+        ctx.voiceAudios = document.querySelectorAll('.voice>audio');
+        if (ctx.voiceAudios?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            createVoiceDom(ctx.voiceAudios);
+          });
+        }
+      } else if (id == 'video') {
+        ctx.videos = document.querySelectorAll('.video>video');
+        if (ctx.videos?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            videoEvents(ctx.videos);
+          });
+        }
+      } else if (id == 'download-file') {
+        ctx.files = document.querySelectorAll('.file');
+        if (ctx.files?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            downloadFileEvent(ctx.files);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+
+    // chat iphone time
+    let phoneTimes = document.querySelectorAll('.chat .status-bar .time');
+
+    if (phoneTimes.length > 0) {
+      NowTime();
+      var date = new Date();
+      var sec = date.getSeconds();
+      var firstAdjustInterval = setInterval(firstAdjustTime, 1000 * (60 - sec));
+    }
+
+    function firstAdjustTime() {
+      NowTime();
+      clearInterval(firstAdjustInterval);
+      setInterval(NowTime, 1000 * 60);
+    }
+
+    function NowTime() {
+      for (let i = 0; i < phoneTimes.length; ++i) {
+        var timeSpan = phoneTimes[i];
+        var date = new Date();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+        timeSpan.innerHTML = check(hour) + ":" + check(min);
+      }
+    };
+
+    function check(val) {
+      if (val < 10) {
+        return ("0" + val);
+      }
+      return (val);
+    }
+
+    // chat quote
+    const chat_quote_obverser = new IntersectionObserver((entries, observer) => {
+      entries.filter((entry) => { return entry.isIntersecting }).sort((a, b) => a.intersectionRect.y !== b.intersectionRect.y ? a.intersectionRect.y - b.intersectionRect.y : a.intersectionRect.x - b.intersectionRect.x).forEach((entry, index) => {
+          observer.unobserve(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('quote-blink');
+            setTimeout(() => {
+              entry.target.classList.remove('quote-blink');
+            }, 1000);
+          }, Math.max(100, 16) * (index + 1));
+        });
+    });
+
+    var chatQuotes = document.querySelectorAll(".chat .talk .quote");
+    chatQuotes.forEach((quote) => {
+      quote.addEventListener('click', function () {
+        var chatCellDom = document.getElementById("quote-" + quote.getAttribute("quotedCellTag"));
+        if (chatCellDom) {
+          var chatDiv = chatCellDom.parentElement;
+          var mid = chatDiv.clientHeight / 2;
+          var offsetTop = chatCellDom.offsetTop;
+          if (offsetTop > mid - chatCellDom.clientHeight / 2) {
+            chatDiv.scrollTo({
+              top: chatCellDom.offsetTop - mid + chatCellDom.clientHeight / 2,
+              behavior: "smooth"
+            });
+          } else {
+            chatDiv.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
+          }
+          chat_quote_obverser.observe(chatCellDom);
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error), .with-fancybox .atk-content img:not([atk-emoticon])';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const memos = document.getElementsByClassName('ds-memos');
+    if (memos != undefined && memos.length > 0) {
+      needFancybox = true;
+    }
+    const fancybox = document.getElementsByClassName('with-fancybox');
+    if (fancybox != undefined && fancybox.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>

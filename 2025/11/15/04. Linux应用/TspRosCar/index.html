@@ -1,0 +1,1386 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1" theme-name="Stellar" theme-version="1.33.1">
+  
+  
+  <meta name="generator" content="Hexo 8.1.1">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title>ros1小车diy记录 - Blog</title>
+
+  
+    <meta name="description" content="以一个ros小车为驱动，学习ros1的使用。其中项目分为两个部分：下位机地盘、上位机控制器。下位机使用stm32制作一个小车底盘，具备速度命令接收和控制、状态上报功能。上位机使用泰山派开发板，运行ros应用。状态可视化利用Ros的多机通信在虚拟机中进行。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ros1小车diy记录">
+<meta property="og:url" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/">
+<meta property="og:site_name" content="Blog">
+<meta property="og:description" content="以一个ros小车为驱动，学习ros1的使用。其中项目分为两个部分：下位机地盘、上位机控制器。下位机使用stm32制作一个小车底盘，具备速度命令接收和控制、状态上报功能。上位机使用泰山派开发板，运行ros应用。状态可视化利用Ros的多机通信在虚拟机中进行。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/IO%E5%BC%95%E8%84%9A%E5%88%86%E9%85%8D.jpg">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/gparted%E5%B7%A5%E5%85%B7%E5%AE%89%E8%A3%85.jpeg">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D1.png">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D2.png">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D3.png">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D4.png">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E5%AE%89%E8%A3%85SSH1.png">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E5%AE%89%E8%A3%85SSH2.png">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E9%87%8C%E7%A8%8B%E8%AE%A1%E5%8F%AF%E8%A7%86%E5%8C%96.png">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E9%9B%B7%E8%BE%BE%E5%8F%AF%E8%A7%86%E5%8C%96.png">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/TF%E6%A0%911.png">
+<meta property="og:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E5%BB%BA%E5%9B%BE%E5%8F%AF%E8%A7%86%E5%8C%96.png">
+<meta property="article:published_time" content="2025-11-15T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-01-17T05:36:25.574Z">
+<meta property="article:author" content="imhaozi">
+<meta property="article:tag" content="ROS">
+<meta property="article:tag" content="ROS1">
+<meta property="article:tag" content="泰山派">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/IO%E5%BC%95%E8%84%9A%E5%88%86%E9%85%8D.jpg">
+  
+  
+  
+  <meta name="keywords" content="ROS,ROS1,泰山派">
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.33.1">
+
+
+  
+    <link rel="shortcut icon" href="/images/avatar.jpg">
+  
+
+  
+
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"imhaozi","sameAs":[]},"dateCreated":"2025-11-15T10:00:00+08:00","dateModified":"2026-01-17T13:36:25+08:00","datePublished":"2025-11-15T10:00:00+08:00","description":"","headline":"ros1小车diy记录","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/"},"publisher":{"@type":"Organization","name":"imhaozi","sameAs":[]},"url":"http://example.com/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/","keywords":"ROS, ROS1, 泰山派","image":[]}</script>
+  
+</head>
+<body>
+
+<div class="l_body content" id="start" layout="post" type="tech" ><aside class="l_left"><div class="sidebg"></div><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="/images/avatar.jpg" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main">Blog</div><div class="sub normal cap">装备锻造中</div><div class="sub hover cap" style="opacity:0"> Write By imhaozi</div></a></div></header>
+
+<div class="nav-area">
+
+<nav class="menu dis-select"><a class="nav-item active" title="博客" href="/" style="color:#1BCDFC"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></a><a class="nav-item" title="文档" href="/wiki/" style="color:#3DC550"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M14.25 4.48v3.057c0 .111 0 .27.02.406a.936.936 0 0 0 .445.683a.96.96 0 0 0 .783.072c.13-.04.272-.108.378-.159L17 8.005l1.124.534c.106.05.248.119.378.16a.958.958 0 0 0 .783-.073a.936.936 0 0 0 .444-.683c.021-.136.021-.295.021-.406V3.031c.113-.005.224-.01.332-.013C21.154 2.98 22 3.86 22 4.933v11.21c0 1.112-.906 2.01-2.015 2.08c-.97.06-2.108.179-2.985.41c-1.082.286-1.99 1.068-3.373 1.436c-.626.167-1.324.257-1.627.323V5.174c.32-.079 1.382-.203 1.674-.371c.184-.107.377-.216.576-.323m5.478 8.338a.75.75 0 0 1-.546.91l-4 1a.75.75 0 0 1-.364-1.456l4-1a.75.75 0 0 1 .91.546" clip-rule="evenodd"/><path fill="currentColor" d="M18.25 3.151c-.62.073-1.23.18-1.75.336a8.2 8.2 0 0 0-.75.27v3.182l.75-.356l.008-.005a1.13 1.13 0 0 1 .492-.13c.047 0 .094.004.138.01c.175.029.315.1.354.12l.009.005l.749.356V3.647z"/><path fill="currentColor" d="M12 5.214c-.334-.064-1.057-.161-1.718-.339C8.938 4.515 8.05 3.765 7 3.487c-.887-.234-2.041-.352-3.018-.412C2.886 3.007 2 3.9 2 4.998v11.146c0 1.11.906 2.01 2.015 2.079c.97.06 2.108.179 2.985.41c.486.129 1.216.431 1.873.726c1.005.451 2.052.797 3.127 1.034z" opacity=".5"/><path fill="currentColor" d="M4.273 12.818a.75.75 0 0 1 .91-.545l4 1a.75.75 0 1 1-.365 1.455l-4-1a.75.75 0 0 1-.545-.91m.909-4.545a.75.75 0 1 0-.364 1.455l4 1a.75.75 0 0 0 .364-1.455z"/></svg></a><a class="nav-item" title="关于" href="/about/" style="color:#F44336"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m13.629 20.472l-.542.916c-.483.816-1.69.816-2.174 0l-.542-.916c-.42-.71-.63-1.066-.968-1.262c-.338-.197-.763-.204-1.613-.219c-1.256-.021-2.043-.098-2.703-.372a5 5 0 0 1-2.706-2.706C2 14.995 2 13.83 2 11.5v-1c0-3.273 0-4.91.737-6.112a5 5 0 0 1 1.65-1.651C5.59 2 7.228 2 10.5 2h3c3.273 0 4.91 0 6.113.737a5 5 0 0 1 1.65 1.65C22 5.59 22 7.228 22 10.5v1c0 2.33 0 3.495-.38 4.413a5 5 0 0 1-2.707 2.706c-.66.274-1.447.35-2.703.372c-.85.015-1.275.022-1.613.219c-.338.196-.548.551-.968 1.262" opacity=".5"/><path fill="currentColor" d="M10.99 14.308c-1.327-.978-3.49-2.84-3.49-4.593c0-2.677 2.475-3.677 4.5-1.609c2.025-2.068 4.5-1.068 4.5 1.609c0 1.752-2.163 3.615-3.49 4.593c-.454.335-.681.502-1.01.502c-.329 0-.556-.167-1.01-.502"/></svg></a></nav>
+</div>
+<div class="widgets">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+
+<widget class="widget-wrapper recent post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/2024/10/08/05.%20%E5%BC%80%E6%BA%90%E5%BA%93/lvgl%E7%A7%BB%E6%A4%8D/"><span class="title">lvgl移植</span></a><a class="item title" href="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/"><span class="title">ros1小车diy记录</span></a><a class="item title" href="/2020/10/01/03.%20RTOS/rtthread_nano/"><span class="title">rtthread_nano移植</span></a><a class="item title" href="/2025/06/01/04.%20Linux%E5%BA%94%E7%94%A8/v3s%E5%BC%80%E5%8F%91%E6%9D%BF%E5%88%B6%E4%BD%9C/"><span class="title">v3s开发板制作</span></a><a class="item title" href="/2025/08/29/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA%E6%8C%87%E5%8D%97/"><span class="title">博客搭建指南</span></a><a class="item title" href="/2025/06/01/10.%20%E5%9B%BD%E9%99%85%E6%A0%87%E5%87%86/%E5%85%85%E7%94%B5%E6%A1%A9%E5%9B%BD%E6%A0%87/"><span class="title">充电桩国标协议解析</span></a><a class="item title" href="/2025/11/05/08.%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/"><span class="title">CanDBC文件制作</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/ymodem/"><span class="title">Ymodem</span></a><a class="item title" href="/2023/01/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/modbus/"><span class="title">Modbus</span></a><a class="item title" href="/2023/07/01/07.%20%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE/canopen/"><span class="title">CanOpen</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="https://github.com/imhaozi" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/github.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://space.bilibili.com/330622220" target="_blank" rel="external nofollow noopener noreferrer"><img no-lazy src="/images/bilibili.svg" / onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="social" href="https://" target="_blank" rel="external nofollow noopener noreferrer"><img src="https://gcore.jsdelivr.net/gh/cdn-x/placeholder/social/942ebbf1a4b91.svg"/></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/Linux%E5%BA%94%E7%94%A8/">Linux应用</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2025-11-15T02:00:00.000Z">2025-11-15</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2026-01-17T05:36:25.574Z">2026-01-17</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>ros1小车diy记录</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><h1 id="1-泰山派设置"><a href="#1-泰山派设置" class="headerlink" title="1. 泰山派设置"></a>1. 泰山派设置</h1><h2 id="1-1-官方镜像"><a href="#1-1-官方镜像" class="headerlink" title="1.1 官方镜像"></a>1.1 官方镜像</h2><p>从官方资料中下载Ubuntu20系统镜像<code>ubuntu20.04_hdmi_20231130_update.img</code>，并按照官方教程烧录。</p>
+<p>镜像地址：<a target="_blank" rel="noopener" href="https://wiki.lckfb.com/zh-hans/tspi-rk3566/download-center.html">https://wiki.lckfb.com/zh-hans/tspi-rk3566/download-center.html</a></p>
+<p>烧录完成后，板子上就有Ubuntu系统了。</p>
+<h2 id="1-2-内核修改"><a href="#1-2-内核修改" class="headerlink" title="1.2 内核修改"></a>1.2 内核修改</h2><p>默认镜像中仅引出一个用户可以使用的串口，上位机需要的端口如下：</p>
+<ul>
+<li>下位机通信，串口</li>
+<li>雷达通信，串口</li>
+</ul>
+<p>最基础的功能，控制<strong>下位机控制、雷达通信</strong>还差一个串口。</p>
+<p>因此需要修改内核配置：</p>
+<blockquote>
+<p>编译过程参考：<a target="_blank" rel="noopener" href="https://wiki.lckfb.com/zh-hans/tspi-rk3566/project-case/fat-little-cell-phone/sdk-compile.html">https://wiki.lckfb.com/zh-hans/tspi-rk3566/project-case/fat-little-cell-phone/sdk-compile.html</a></p>
+</blockquote>
+<p>文件需要做的修改如下：</p>
+<ol>
+<li>调试串口波特率修改（非必须）</li>
+</ol>
+<p>找到下面这个文件</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tsp/kernel/arch/arm64/boot/dts/rockchip/tspi-rk3566-core-v10.dtsi</span><br></pre></td></tr></table></figure>
+
+<p>修改下面这段，把调试串口波特率从1500000修改位115200。非必须。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">fiq-debugger &#123;</span><br><span class="line">	compatible = &quot;rockchip,fiq-debugger&quot;;</span><br><span class="line">	rockchip,serial-id = &lt;2&gt;;</span><br><span class="line">	rockchip,wake-irq = &lt;0&gt;;</span><br><span class="line">	/* If enable uart uses irq instead of fiq */</span><br><span class="line">	rockchip,irq-mode-enable = &lt;1&gt;;</span><br><span class="line">	rockchip,baudrate = &lt;115200&gt;;  /* Only 115200 and 1500000 */</span><br><span class="line">	interrupts = &lt;GIC_SPI 252 IRQ_TYPE_LEVEL_LOW&gt;;</span><br><span class="line">	pinctrl-names = &quot;default&quot;;</span><br><span class="line">	pinctrl-0 = &lt;&amp;uart2m0_xfer&gt;;</span><br><span class="line">	status = &quot;okay&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>添加一个串口（必须）</li>
+</ol>
+<p>板子上引出的排针功能定义如下，选择一个合适的串口使用，此处使用<code>串口5</code>。</p>
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/IO%E5%BC%95%E8%84%9A%E5%88%86%E9%85%8D.jpg" alt="IO引脚分配"></p>
+<blockquote>
+<p>引脚定义：<a target="_blank" rel="noopener" href="https://wiki.lckfb.com/zh-hans/tspi-rk3566/documentation/io-allocation-table.html">https://wiki.lckfb.com/zh-hans/tspi-rk3566/documentation/io-allocation-table.html</a></p>
+</blockquote>
+<p>找到下面这个文件</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tsp/kernel/arch/arm64/boot/dts/rockchip/tspi-rk3566-user-v10-linux.dts</span><br></pre></td></tr></table></figure>
+
+<p>找到串口3的位置，将其复制一份，然后将3修改为5即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//用户串口3</span><br><span class="line">&amp;uart3 &#123;</span><br><span class="line">	status = &quot;okay&quot;;</span><br><span class="line">	pinctrl-names = &quot;default&quot;;</span><br><span class="line">	pinctrl-0 = &lt;&amp;uart3m1_xfer&gt;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//用户串口5（新添加的）</span><br><span class="line">&amp;uart5 &#123;</span><br><span class="line">	status = &quot;okay&quot;;</span><br><span class="line">	pinctrl-names = &quot;default&quot;;</span><br><span class="line">	pinctrl-0 = &lt;&amp;uart5m1_xfer&gt;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>然后按照教程中的步骤，<strong>只编译内核，生成boot.img文件</strong>即可，然后单独将boot.img烧录进板子。</p>
+<blockquote>
+<p>烧录方法同样参考官方资料，比较简单。</p>
+</blockquote>
+<p>烧录完成之后，板子上就的串口5就也可以用了，可以先接个串口工具试试能不能使用串口5收发数据。</p>
+<h2 id="1-3-空间分配"><a href="#1-3-空间分配" class="headerlink" title="1.3 空间分配"></a>1.3 空间分配</h2><p>镜像烧录后，16G的EMMC空间有很大一部分都是空闲的，不能被直接使用，可用的空间还不够安装ROS的，因此需要将空闲的空间重新分配一下。</p>
+<blockquote>
+<p>以下步骤需要将泰山派连接屏幕，下面的图片是最早的时候拍的，如果你按照我的流程生成的镜像，用户名可能不是这个。</p>
+</blockquote>
+<p>在shell窗口中安装分配工具</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install gparted</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/gparted%E5%B7%A5%E5%85%B7%E5%AE%89%E8%A3%85.jpeg" alt="gparted工具安装"></p>
+<p>使用下面命令启动磁盘分配工具，将磁盘<code>oem</code>和<code>userdata</code>右键<code>取消挂载</code>，再右键<code>删除</code>。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> gparted</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D1.png" alt="空间分配1"></p>
+<p>将删除掉的空间分配给<code>rootfs</code>，右键选择Resize。</p>
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D2.png" alt="空间分配2"></p>
+<p>完成之后，即可看到效果，点击对号应用即可。</p>
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D3.png" alt="空间分配3"></p>
+<p>查看磁盘空间，已分配完成。</p>
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D4.png" alt="空间分配4"></p>
+<h2 id="1-4-安装SSH"><a href="#1-4-安装SSH" class="headerlink" title="1.4 安装SSH"></a>1.4 安装SSH</h2><p>更新包</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get update</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E5%AE%89%E8%A3%85SSH1.png" alt="安装SSH1"></p>
+<p>安装服务</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get install openssh-server</span><br></pre></td></tr></table></figure>
+
+<p>提示依赖关系不对时，提示需要哪个版本就安装哪个版本。</p>
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E5%AE%89%E8%A3%85SSH2.png" alt="安装SSH2"></p>
+<p>安装完成之后，将泰山派连接一个WIFI，使用ifconfig命令查看一下板子的IP地址，并记录一下。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="1-5-安装ROS"><a href="#1-5-安装ROS" class="headerlink" title="1.5 安装ROS"></a>1.5 安装ROS</h2><p>这里使用小鱼的一键安装，方便省力。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://fishros.com/install -O fishros &amp;&amp; bash fishros</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">lckfb@MiWiFi-R3GV2-srv:~$</span><br><span class="line">lckfb@MiWiFi-R3GV2-srv:~$ wget http://fishros.com/install -O fishros &amp;&amp; bash fishros</span><br><span class="line">--2025-05-24 16:05:00--  http://fishros.com/install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 省略一堆文字</span></span><br><span class="line"><span class="comment"># 等待弹出选项</span></span><br><span class="line"></span><br><span class="line">ROS相关:</span><br><span class="line">  [1]:一键安装(推荐):ROS(支持ROS/ROS2,树莓派Jetson)</span><br><span class="line">  [3]:一键安装:rosdep(小鱼的rosdepc,又快又好用)</span><br><span class="line">  [4]:一键配置:ROS环境(快速更新ROS环境设置,自动生成环境选择)</span><br><span class="line">  [9]:一键安装:Cartographer(18 20测试通过,16未测. updateTime 20240125)</span><br><span class="line">  [11]:一键安装:ROS Docker版(支持所有版本ROS/ROS2)</span><br><span class="line">  [16]:一键安装：系统自带ROS (！！警告！！仅供特殊情况下使用)</span><br><span class="line"></span><br><span class="line">常用软件:</span><br><span class="line">  [2]:一键安装:github桌面版(小鱼常用的github客户端)</span><br><span class="line">  [6]:一键安装:NodeJS环境</span><br><span class="line">  [7]:一键安装:VsCode开发工具</span><br><span class="line">  [8]:一键安装:Docker</span><br><span class="line">  [10]:一键安装:微信(可以在Linux上使用的微信)</span><br><span class="line">  [12]:一键安装:PlateformIO MicroROS开发环境(支持Fishbot)</span><br><span class="line">  [15]:一键安装：QQ <span class="keyword">for</span> Linux</span><br><span class="line"></span><br><span class="line">配置工具:</span><br><span class="line">  [5]:一键配置:系统源(更换系统源,支持全版本Ubuntu系统)</span><br><span class="line">  [13]:一键配置:python国内源</span><br><span class="line">  [17]:一键配置: Docker代理(支持VPN+代理服务两种模式)</span><br><span class="line"></span><br><span class="line">[0]:quit</span><br><span class="line"></span><br><span class="line">请输入[]内的数字以选择:1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输入1 选择安装ros</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 省略一堆文字</span></span><br><span class="line"><span class="comment"># 等待弹出选项</span></span><br><span class="line"></span><br><span class="line">RUN Choose Task:[请输入括号内的数字]</span><br><span class="line">新手或首次安装一定要一定要一定要换源并清理三方源，换源!!!系统默认国外源容易失败!!</span><br><span class="line">[1]:更换系统源再继续安装</span><br><span class="line">[2]:不更换继续安装</span><br><span class="line">[0]:quit</span><br><span class="line">请输入[]内的数字以选择:1</span><br><span class="line">RUN Choose Task:[请输入括号内的数字]</span><br><span class="line">请选择换源方式,如果不知道选什么请选2</span><br><span class="line">[1]:仅更换系统源</span><br><span class="line">[2]:更换系统源并清理第三方源</span><br><span class="line">[0]:quit</span><br><span class="line">请输入[]内的数字以选择:2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分别输入1、2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 省略一堆文字</span></span><br><span class="line"><span class="comment"># 等待弹出选项</span></span><br><span class="line"></span><br><span class="line">RUN Choose Task:[请输入括号内的数字]</span><br><span class="line">请选择你要安装的ROS版本名称(请注意ROS1和ROS2区别):</span><br><span class="line">[1]:foxy(ROS2)</span><br><span class="line">[2]:galactic(ROS2)</span><br><span class="line">[3]:noetic(ROS1)</span><br><span class="line">[4]:rolling(ROS2)</span><br><span class="line">[0]:quit</span><br><span class="line">请输入[]内的数字以选择:3</span><br><span class="line">RUN Choose Task:[请输入括号内的数字]</span><br><span class="line">请选择安装的具体版本(如果不知道怎么选,请选1桌面版):</span><br><span class="line">[1]:noetic(ROS1)桌面版</span><br><span class="line">[2]:noetic(ROS1)基础版(小)</span><br><span class="line">[0]:quit</span><br><span class="line">请输入[]内的数字以选择:1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分别输入3、1；这里很重要安装的版本一定不要选错</span></span><br><span class="line"><span class="comment"># 然后开始等待</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>等待一段时间后，第一次提示软件包依赖不对，这里先敲回车继续。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">============================================================</span><br><span class="line">请注意我，检测你在安装过程中出现依赖问题，请在稍后输入n,再选择y,即可解决（若无法解决，清在稍后手动运行命令: <span class="built_in">sudo</span> aptitude install ros-noetic-desktop-full)</span><br><span class="line">确认了解情况，请输入回车继续安装</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 第一次弹出上面的框，直接敲回车继续</span></span><br><span class="line"><span class="comment"># 片刻后，第一次弹出推荐方案。</span></span><br><span class="line"></span><br><span class="line">是否接受该解决方案？[Y/n/q/?] n</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输入n敲回车，拒绝第一次的方案。</span></span><br><span class="line"><span class="comment"># 片刻后，第二次弹出推荐方案。</span></span><br><span class="line"></span><br><span class="line">是否接受该解决方案？[Y/n/q/?] Y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输入Y敲回车，接收第二次的方案。</span></span><br><span class="line"><span class="comment"># 片刻后，弹出要安装的包需要确认。</span></span><br><span class="line"></span><br><span class="line">40 个软件包被升级，新安装 1025 个， 1 个将被删除， 同时 199 个将不升级。</span><br><span class="line">需要获取 575 MB 的存档。 解包后将要使用 3,812 MB。</span><br><span class="line">您要继续吗？[Y/n/?] Y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输入Y确认即可。</span></span><br><span class="line"><span class="comment"># 然后就是漫长漫长漫长漫长漫长漫长的等待</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 最后看到下面这句话 就安装完成了</span></span><br><span class="line"></span><br><span class="line">恭喜你，安装成功了，再附赠你机器人学习宝藏网站：鱼香社区:https://fishros.org.cn/forum</span><br><span class="line">Run CMD Task:[<span class="built_in">ls</span> /opt/ros/noetic/setup.bash]</span><br><span class="line">[-][0.01s] CMD Result:success</span><br><span class="line"></span><br><span class="line">小鱼，黄黄的提示：您安装的是ROS1，可以打开一个新的终端输入roscore测试！</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果，这里第二次接受方案，然后往下走还是报错了，那就从头来，然后前两次都拒绝，第三次再接受。如果还失败，就再从头来，第四次再接受。 </p>
+</blockquote>
+<p>安装完成后，重新起一个终端，输入<code>roscore</code>指令，能看到如下信息，就表示ros安装完成了。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">lckfb@MiWiFi-R3GV2-srv:~$ roscore</span><br><span class="line">... logging to /home/lckfb/.ros/log/1647e6b0-38bd-11f0-b3d3-b81332af56be/roslaunch-MiWiFi-R3GV2-srv-16753.log</span><br><span class="line">Checking <span class="built_in">log</span> directory <span class="keyword">for</span> disk usage. This may take a <span class="keyword">while</span>.</span><br><span class="line">Press Ctrl-C to interrupt</span><br><span class="line">Done checking <span class="built_in">log</span> file disk usage. Usage is &lt;1GB.</span><br><span class="line"></span><br><span class="line">started roslaunch server http://MiWiFi-R3GV2-srv:35197/</span><br><span class="line">ros_comm version 1.17.3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SUMMARY</span><br><span class="line">========</span><br><span class="line"></span><br><span class="line">PARAMETERS</span><br><span class="line"> * /rosdistro: noetic</span><br><span class="line"> * /rosversion: 1.17.3</span><br><span class="line"></span><br><span class="line">NODES</span><br><span class="line"></span><br><span class="line">auto-starting new master</span><br><span class="line">process[master]: started with pid [16761]</span><br><span class="line">ROS_MASTER_URI=http://MiWiFi-R3GV2-srv:11311/</span><br><span class="line"></span><br><span class="line">setting /run_id to 1647e6b0-38bd-11f0-b3d3-b81332af56be</span><br><span class="line">process[rosout-1]: started with pid [16771]</span><br><span class="line">started core service [/rosout]</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="1-6-安装Vscode"><a href="#1-6-安装Vscode" class="headerlink" title="1.6 安装Vscode"></a>1.6 安装Vscode</h2><blockquote>
+<p>已经有经验的话，不需要频繁修改就可以不用装了。</p>
+<p>我这里刚开始调试的时候装了，后来基础硬件调试完之后，重新烧录过系统，就没再安装了，在虚拟机中修改之后，再把代码放过去编译。</p>
+</blockquote>
+<p>其实这个开发板跑Vscode只能将就，但是主要开发过程中需要不断改，装一个还是方便一点。</p>
+<p>安装完成后，Vscode中安装个ssh插件，就可以在电脑上编辑开发板中的代码了。</p>
+<p>Vscode其实相对好装，但是这里还是使用一键安装命令，省时省力。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://fishros.com/install -O fishros &amp;&amp; bash fishros</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">lckfb@MiWiFi-R3GV2-srv:~$ wget http://fishros.com/install -O fishros &amp;&amp; bash fishros</span><br><span class="line">--2025-05-25 08:07:07--  http://fishros.com/install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 稍等片刻，然后选择数字7即可</span></span><br><span class="line"></span><br><span class="line">ROS相关:</span><br><span class="line">  [1]:一键安装(推荐):ROS(支持ROS/ROS2,树莓派Jetson)</span><br><span class="line">  [3]:一键安装:rosdep(小鱼的rosdepc,又快又好用)</span><br><span class="line">  [4]:一键配置:ROS环境(快速更新ROS环境设置,自动生成环境选择)</span><br><span class="line">  [9]:一键安装:Cartographer(18 20测试通过,16未测. updateTime 20240125)</span><br><span class="line">  [11]:一键安装:ROS Docker版(支持所有版本ROS/ROS2)</span><br><span class="line">  [16]:一键安装：系统自带ROS (！！警告！！仅供特殊情况下使用)</span><br><span class="line"></span><br><span class="line">常用软件:</span><br><span class="line">  [2]:一键安装:github桌面版(小鱼常用的github客户端)</span><br><span class="line">  [6]:一键安装:NodeJS环境</span><br><span class="line">  [7]:一键安装:VsCode开发工具</span><br><span class="line">  [8]:一键安装:Docker</span><br><span class="line">  [10]:一键安装:微信(可以在Linux上使用的微信)</span><br><span class="line">  [12]:一键安装:PlateformIO MicroROS开发环境(支持Fishbot)</span><br><span class="line">  [15]:一键安装：QQ <span class="keyword">for</span> Linux</span><br><span class="line"></span><br><span class="line">配置工具:</span><br><span class="line">  [5]:一键配置:系统源(更换系统源,支持全版本Ubuntu系统)</span><br><span class="line">  [13]:一键配置:python国内源</span><br><span class="line">  [17]:一键配置: Docker代理(支持VPN+代理服务两种模式)</span><br><span class="line"></span><br><span class="line">[0]:quit</span><br><span class="line"></span><br><span class="line">请输入[]内的数字以选择:7</span><br><span class="line"></span><br><span class="line"><span class="comment"># 然后等待安装完成即可</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="1-7-权限设置"><a href="#1-7-权限设置" class="headerlink" title="1.7 权限设置"></a>1.7 权限设置</h2><h3 id="1-7-1-串口权限"><a href="#1-7-1-串口权限" class="headerlink" title="1.7.1 串口权限"></a>1.7.1 串口权限</h3><p>两个串口<code>/dev/ttyS3</code>和<code>/dev/ttyS5</code>使用普通用户登录默认都是没有操作权限的，在代码里不方便操作。</p>
+<p>因此这里永久修改一下权限。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建udev规则文件</span></span><br><span class="line"><span class="built_in">sudo</span> vi /etc/udev/rules.d/99-serial-ports.rules</span><br></pre></td></tr></table></figure>
+
+<p>添加以下内容</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">KERNEL==<span class="string">&quot;ttyS3&quot;</span>, MODE=<span class="string">&quot;0666&quot;</span></span><br><span class="line">KERNEL==<span class="string">&quot;ttyS5&quot;</span>, MODE=<span class="string">&quot;0666&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>添加完成后重新加载</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重新加载udev规则</span></span><br><span class="line"><span class="built_in">sudo</span> udevadm control --reload-rules</span><br><span class="line"><span class="built_in">sudo</span> udevadm trigger</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者重启系统使规则生效</span></span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br></pre></td></tr></table></figure>
+
+<p>查看串口权限，可以看到有读写权限了</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">lckfb@MiWiFi-R3GV2-srv:~/ros1-car-ws$ <span class="built_in">ls</span> -l /dev/ttyS5</span><br><span class="line">crw-rw-rw- 1 root dialout 4, 69 11月 28 14:21 /dev/ttyS5</span><br><span class="line">lckfb@MiWiFi-R3GV2-srv:~/ros1-car-ws$ <span class="built_in">ls</span> -l /dev/ttyS3</span><br><span class="line">crw-rw-rw- 1 root dialout 4, 67 11月 28 14:21 /dev/ttyS3</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-7-2-IO引脚"><a href="#1-7-2-IO引脚" class="headerlink" title="1.7.2 IO引脚"></a>1.7.2 IO引脚</h3><p>风扇和雷达供电控制引脚上电后默认也是没有操作权限的。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">lckfb@MiWiFi-R3GV2-srv:~$ <span class="built_in">echo</span> 36 &gt; /sys/class/gpio/export</span><br><span class="line">-bash: /sys/class/gpio/export: 权限不够</span><br><span class="line">lckfb@MiWiFi-R3GV2-srv:~$ <span class="built_in">sudo</span> <span class="built_in">echo</span> 36 &gt; /sys/class/gpio/export</span><br><span class="line">-bash: /sys/class/gpio/export: 权限不够</span><br></pre></td></tr></table></figure>
+
+<p>创建gpio用户组</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> groupadd gpio          <span class="comment"># 创建组（如果不存在）</span></span><br><span class="line"><span class="built_in">sudo</span> usermod -a -G gpio <span class="variable">$USER</span>   <span class="comment"># 将当前用户加入 gpio 组</span></span><br></pre></td></tr></table></figure>
+
+<p>创建文件</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> vi /etc/udev/rules.d/99-gpio.rules</span><br></pre></td></tr></table></figure>
+
+<p>添加以下内容</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Set permissions for GPIO sysfs interface</span></span><br><span class="line">SUBSYSTEM==<span class="string">&quot;gpio&quot;</span>, KERNEL==<span class="string">&quot;gpiochip*&quot;</span>, ACTION==<span class="string">&quot;add&quot;</span>, PROGRAM=<span class="string">&quot;/bin/sh -c &#x27;chown -R root:gpio /sys/class/gpio &amp;&amp; chmod -R 775 /sys/class/gpio&#x27;&quot;</span></span><br><span class="line">SUBSYSTEM==<span class="string">&quot;gpio&quot;</span>, KERNEL==<span class="string">&quot;gpio*&quot;</span>, ACTION==<span class="string">&quot;add&quot;</span>, PROGRAM=<span class="string">&quot;/bin/sh -c &#x27;chown -R root:gpio /sys/class/gpio/gpio* &amp;&amp; chmod -R 775 /sys/class/gpio/gpio*&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>添加完成后重新加载</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重新加载udev规则</span></span><br><span class="line"><span class="built_in">sudo</span> udevadm control --reload-rules</span><br><span class="line"><span class="built_in">sudo</span> udevadm trigger --subsystem-match=gpio</span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br></pre></td></tr></table></figure>
+
+<p>查看分组，可以看到gpio</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lckfb@MiWiFi-R3GV2-srv:~$ <span class="built_in">groups</span></span><br><span class="line">lckfb <span class="built_in">sudo</span> audio video gpio</span><br></pre></td></tr></table></figure>
+
+<p>然后重新测试就可以了。</p>
+<h3 id="1-7-3-摄像头权限"><a href="#1-7-3-摄像头权限" class="headerlink" title="1.7.3 摄像头权限"></a>1.7.3 摄像头权限</h3><p>执行以下命令，重启生效。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加权限</span></span><br><span class="line"><span class="built_in">sudo</span> usermod -aG video <span class="variable">$USER</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者重启系统使规则生效</span></span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br></pre></td></tr></table></figure>
+
+<p>重启完成之后，执行以下命令，看到有video输出即表示成功。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lckfb@MiWiFi-R3GV2-srv:~$ <span class="built_in">groups</span></span><br><span class="line">lckfb <span class="built_in">sudo</span> audio video</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="2-下位机开发（Base）"><a href="#2-下位机开发（Base）" class="headerlink" title="2. 下位机开发（Base）"></a>2. 下位机开发（Base）</h1><p>下位机相对来说核心逻辑比较简单，一共需要实现以下功能：</p>
+<ol>
+<li>串口接收上位机发送的目标电机速度，使用PID调节电机速度，保持速度稳定；</li>
+<li>获取电机编码器值、电池电量，通过串口定时上报；</li>
+</ol>
+<h2 id="2-1-目标速度控制"><a href="#2-1-目标速度控制" class="headerlink" title="2.1 目标速度控制"></a>2.1 目标速度控制</h2><p>这里速度控制使用5ms的定时器中断完成，并且每4次中断，上报一次编码器和电池电压数据。</p>
+<p>核心处理逻辑就是下面这个函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">HAL_TIM_PeriodElapsedCallback</span><span class="params">(TIM_HandleTypeDef *htim)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 这个回调函数 是共用的，因此需要先判断，是不是定时器2</span></span><br><span class="line">    <span class="keyword">if</span>(htim-&gt;Instance == htim1.Instance)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		实际上 因为编码器接线差异 导致编码器数值增加的方向不一定是电机正转的方向</span></span><br><span class="line"><span class="comment">		这里测试结果：</span></span><br><span class="line"><span class="comment">		右电机正转（顺时针，小车往前走）编码器值从0加，反转（逆时针，小车往后退）往后退是从65535减</span></span><br><span class="line"><span class="comment">		左电机反转（逆时针，小车往前走）编码器值从0加，正转（顺时针，小车往后退）往后退是从65535减</span></span><br><span class="line"><span class="comment">		也就是：左右轮都是 编码器值从0加是小车往前走</span></span><br><span class="line"><span class="comment">		</span></span><br><span class="line"><span class="comment">		但是这里需要都处理为顺时针正转时，编码器值增加。</span></span><br><span class="line"><span class="comment">		ROS就是规范~~~</span></span><br><span class="line"><span class="comment">		*/</span></span><br><span class="line"></span><br><span class="line">		<span class="comment">// 获取左右电机编码器计数 这里测试都是前进方向是从0加 后退方向是从65535减</span></span><br><span class="line">		<span class="type">int32_t</span> right_encoder_diff = __HAL_TIM_GET_COUNTER(&amp;htim2);</span><br><span class="line">		<span class="type">int32_t</span> left_encoder_diff = __HAL_TIM_GET_COUNTER(&amp;htim4);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 方向处理 得到的速度都是电机正转的速度（右电机往前走 左电机往后走）</span></span><br><span class="line">		<span class="comment">// 右轮 编码器值增加的方向就是电机正向旋转的方向 也是前进的方向(100表示正转了100 65535表示反转了1，需要处理为-1)</span></span><br><span class="line">		<span class="keyword">if</span>(right_encoder_diff &gt; <span class="number">30000</span>)	</span><br><span class="line">			right_encoder_diff = right_encoder_diff - <span class="number">65536</span>;</span><br><span class="line">		<span class="comment">// 左轮 编码器值增加的方向就是电机反向旋转的方向 也是前进的方向(100表示反转了100，需要处理为-100，65535表示正转了1)</span></span><br><span class="line">		<span class="keyword">if</span>(left_encoder_diff &gt; <span class="number">30000</span>)</span><br><span class="line">			left_encoder_diff = <span class="number">65536</span> - left_encoder_diff;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			left_encoder_diff = <span class="number">0</span> - left_encoder_diff;</span><br><span class="line">		<span class="comment">// 清除计数</span></span><br><span class="line">		__HAL_TIM_SET_COUNTER(&amp;htim2, <span class="number">0</span>);</span><br><span class="line">		__HAL_TIM_SET_COUNTER(&amp;htim4, <span class="number">0</span>);</span><br><span class="line">		<span class="comment">// 编码器值累加（用于上报编码器值）</span></span><br><span class="line">		left_encoder_count += left_encoder_diff;</span><br><span class="line">		right_encoder_count += right_encoder_diff;</span><br><span class="line">		<span class="comment">// 计算为速度</span></span><br><span class="line">		<span class="comment">// 电机一圈7个脉冲 减速比50 也就是一圈350个脉冲 上下边沿都检测 一圈计数值为 350 * 4 = 1400</span></span><br><span class="line">		<span class="comment">// 圈数 = 编码器值 / 1400</span></span><br><span class="line">		<span class="comment">// 旋转的弧度 = 圈数 * 2PI</span></span><br><span class="line">		<span class="comment">// 电机速度(rad/s) = 旋转的弧度 / 0.005 = 圈数 * 2PI / 0.005 = 编码器值 / 1400 * 2PI / 0.005</span></span><br><span class="line">		<span class="comment">// 电机速度(rad/s) = 编码器值 * 6.2831852 / 7</span></span><br><span class="line">		<span class="type">float</span> left_speed = (<span class="type">float</span>)left_encoder_diff * <span class="number">6.2831852</span> / <span class="number">7</span>;</span><br><span class="line">		<span class="type">float</span> right_speed = (<span class="type">float</span>)right_encoder_diff * <span class="number">6.2831852</span> / <span class="number">7</span>;</span><br><span class="line">		<span class="comment">// 滤波</span></span><br><span class="line">		left_speed = left_speed * <span class="number">0.3</span> + real_left_speed * <span class="number">0.7</span>;</span><br><span class="line">		right_speed = right_speed * <span class="number">0.3</span> + real_right_speed * <span class="number">0.7</span>;</span><br><span class="line">		<span class="comment">// PID闭环计算</span></span><br><span class="line">		<span class="type">float</span> left_out = pic_ctrl(&amp;left_pid, target_left_speed, left_speed);</span><br><span class="line">		<span class="type">float</span> right_out = pic_ctrl(&amp;right_pid, target_right_speed, right_speed);</span><br><span class="line">		<span class="comment">// 设置</span></span><br><span class="line">		<span class="keyword">if</span>(left_out &gt;= <span class="number">0</span>)	<span class="comment">// 正转</span></span><br><span class="line">		&#123;</span><br><span class="line">			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);</span><br><span class="line">			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_SET);</span><br><span class="line">			__HAL_TIM_SET_COMPARE(&amp;htim3, TIM_CHANNEL_3, left_out);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="comment">// 反转</span></span><br><span class="line">		&#123;</span><br><span class="line">			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);</span><br><span class="line">			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, GPIO_PIN_RESET);</span><br><span class="line">			__HAL_TIM_SET_COMPARE(&amp;htim3, TIM_CHANNEL_3, -left_out);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span>(right_out &gt;= <span class="number">0</span>)	<span class="comment">// 正转</span></span><br><span class="line">		&#123;</span><br><span class="line">			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);</span><br><span class="line">			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);</span><br><span class="line">			__HAL_TIM_SET_COMPARE(&amp;htim3, TIM_CHANNEL_1, right_out);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="comment">// 反转</span></span><br><span class="line">		&#123;</span><br><span class="line">			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);</span><br><span class="line">			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);</span><br><span class="line">			__HAL_TIM_SET_COMPARE(&amp;htim3, TIM_CHANNEL_1, -right_out);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> PID_DEBUG_NEED</span></span><br><span class="line">		<span class="comment">// 数据顺序（tar real kp ki kd）</span></span><br><span class="line"><span class="comment">//		float send_data[5] = &#123;target_left_speed, left_speed, left_pid.kp, left_pid.ki, left_pid.kd&#125;;</span></span><br><span class="line">		<span class="type">float</span> send_data[<span class="number">5</span>] = &#123;target_right_speed, right_speed, right_pid.kp, right_pid.ki, right_pid.kd&#125;;</span><br><span class="line">		debug_data_send(send_data, <span class="number">5</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">		status_send_count++;</span><br><span class="line">		<span class="keyword">if</span>(status_send_count &gt;= <span class="number">4</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="comment">// 电池电压</span></span><br><span class="line">			<span class="type">uint16_t</span> battery_vol_mv = (<span class="type">uint16_t</span>)(battery_vol_read() * <span class="number">1000</span>);</span><br><span class="line">			</span><br><span class="line">			<span class="type">uint8_t</span> send_data[<span class="number">10</span>];</span><br><span class="line">			send_data[<span class="number">0</span>] = <span class="string">&#x27;R&#x27;</span>;</span><br><span class="line">			send_data[<span class="number">1</span>] = <span class="string">&#x27;O&#x27;</span>;</span><br><span class="line">			send_data[<span class="number">2</span>] = <span class="string">&#x27;S&#x27;</span>;</span><br><span class="line">			send_data[<span class="number">3</span>] = (left_encoder_count &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">			send_data[<span class="number">4</span>] = (left_encoder_count &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">			send_data[<span class="number">5</span>] = (right_encoder_count &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">			send_data[<span class="number">6</span>] = (right_encoder_count &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">			send_data[<span class="number">7</span>] = (battery_vol_mv &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">			send_data[<span class="number">8</span>] = (battery_vol_mv &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">			send_data[<span class="number">9</span>] = check_sum(send_data, <span class="number">9</span>);</span><br><span class="line"></span><br><span class="line">			<span class="comment">// 发送</span></span><br><span class="line">			<span class="keyword">if</span>(upper_data_send(send_data, <span class="number">10</span>) == <span class="number">0</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				<span class="comment">// 清空累计值</span></span><br><span class="line">				left_encoder_count = <span class="number">0</span>;</span><br><span class="line">				right_encoder_count = <span class="number">0</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		</span><br><span class="line">			<span class="comment">// 清除计数</span></span><br><span class="line">			status_send_count = <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-2-目标速度获取"><a href="#2-2-目标速度获取" class="headerlink" title="2.2 目标速度获取"></a>2.2 目标速度获取</h2><p>解析上位机数据使用串口中断完成</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">HAL_UART_RxCpltCallback</span><span class="params">(UART_HandleTypeDef *huart)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 判断是不是串口1 中断</span></span><br><span class="line">	<span class="keyword">if</span>(huart-&gt;Instance == USART1)</span><br><span class="line">	&#123;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> PID_DEBUG_NEED</span></span><br><span class="line">		<span class="keyword">if</span>(rx_buff[<span class="number">0</span>] == <span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">			left_pid.kp = left_pid.kp + <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span>(rx_buff[<span class="number">0</span>] == <span class="string">&#x27;2&#x27;</span>)</span><br><span class="line">			left_pid.kp = left_pid.kp - <span class="number">10</span>;</span><br><span class="line">		<span class="keyword">if</span>(rx_buff[<span class="number">0</span>] == <span class="string">&#x27;3&#x27;</span>)</span><br><span class="line">			left_pid.ki = left_pid.ki + <span class="number">0.01</span>;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span>(rx_buff[<span class="number">0</span>] == <span class="string">&#x27;4&#x27;</span>)</span><br><span class="line">			left_pid.ki = left_pid.ki - <span class="number">0.01</span>;</span><br><span class="line">		<span class="keyword">if</span>(rx_buff[<span class="number">0</span>] == <span class="string">&#x27;5&#x27;</span>)</span><br><span class="line">			left_pid.kd = left_pid.kd + <span class="number">0.01</span>;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span>(rx_buff[<span class="number">0</span>] == <span class="string">&#x27;6&#x27;</span>)</span><br><span class="line">			left_pid.kd= left_pid.kd - <span class="number">0.01</span>;</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">		<span class="keyword">if</span>((rx_len == <span class="number">0</span>) &amp;&amp; (rx_buff[rx_len] != <span class="string">&#x27;R&#x27;</span>))</span><br><span class="line">		&#123;</span><br><span class="line">			rx_len = <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span>((rx_len == <span class="number">1</span>) &amp;&amp; (rx_buff[rx_len] != <span class="string">&#x27;O&#x27;</span>))</span><br><span class="line">		&#123;</span><br><span class="line">			rx_len = <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span>((rx_len == <span class="number">2</span>) &amp;&amp; (rx_buff[rx_len] != <span class="string">&#x27;S&#x27;</span>))</span><br><span class="line">		&#123;</span><br><span class="line">			rx_len = <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			rx_len++;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 一包数据接收完了</span></span><br><span class="line">		<span class="keyword">if</span>(rx_len &gt;= <span class="number">8</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="comment">// 校验</span></span><br><span class="line">			<span class="keyword">if</span>(rx_buff[<span class="number">7</span>] == check_sum(rx_buff, <span class="number">7</span>))</span><br><span class="line">			&#123;</span><br><span class="line">				<span class="type">float</span> left_speed = (<span class="type">float</span>)((<span class="type">int16_t</span>)((rx_buff[<span class="number">4</span>] &lt;&lt; <span class="number">8</span>) | (rx_buff[<span class="number">3</span>] &lt;&lt; <span class="number">0</span>))) / <span class="number">1000</span>;</span><br><span class="line">				<span class="type">float</span> right_speed = (<span class="type">float</span>)((<span class="type">int16_t</span>)((rx_buff[<span class="number">6</span>] &lt;&lt; <span class="number">8</span>) | (rx_buff[<span class="number">5</span>] &lt;&lt; <span class="number">0</span>))) / <span class="number">1000</span>;</span><br><span class="line">				</span><br><span class="line">				motor_write_speed(left_speed, right_speed);</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			comm_count = <span class="number">0</span>;</span><br><span class="line">			rx_len = <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 重新使能接收中断</span></span><br><span class="line">		HAL_UART_Receive_IT(&amp;huart1, (<span class="type">uint8_t</span> *)&amp;rx_buff[rx_len], <span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-3-状态显示"><a href="#2-3-状态显示" class="headerlink" title="2.3 状态显示"></a>2.3 状态显示</h2><p>另外添加了个LED显示功能，在main函数中处理。</p>
+<ul>
+<li>正常情况下，下位机亮绿灯</li>
+<li>发生通信超时，下位机亮红灯，并且停止移动</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">uint32_t</span> last_led_time = HAL_GetTick();	<span class="comment">// led周期闪烁时间</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 发送数据</span></span><br><span class="line">    <span class="type">uint32_t</span> current_time = HAL_GetTick();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// LED状态</span></span><br><span class="line">    <span class="keyword">if</span>((current_time - last_led_time) &gt;= <span class="number">1000</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 五秒未收到上位机有效命令</span></span><br><span class="line">        comm_count++;</span><br><span class="line">        <span class="keyword">if</span>(comm_count &gt; <span class="number">5</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            motor_write_speed(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">            led_write(LED_RED);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            led_write(LED_GREEN);</span><br><span class="line">        &#125;</span><br><span class="line">        last_led_time = current_time;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1 id="3-上位机开发（RosWs）"><a href="#3-上位机开发（RosWs）" class="headerlink" title="3. 上位机开发（RosWs）"></a>3. 上位机开发（RosWs）</h1><p>主要规划和构建各个软件包的功能。</p>
+<h2 id="3-1-创建项目"><a href="#3-1-创建项目" class="headerlink" title="3.1 创建项目"></a>3.1 创建项目</h2><p>创建一个工作空间文件夹（就是一个工程文件夹）</p>
+<ol>
+<li>工作空间中可以有多个软件包</li>
+<li>软件包中又可以又多个节点</li>
+</ol>
+<p><strong>步骤1：创建工作空间</strong></p>
+<p>比如这里想创建一个小车项目，就可以创建下面的文件目录</p>
+<ul>
+<li>Ros1CarWs<ul>
+<li>src：存放代码，源代码、功能包等</li>
+</ul>
+</li>
+</ul>
+<p>创建一个<code>Ros1CarWs</code>目录作为本项目的工作空间。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">haozi@computer:~/develop$ <span class="built_in">mkdir</span> Ros1CarWs</span><br><span class="line">haozi@computer:~/develop$ <span class="built_in">cd</span> Ros1CarWs/</span><br><span class="line">haozi@computer:~/develop/Ros1CarWs$ <span class="built_in">mkdir</span> src</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>步骤2：创建软件包</strong></p>
+<p>在工作空间的src目录下可以有多个软件包。</p>
+<p>因此需要在src目录下进行创建，切换到工作空间的src目录下，执行如下格式指令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catkin_create_pkg 包名 &lt;依赖项1&gt; &lt;依赖项2&gt; ...</span><br></pre></td></tr></table></figure>
+
+<p>比如，创建一个名叫<code>test_pkg</code>的包，指令如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haozi@computer:~/develop/Ros1CarWs/src$ catkin_create_pkg test_pkg rospy roscpp std_msgs</span><br></pre></td></tr></table></figure>
+
+<p>执行完成后，在src目录下就会多出一个新的目录<code>test_pkg</code>，该目录就是一个包了，包里面又包含了多个文件。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">haozi@computer:~/develop/Ros1CarWs/src$ <span class="built_in">ls</span></span><br><span class="line">CMakeLists.txt  test_pkg  wpr_simulation</span><br><span class="line">haozi@computer:~/develop/Ros1CarWs/src$ <span class="built_in">cd</span> test_pkg/</span><br><span class="line">haozi@computer:~/develop/Ros1CarWs/src/test_pkg$ <span class="built_in">ls</span></span><br><span class="line">CMakeLists.txt  include  package.xml  src</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>步骤3：添加节点代码</strong></p>
+<p>在软件包的src目录下创建代码文件<code>main.cpp</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;test_pkg running~ \n&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 后面的是节点名称</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;test_node&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;test_node running~ \n&quot;</span>);</span><br><span class="line">        <span class="built_in">sleep</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个包的CMakeLists.txt文件中，build部分，找到对应的注释的位置，添加如下两条（没注释掉的是添加的，注释掉的是原有的）。</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## Declare a C++ executable</span></span><br><span class="line"><span class="comment">## With catkin_make all packages are built within a single CMake context</span></span><br><span class="line"><span class="comment">## The recommended prefix ensures that target names across packages don&#x27;t collide</span></span><br><span class="line"><span class="comment"># add_executable($&#123;PROJECT_NAME&#125;_node src/test_pkg_node.cpp)</span></span><br><span class="line"><span class="keyword">add_executable</span>(test_node src/main.cpp)</span><br><span class="line"></span><br><span class="line"><span class="comment">## Specify libraries to link a library or executable target against</span></span><br><span class="line"><span class="comment"># target_link_libraries($&#123;PROJECT_NAME&#125;_node</span></span><br><span class="line"><span class="comment">#   $&#123;catkin_LIBRARIES&#125;</span></span><br><span class="line"><span class="comment"># )</span></span><br><span class="line"><span class="keyword">target_link_libraries</span>(test_node</span><br><span class="line">  <span class="variable">$&#123;catkin_LIBRARIES&#125;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ul>
+<li>add_executable：表示需要编译可执行文件</li>
+<li>target_link_libraries：表示需要链接ros库</li>
+</ul>
+<p><strong>步骤4：编译代码</strong></p>
+<p>在工作空间目录Ros1CarWs下执行编译命令</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">haozi@computer:~/develop/Ros1CarWs$ <span class="built_in">pwd</span></span><br><span class="line">/home/haozi/develop/Ros1CarWs</span><br><span class="line">haozi@computer:~/develop/Ros1CarWs$ catkin_make</span><br><span class="line">[100%] Linking CXX executable /home/haozi/develop/Ros1CarWs/devel/lib/test_pkg/test_node</span><br><span class="line">[100%] Built target test_node</span><br></pre></td></tr></table></figure>
+
+<p>编译完成后，工作空间下就会多出来两个文件夹，build、devel</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">haozi@computer:~/develop/Ros1CarWs$ <span class="built_in">ls</span></span><br><span class="line">build  devel  src</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>build：编译文件</li>
+<li>devel：执行文件，执行前需要在这里添加源</li>
+</ul>
+<p><strong>步骤5：执行</strong></p>
+<p>启动一个新的终端，启动ros</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roscore</span><br></pre></td></tr></table></figure>
+
+<p>添加代码源（注意相对目录或者绝对目录）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haozi@computer:~/develop/Ros1CarWs$ <span class="built_in">source</span> devel/setup.bash</span><br></pre></td></tr></table></figure>
+
+<p>执行代码</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 命令格式：rosrun 包名 节点名</span></span><br><span class="line">haozi@computer:~/develop/Ros1CarWs$ rosrun test_pkg test_node</span><br><span class="line">test_pkg running~ </span><br><span class="line">test_node running~ </span><br><span class="line">test_node running~ </span><br><span class="line">test_node running~</span><br></pre></td></tr></table></figure>
+
+<p>到这里，创建一个ros软件包并执行的流程就完成了。</p>
+<p>还可以继续重复步骤2-5，就可以创建多个不同的软件包了。</p>
+<p><strong>步骤6：优化</strong></p>
+<p>每次打开终端总要source一下，可以修改配置，打开终端时自动source。</p>
+<p>执行如下指令</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haozi@computer:~$ gedit ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>在弹出的编辑器中，最后一行添加如下内容。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/Ros1CarWs/devel/setup.bash</span><br></pre></td></tr></table></figure>
+
+<p>这样每次打开终端，就会自动执行这一行命令了。</p>
+<blockquote>
+<p>不过这里我还是不用了。</p>
+</blockquote>
+<h2 id="3-2-电脑端可视化"><a href="#3-2-电脑端可视化" class="headerlink" title="3.2 电脑端可视化"></a>3.2 电脑端可视化</h2><p>小车主控不具有可视化能力，需要借用电脑来进行可视化操作。</p>
+<p><strong>步骤1：</strong></p>
+<p>虚拟机网络设置为桥接模式（这样开发板和虚拟机才可以在一个网段下）</p>
+<p><strong>步骤2：</strong></p>
+<p>将电脑和开发板连接同一个wifi</p>
+<p><strong>步骤3：</strong></p>
+<p>查看电脑端和开发板IP地址和设备名</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hostname</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<ul>
+<li>虚拟机<ul>
+<li>主机名：computer</li>
+<li>IP：192.168.31.28</li>
+</ul>
+</li>
+<li>开发板<ul>
+<li>主机名：MiWiFi-R3GV2-srv</li>
+<li>IP：192.168.31.35</li>
+</ul>
+</li>
+</ul>
+<p><strong>步骤4：</strong></p>
+<p>编辑<code>/etc/hosts</code>文件，添加一行，添加对方的IP和主机名</p>
+<p>开发板端</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.31.28    computer</span><br></pre></td></tr></table></figure>
+
+<p>电脑端</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.31.35    MiWiFi-R3GV2-srv</span><br></pre></td></tr></table></figure>
+
+<p>设置完成之后，分别ping对方的ip和主机名，应该都是可以ping通的。</p>
+<p><strong>步骤5：</strong></p>
+<p>这里将开发板作为ROS主机使用。编辑<code>~/.bashrc</code>文件，添加几行。</p>
+<p>开发板端</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ROS网络配置</span></span><br><span class="line"><span class="built_in">export</span> ROS_MASTER_URI=http://MiWiFi-R3GV2-srv:11311</span><br><span class="line"><span class="built_in">export</span> ROS_HOSTNAME=MiWiFi-R3GV2-srv</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行source</span></span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>电脑端</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ROS网络配置</span></span><br><span class="line"><span class="built_in">export</span> ROS_MASTER_URI=http://MiWiFi-R3GV2-srv:11311</span><br><span class="line"><span class="built_in">export</span> ROS_HOSTNAME=computer</span><br><span class="line"><span class="comment"># 执行source</span></span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>然后在开发板端运行roscore及其他服务，在电脑端就可以使用相关命令看到状态了。</p>
+<blockquote>
+<p>也可以直接将上面两行写入到这个文件，就不用每次打开终端都需要重新导入了。</p>
+<p>这里就这么干了！！！</p>
+</blockquote>
+<h2 id="3-3-下位机控制包（base-ctrl-pkg）"><a href="#3-3-下位机控制包（base-ctrl-pkg）" class="headerlink" title="3.3 下位机控制包（base_ctrl_pkg）"></a>3.3 下位机控制包（base_ctrl_pkg）</h2><p>本软件包主要实现以下功能：</p>
+<ol>
+<li>订阅速度控制消息，解析为两个轮子的速度后，定时下发给下位机</li>
+<li>解析两个轮子编码器值，计算里程计状态，发布里程计消息</li>
+</ol>
+<h3 id="3-3-1-速度订阅"><a href="#3-3-1-速度订阅" class="headerlink" title="3.3.1 速度订阅"></a>3.3.1 速度订阅</h3><p>创建一个速度订阅者对象</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar_speed_sub_ = nh_.<span class="built_in">subscribe</span>(<span class="string">&quot;/cmd_vel&quot;</span>, <span class="number">10</span>, &amp;BaseCtrl::CmdVelCallback, <span class="keyword">this</span>); <span class="comment">// 订阅目标速度</span></span><br></pre></td></tr></table></figure>
+
+<p>回调函数中根据差速轮模型解析两个轮子速度</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 速度指令订阅回调函数</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">BaseCtrl::CmdVelCallback</span><span class="params">(<span class="type">const</span> geometry_msgs::Twist::ConstPtr &amp;msg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 解析为左右电机的速度</span></span><br><span class="line">    <span class="comment">// ROS_INFO(&quot;tar linear = %f(m/s), angular = %f(rad/s) ~ \n&quot;, msg-&gt;linear.x, msg-&gt;angular.z);</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第一步：把小车的移动速度，计算为小车轮子的线速度</span></span><br><span class="line">    <span class="type">float</span> left_linear = msg-&gt;linear.x - <span class="number">0.5</span> * WHEEL_TRACK * msg-&gt;angular.z;</span><br><span class="line">    <span class="type">float</span> right_linear = msg-&gt;linear.x + <span class="number">0.5</span> * WHEEL_TRACK * msg-&gt;angular.z;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第二步：把轮子的线速度，计算为行走电机的旋转速度</span></span><br><span class="line">    <span class="type">float</span> left_angular = left_linear / WHEEL_RADIUS;</span><br><span class="line">    <span class="type">float</span> right_angular = right_linear / WHEEL_RADIUS;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 转换为可以下发的单位 0.001倍</span></span><br><span class="line">    <span class="comment">// 轮子向前线速度为正 轮子顺时针角速度为正 则左轮子的线速度和角速度符号是反的</span></span><br><span class="line">    h2l_data_.left_speed = (<span class="type">int16_t</span>)(-left_angular * <span class="number">1000</span>);</span><br><span class="line">    h2l_data_.right_speed = (<span class="type">int16_t</span>)(right_angular * <span class="number">1000</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在定时器的中断回调函数中定时调用以下函数，将目标速度发送给下位机</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 下位机命令定时发布</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">BaseCtrl::TimerUartSend</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">uint8_t</span> send_data[<span class="number">8</span>];</span><br><span class="line">    <span class="comment">// 数据头</span></span><br><span class="line">    send_data[<span class="number">0</span>] = <span class="string">&#x27;R&#x27;</span>;</span><br><span class="line">    send_data[<span class="number">1</span>] = <span class="string">&#x27;O&#x27;</span>;</span><br><span class="line">    send_data[<span class="number">2</span>] = <span class="string">&#x27;S&#x27;</span>;</span><br><span class="line">    <span class="comment">// 电机速度</span></span><br><span class="line">    send_data[<span class="number">3</span>] = (h2l_data_.left_speed &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">    send_data[<span class="number">4</span>] = (h2l_data_.left_speed &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">    send_data[<span class="number">5</span>] = (h2l_data_.right_speed &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">    send_data[<span class="number">6</span>] = (h2l_data_.right_speed &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>;</span><br><span class="line">    <span class="comment">// 校验</span></span><br><span class="line">    send_data[<span class="number">7</span>] = <span class="built_in">CheckSum</span>(send_data, <span class="number">7</span>);</span><br><span class="line">    <span class="comment">// 发送</span></span><br><span class="line">    uart_.<span class="built_in">Write</span>(send_data, <span class="number">8</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试效果</p>
+<p>在小车上将<code>base_ctrl_pkg</code>节点运行起来，在虚拟机中利用现成的速度控制节点，就可以控制小车进行移动了。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun rqt_robot_steering rqt_robot_steering</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>先完成这个功能，才能继续往下走</p>
+</blockquote>
+<h3 id="3-3-2-里程计发布"><a href="#3-3-2-里程计发布" class="headerlink" title="3.3.2 里程计发布"></a>3.3.2 里程计发布</h3><p>创建一个发布者对象，用于发布里程计消息</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">odom_pub_ = nh_.advertise&lt;nav_msgs::Odometry&gt;(<span class="string">&quot;odom&quot;</span>, 50);                       // 发布里程计数据</span><br></pre></td></tr></table></figure>
+
+<p>里程计消息的计算如下，相对好理解，此函数也是在定时器回调函数中调用。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 里程计消息定时发布</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">BaseCtrl::TimerOdomPub</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ros::Time current_time = ros::Time::<span class="built_in">now</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第一次运行则不计算</span></span><br><span class="line">    <span class="keyword">if</span> (first_update_)</span><br><span class="line">    &#123;</span><br><span class="line">        last_encoder_.left = now_encoder_.left;</span><br><span class="line">        last_encoder_.right = now_encoder_.right;</span><br><span class="line">        last_update_time_ = current_time;</span><br><span class="line">        first_update_ = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算时间间隔(要说这里都已经用定时器了 其实这个时间间隔可以固定一个的)</span></span><br><span class="line">    <span class="type">double</span> dt = (current_time - last_update_time_).<span class="built_in">toSec</span>();</span><br><span class="line">    <span class="keyword">if</span> (dt &lt;= <span class="number">0.001</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_WARN_THROTTLE</span>(<span class="number">1.0</span>, <span class="string">&quot;Time interval too small: %.3f s&quot;</span>, dt);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 计算编码器增量(脉冲数)</span></span><br><span class="line">    <span class="type">int64_t</span> left_encoder_delta = now_encoder_.left - last_encoder_.left;</span><br><span class="line">    <span class="type">int64_t</span> right_encoder_delta = now_encoder_.right - last_encoder_.right;</span><br><span class="line">    <span class="comment">// 尽快更新编码器 防止计算过程中now_encoder_值更新 导致下一轮计算丢数</span></span><br><span class="line">    last_encoder_.left = now_encoder_.left;</span><br><span class="line">    last_encoder_.right = now_encoder_.right;</span><br><span class="line">    <span class="comment">// 计算左右电机移动的距离(m)</span></span><br><span class="line">    <span class="type">double</span> left_distance = (<span class="type">double</span>)left_encoder_delta / ENCODER_RESOLUTION * WHEEL_RADIUS * M_PI;</span><br><span class="line">    <span class="type">double</span> right_distance = (<span class="type">double</span>)right_encoder_delta / ENCODER_RESOLUTION * WHEEL_RADIUS * M_PI;</span><br><span class="line">    <span class="comment">// 转换为统一方向 往前走是正</span></span><br><span class="line">    left_distance *= <span class="number">-1</span>;</span><br><span class="line">    right_distance *= <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// 计算平均移动距离和方向变化</span></span><br><span class="line">    <span class="type">double</span> delta_distance = (left_distance + right_distance) / <span class="number">2.0</span>;      <span class="comment">// 本次距离变化</span></span><br><span class="line">    <span class="type">double</span> delta_theta = (right_distance - left_distance) / WHEEL_TRACK; <span class="comment">// 本次角度变化</span></span><br><span class="line">    <span class="comment">// 计算线速度(m/s)和角速度(rad/s)</span></span><br><span class="line">    <span class="type">double</span> linear_vel = delta_distance / dt;</span><br><span class="line">    <span class="type">double</span> angular_vel = delta_theta / dt;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ROS_INFO(&quot;left_encoder_delta=%d, right_encoder_delta=%d&quot;, left_encoder_delta, right_encoder_delta);</span></span><br><span class="line">    <span class="comment">// ROS_INFO(&quot;left_distance=%.4f m, right_distance=%.4f m&quot;, left_distance, right_distance);</span></span><br><span class="line">    <span class="comment">// ROS_INFO(&quot;delta_distance=%.4f m, delta_theta=%.4f rad&quot;, delta_distance, delta_theta);</span></span><br><span class="line">    <span class="comment">// ROS_INFO(&quot;linear_vel=%.4f m/s, angular_vel=%.4f rad/s&quot;, linear_vel, angular_vel);</span></span><br><span class="line">    <span class="comment">// ROS_INFO(&quot;-----------------&quot;);</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 累计位置</span></span><br><span class="line">    x_ += delta_distance * <span class="built_in">cos</span>(theta_ + delta_theta / <span class="number">2</span>);</span><br><span class="line">    y_ += delta_distance * <span class="built_in">sin</span>(theta_ + delta_theta / <span class="number">2</span>);</span><br><span class="line">    <span class="comment">// 累计角度 并标准化角度到 [-pi, pi]</span></span><br><span class="line">    theta_ += delta_theta;</span><br><span class="line">    <span class="keyword">while</span> (theta_ &gt; M_PI)</span><br><span class="line">        theta_ -= <span class="number">2.0</span> * M_PI;</span><br><span class="line">    <span class="keyword">while</span> (theta_ &lt; -M_PI)</span><br><span class="line">        theta_ += <span class="number">2.0</span> * M_PI;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发布数据</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建四元数从偏航角</span></span><br><span class="line">    tf2::Quaternion odom_quat;</span><br><span class="line">    odom_quat.<span class="built_in">setRPY</span>(<span class="number">0</span>, <span class="number">0</span>, theta_);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1. 发布里程计消息</span></span><br><span class="line">    nav_msgs::Odometry odom_msg;</span><br><span class="line">    odom_msg.header.stamp = current_time;</span><br><span class="line">    odom_msg.header.frame_id = <span class="string">&quot;odom&quot;</span>;</span><br><span class="line">    odom_msg.child_frame_id = <span class="string">&quot;base_footprint&quot;</span>;</span><br><span class="line">    <span class="comment">// 设置位置</span></span><br><span class="line">    odom_msg.pose.pose.position.x = x_;</span><br><span class="line">    odom_msg.pose.pose.position.y = y_;</span><br><span class="line">    odom_msg.pose.pose.position.z = <span class="number">0.0</span>;</span><br><span class="line">    <span class="comment">// 设置姿态（四元数）</span></span><br><span class="line">    odom_msg.pose.pose.orientation.x = odom_quat.<span class="built_in">x</span>();</span><br><span class="line">    odom_msg.pose.pose.orientation.y = odom_quat.<span class="built_in">y</span>();</span><br><span class="line">    odom_msg.pose.pose.orientation.z = odom_quat.<span class="built_in">z</span>();</span><br><span class="line">    odom_msg.pose.pose.orientation.w = odom_quat.<span class="built_in">w</span>();</span><br><span class="line">    <span class="comment">// 设置位置协方差</span></span><br><span class="line">    <span class="comment">// odom_msg.pose.covariance[0] = 0.1;  // x</span></span><br><span class="line">    <span class="comment">// odom_msg.pose.covariance[7] = 0.1;  // y</span></span><br><span class="line">    <span class="comment">// odom_msg.pose.covariance[35] = 0.2; // 偏航</span></span><br><span class="line">    <span class="comment">// 设置速度</span></span><br><span class="line">    odom_msg.twist.twist.linear.x = linear_vel;</span><br><span class="line">    odom_msg.twist.twist.linear.y = <span class="number">0</span>;</span><br><span class="line">    odom_msg.twist.twist.angular.z = angular_vel;</span><br><span class="line">    <span class="comment">// 速度协方差</span></span><br><span class="line">    <span class="comment">// odom_msg.twist.covariance[0] = 0.1;  // vx</span></span><br><span class="line">    <span class="comment">// odom_msg.twist.covariance[7] = 0.0;  // vy</span></span><br><span class="line">    <span class="comment">// odom_msg.twist.covariance[14] = 0.0; // vz</span></span><br><span class="line">    <span class="comment">// odom_msg.twist.covariance[21] = 0.0; // 滚转角速度</span></span><br><span class="line">    <span class="comment">// odom_msg.twist.covariance[28] = 0.0; // 俯仰角速度</span></span><br><span class="line">    <span class="comment">// odom_msg.twist.covariance[35] = 0.2; // 偏航角速度</span></span><br><span class="line">    <span class="comment">// 发布里程计消息</span></span><br><span class="line">    odom_pub_.<span class="built_in">publish</span>(odom_msg);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 发布TF变换: odom -&gt; base_link</span></span><br><span class="line">    geometry_msgs::TransformStamped odom_trans;</span><br><span class="line">    odom_trans.header.stamp = current_time;</span><br><span class="line">    odom_trans.header.frame_id = <span class="string">&quot;odom&quot;</span>;</span><br><span class="line">    odom_trans.child_frame_id = <span class="string">&quot;base_footprint&quot;</span>;</span><br><span class="line">    odom_trans.transform.translation.x = x_;</span><br><span class="line">    odom_trans.transform.translation.y = y_;</span><br><span class="line">    odom_trans.transform.translation.z = <span class="number">0.0</span>;</span><br><span class="line">    odom_trans.transform.rotation.x = odom_quat.<span class="built_in">x</span>();</span><br><span class="line">    odom_trans.transform.rotation.y = odom_quat.<span class="built_in">y</span>();</span><br><span class="line">    odom_trans.transform.rotation.z = odom_quat.<span class="built_in">z</span>();</span><br><span class="line">    odom_trans.transform.rotation.w = odom_quat.<span class="built_in">w</span>();</span><br><span class="line">    <span class="comment">// 发布TF变换</span></span><br><span class="line">    tf_broadcaster_.<span class="built_in">sendTransform</span>(odom_trans);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 更新上一时刻数据</span></span><br><span class="line">    last_update_time_ = current_time;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试效果</p>
+<p>在小车上将<code>base_ctrl_node</code>节点运行起来，在虚拟机中利用现成的速度控制节点，控制小车移动，或者手推着小车走也是可以的，让小车可以读到轮子的编码器数据即可。</p>
+<p>在虚拟机中运行<code>rviz</code>，add添加里程计选项，并且将话题修改为<code>/odom</code>，全局设置中<code>Fixed Frame</code>也修改为<code>odom</code>，即可看到里程计运动效果</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun rviz rviz</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E9%87%8C%E7%A8%8B%E8%AE%A1%E5%8F%AF%E8%A7%86%E5%8C%96.png" alt="里程计可视化"></p>
+<h2 id="3-4-雷达消息包（lidar-pkg）"><a href="#3-4-雷达消息包（lidar-pkg）" class="headerlink" title="3.4 雷达消息包（lidar_pkg）"></a>3.4 雷达消息包（lidar_pkg）</h2><p>本软件包主要实现以下功能：</p>
+<ol>
+<li>接收雷达数据，将雷达原始数据解析为雷达话题数据并发布</li>
+</ol>
+<p>创建一个新的软件包<code>lidar_pkg</code>，用于发布雷达数据。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haozi@computer:~/develop/Ros1CarWs/src$ catkin_create_pkg lidar_pkg rospy roscpp std_msgs sensor_msgs</span><br></pre></td></tr></table></figure>
+
+<p>创建一个地图发布者对象</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">laser_pub_ = nh_.<span class="built_in">advertise</span>&lt;sensor_msgs::LaserScan&gt;(<span class="string">&quot;/scan&quot;</span>, <span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<p>雷达数据读取如下，按照雷达数据长度格式，获取到一包数据长度即可。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 接收一包雷达数据</span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">Lidar::ReadLidarData</span><span class="params">(<span class="type">lidar_data_t</span> &amp;lidar_data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">        雷达数据格式 参考lidar_data数据类型定义</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="type">int</span> len;</span><br><span class="line">    <span class="type">uint8_t</span> recv_buff[<span class="number">100</span>];</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 接收数据头 找第一个字节 最多尝试100次</span></span><br><span class="line">    <span class="type">uint8_t</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        len = uart_.<span class="built_in">Read</span>(recv_buff, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">if</span> ((len == <span class="number">1</span>) &amp;&amp; (recv_buff[<span class="number">0</span>] == <span class="number">0xAA</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            len = uart_.<span class="built_in">Read</span>(recv_buff, <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> ((len == <span class="number">1</span>) &amp;&amp; (recv_buff[<span class="number">0</span>] == <span class="number">0x55</span>))</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">break</span>; <span class="comment">// 找到数据头了</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">ROS_INFO</span>(<span class="string">&quot;find data header2 failed. &quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-2</span>; <span class="comment">// 未找到数据头第2个字节</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (i++ &gt; <span class="number">100</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;find data header1 failed. &quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>; <span class="comment">// 未找到数据头第1个字节</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    lidar_data.header[<span class="number">0</span>] = <span class="number">0xAA</span>;</span><br><span class="line">    lidar_data.header[<span class="number">1</span>] = <span class="number">0x55</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 包类型</span></span><br><span class="line">    len = uart_.<span class="built_in">Read</span>(recv_buff, <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> ((recv_buff[<span class="number">0</span>] != <span class="number">0</span>) &amp;&amp; (recv_buff[<span class="number">0</span>] != <span class="number">1</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;ct out range %d. &quot;</span>, recv_buff[<span class="number">0</span>]);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-3</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        lidar_data.ct = recv_buff[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;find data ct failed. &quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-4</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 采样点数量</span></span><br><span class="line">    len = uart_.<span class="built_in">Read</span>(recv_buff, <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> ((recv_buff[<span class="number">0</span>] &lt; <span class="number">1</span>) || (recv_buff[<span class="number">0</span>] &gt; <span class="number">25</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;lsn out range %d. &quot;</span>, recv_buff[<span class="number">0</span>]);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-5</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        lidar_data.lsn = recv_buff[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;find data lsn failed. &quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-6</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 剩下 起始角度2字节 结束角度2字节 校验2字节 采样数据2*lsn字节</span></span><br><span class="line">    <span class="type">uint8_t</span> read_len = <span class="number">0</span>;</span><br><span class="line">    <span class="type">uint8_t</span> need_len = <span class="number">6</span> + <span class="number">2</span> * lidar_data.lsn;</span><br><span class="line">    len = uart_.<span class="built_in">Read</span>(&amp;(recv_buff[read_len]), need_len);</span><br><span class="line">    <span class="keyword">if</span> (len &lt; need_len)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 继续读剩下的</span></span><br><span class="line">        read_len = read_len + len;</span><br><span class="line">        need_len = need_len - len;</span><br><span class="line">        len = uart_.<span class="built_in">Read</span>(&amp;(recv_buff[read_len]), need_len);</span><br><span class="line">        <span class="keyword">if</span> (len &lt; need_len)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 继续读剩下的</span></span><br><span class="line">            read_len = read_len + len;</span><br><span class="line">            need_len = need_len - len;</span><br><span class="line">            len = uart_.<span class="built_in">Read</span>(&amp;(recv_buff[read_len]), need_len);</span><br><span class="line">            <span class="keyword">if</span> (len &lt; need_len)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">ROS_INFO</span>(<span class="string">&quot;find data si failed. len=%d, lsn=%d.&quot;</span>, read_len, lidar_data.lsn);</span><br><span class="line">                <span class="keyword">return</span> <span class="number">-7</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    lidar_data.fsa = ((recv_buff[<span class="number">1</span>] &lt;&lt; <span class="number">8</span>) | recv_buff[<span class="number">0</span>]);</span><br><span class="line">    lidar_data.lsa = ((recv_buff[<span class="number">3</span>] &lt;&lt; <span class="number">8</span>) | recv_buff[<span class="number">2</span>]);</span><br><span class="line">    lidar_data.cs = ((recv_buff[<span class="number">5</span>] &lt;&lt; <span class="number">8</span>) | recv_buff[<span class="number">4</span>]);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">uint8_t</span> i = <span class="number">0</span>; i &lt; lidar_data.lsn; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        lidar_data.si[i] = ((recv_buff[<span class="number">7</span> + i * <span class="number">2</span>] &lt;&lt; <span class="number">8</span>) | recv_buff[<span class="number">6</span> + i * <span class="number">2</span>]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>按照长度和距离解析格式进行解析，并发布雷达话题数据</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> POINTS_SIZE 800 <span class="comment">// 修正和插值到800点(本身390个点左右)</span></span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Lidar::LidarTask</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;LidarTask running... \n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> ret;</span><br><span class="line">    <span class="type">int</span> start_cnt = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 数据缓冲定义</span></span><br><span class="line">    <span class="type">lidar_data_t</span> lidar_data; <span class="comment">// 雷达串口发送过来的数据</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 雷达数据类型</span></span><br><span class="line">    sensor_msgs::LaserScan laser_scan; <span class="comment">// scan要发布的数据</span></span><br><span class="line">    laser_scan.header.frame_id = <span class="string">&quot;laser_link&quot;</span>;</span><br><span class="line">    laser_scan.angle_min = -M_PI; <span class="comment">// 从正前方顺时针旋转到正后方 正后方就是-PI</span></span><br><span class="line">    laser_scan.angle_max = M_PI;  <span class="comment">// 从正前方逆时针旋转到正后方 正后方就是 PI</span></span><br><span class="line">    laser_scan.angle_increment = (laser_scan.angle_max - laser_scan.angle_min) / POINTS_SIZE;</span><br><span class="line">    laser_scan.range_min = <span class="number">0.1</span>; <span class="comment">// 雷达最小量程</span></span><br><span class="line">    laser_scan.range_max = <span class="number">8.0</span>; <span class="comment">// 雷达最大量程</span></span><br><span class="line">    laser_scan.ranges.<span class="built_in">resize</span>(POINTS_SIZE);</span><br><span class="line">    std::<span class="built_in">fill</span>(laser_scan.ranges.<span class="built_in">begin</span>(), laser_scan.ranges.<span class="built_in">end</span>(), std::numeric_limits&lt;<span class="type">float</span>&gt;::<span class="built_in">infinity</span>()); <span class="comment">// 全部填充为无限远</span></span><br><span class="line">    laser_scan.intensities.<span class="built_in">resize</span>(POINTS_SIZE, <span class="number">127</span>);                                                       <span class="comment">// 假设强度值为127</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 清空数据</span></span><br><span class="line">        <span class="built_in">memset</span>(&amp;lidar_data, <span class="number">0</span>, <span class="built_in">sizeof</span>(lidar_data));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 读取数据</span></span><br><span class="line">        ret = <span class="built_in">ReadLidarData</span>(lidar_data);</span><br><span class="line">        <span class="keyword">if</span> (ret != <span class="number">0</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (ret != <span class="number">-1</span>) <span class="comment">// 雷达断电后会返回-1，雷达断电不用打印报错</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="built_in">ROS_INFO</span>(<span class="string">&quot;read_lidar_data ret=%d&quot;</span>, ret);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> 0</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;header %d %d \n&quot;</span>, lidar_data.header[<span class="number">0</span>], lidar_data.header[<span class="number">1</span>]);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ct %d \n&quot;</span>, lidar_data.ct);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;lsn %d \n&quot;</span>, lidar_data.lsn);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;fsa %d %f \n&quot;</span>, lidar_data.fsa, (lidar_data.fsa &gt;&gt; <span class="number">1</span>) / <span class="number">64.0</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;lsa %d %f \n&quot;</span>, lidar_data.lsa, (lidar_data.lsa &gt;&gt; <span class="number">1</span>) / <span class="number">64.0</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;cs %d \n&quot;</span>, lidar_data.cs);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;si = &quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">uint8_t</span> i = <span class="number">0</span>; i &lt; lidar_data.lsn; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;0x%x, &quot;</span>, lidar_data.si[i]);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">        <span class="comment">// 解析数据</span></span><br><span class="line">        <span class="type">float</span> fsa = (lidar_data.fsa &gt;&gt; <span class="number">1</span>) / <span class="number">64.0</span>;</span><br><span class="line">        <span class="type">float</span> lsa = (lidar_data.lsa &gt;&gt; <span class="number">1</span>) / <span class="number">64.0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; lidar_data.lsn; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 解析距离：单位mm</span></span><br><span class="line">            <span class="type">float</span> distance_mm = (lidar_data.si[i] &gt;&gt; <span class="number">2</span>);</span><br><span class="line">            <span class="comment">// 角度修正</span></span><br><span class="line">            <span class="type">float</span> angle_correct = (distance_mm == <span class="number">0</span>) ? <span class="number">0</span> : <span class="built_in">atan</span>(<span class="number">19.16</span> * (distance_mm - <span class="number">90.15</span>) / (<span class="number">90.15</span> * distance_mm));</span><br><span class="line">            <span class="comment">// 找到第i个数据的实际角度(把数据均分到起始角度到截至角度之间)</span></span><br><span class="line">            <span class="type">float</span> angle = (lidar_data.lsn &lt;= <span class="number">1</span>) ? fsa : fsa + ((lsa - fsa) / (lidar_data.lsn - <span class="number">1</span>)) * i;</span><br><span class="line">            angle = angle - angle_correct;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">                distance_mm 和 angle 已经是一对方向和距离了</span></span><br><span class="line"><span class="comment">                这个雷达的数据定义和这里的安装方式是：</span></span><br><span class="line"><span class="comment">                    从正后方顺时针旋转12度为0度，然后顺时针旋转表示度数增加</span></span><br><span class="line"><span class="comment">                ros正常的定义为：</span></span><br><span class="line"><span class="comment">                    正前方度数为0 雷达数组中的数据 从-PI到PI，也就是从正后方开始逆时针旋转一周</span></span><br><span class="line"><span class="comment">                因此这里需要做个转换</span></span><br><span class="line"><span class="comment">                比如 angle=0 distange=1 需要转换为angle=168 distange=1</span></span><br><span class="line"><span class="comment">                比如 angle=168 distange=1 需要转换为angle=0 distange=1</span></span><br><span class="line"><span class="comment">                比如 angle=348 distange=1 需要转换为angle=-180 distange=1</span></span><br><span class="line"><span class="comment">                比如 angle=359 distange=1 需要转换为angle=169 distange=1</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">            <span class="comment">// 角度转换</span></span><br><span class="line">            angle = <span class="number">168</span> - angle;</span><br><span class="line">            angle = (angle &lt; <span class="number">-180</span>) ? angle + <span class="number">360.0</span> : angle;</span><br><span class="line">            <span class="comment">// 索引计算 计算这个角度对应的距离在雷达距离数组中的索引(-180度对应0索引 180度对应799索引) 加上0.5是为了四舍五入 要不然799索引永远出不来</span></span><br><span class="line">            <span class="type">int</span> index = (angle + <span class="number">180.0</span>) / <span class="number">360.0</span> * (POINTS_SIZE - <span class="number">1</span>) + <span class="number">0.5</span>;</span><br><span class="line">            <span class="comment">// 填充距离数据到雷达消息数组中</span></span><br><span class="line">            laser_scan.ranges[index] = distance_mm / <span class="number">1000.0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 一圈结束 发布消息</span></span><br><span class="line">        <span class="keyword">if</span> (lidar_data.ct == <span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 发布LaserScan消息</span></span><br><span class="line">            laser_scan.header.stamp = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">            laser_pub_.<span class="built_in">publish</span>(laser_scan);</span><br><span class="line">            <span class="comment">// 发布后清除数据 全部填充为无限远</span></span><br><span class="line">            std::<span class="built_in">fill</span>(laser_scan.ranges.<span class="built_in">begin</span>(), laser_scan.ranges.<span class="built_in">end</span>(), std::numeric_limits&lt;<span class="type">float</span>&gt;::<span class="built_in">infinity</span>());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>测试效果</p>
+<p>在小车上将<code>lidar_node</code>节点运行起来。</p>
+<p>在虚拟机中运行<code>rviz</code>，add添加雷达数据选项，并且将话题修改为<code>/scan</code>，全局设置中<code>Fixed Frame</code>也修改为<code>laser_link</code>，即可看到雷达数据标注效果。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun rviz rviz</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E9%9B%B7%E8%BE%BE%E5%8F%AF%E8%A7%86%E5%8C%96.png" alt="雷达可视化"></p>
+<h2 id="3-5-Launch启动"><a href="#3-5-Launch启动" class="headerlink" title="3.5 Launch启动"></a>3.5 Launch启动</h2><p>当需要启动多个软件包时，需要打开多个终端，并且输入多次命令。</p>
+<p>为了实现一条命令启动，创建一个软件包用于启动所有节点</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catkin_create_pkg launch_pkg rospy roscpp std_msgs</span><br></pre></td></tr></table></figure>
+
+<p>在软件包中创建一个launch文件夹，文件夹中创建<code>all.launch</code>文件，文件内容如下，把所有需要启动的节点都放进来</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;launch&gt;</span><br><span class="line">    &lt;!-- 启动文件 - 启动所有软件包 --&gt;</span><br><span class="line">    &lt;node pkg=&quot;base_ctrl_pkg&quot; type=&quot;base_ctrl_node&quot; name=&quot;base_ctrl_node&quot; output=&quot;screen&quot;/&gt;</span><br><span class="line">    &lt;node pkg=&quot;lidar_pkg&quot; type=&quot;lidar_node&quot; name=&quot;lidar_node&quot; output=&quot;screen&quot;/&gt;</span><br><span class="line">&lt;/launch&gt;</span><br></pre></td></tr></table></figure>
+
+<p>完成后编译工作空间，编译完成后，使用如下命令即可直接启动所有软件包。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># roslaunch &lt;包名&gt; &lt;launch文件名&gt;</span></span><br><span class="line"></span><br><span class="line">roslaunch launch_pkg all.launch</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>实际上，这个launch文件，放在任意一个软件包里都可以，但是为了结构清晰，就创建了一个空的软件包来干这件事了。</p>
+</blockquote>
+<h2 id="3-6-TF系统"><a href="#3-6-TF系统" class="headerlink" title="3.6 TF系统"></a>3.6 TF系统</h2><p>基础工作做完了，接下来需要理解一些东西了，否则拿别人的东西运行也不知道咋回事，或者有地方不一样的甚至跑不起来。</p>
+<p>前面里程计和雷达分别在RVIZ中仿真的时候发现，这两个竟然不能同时显示！！！</p>
+<p>Global Options中的Fixed Frame选项只能同时满足一个传感器，这里就有点问题。</p>
+<p>将两个软件包都运行起来之后，使用以下命令查看TF树</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun rqt_tf_tree rqt_tf_tree</span><br></pre></td></tr></table></figure>
+
+<p>效果如下</p>
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/TF%E6%A0%911.png" alt="TF树1"></p>
+<p>TF（TransForm，坐标变换系），主要搞清楚几个坐标系之间的关系。</p>
+<p><strong>地图坐标系</strong></p>
+<p>地图坐标系<code>/map</code>，最根本的坐标系，坐标系原点从建图开始就固定不动了。</p>
+<ul>
+<li>原点：在机器人建图时候的初始位置</li>
+<li>方向：遵循右手法则，正前方为X，正左方为Y，正上方为Z</li>
+</ul>
+<p><strong>机器人坐标系</strong></p>
+<p>机器人坐标系<code>base_footprint</code>，坐标系原点永远跟随机器人移动。</p>
+<ul>
+<li>原点：在机器人地面投影的正中心</li>
+<li>方向：遵循右手法则，机器人的正前方为X，机器人正左方为Y，机器人正上方为Z</li>
+</ul>
+<p>为了描述机器人在地图中的位置，把地图坐标系作为父坐标系，机器人坐标系作为子坐标系。</p>
+<p>只需要六个值就可以表示机器人在地图中的位置：</p>
+<ol>
+<li>机器人坐标系在地图坐标系中，xyz三个方向上距离的偏差</li>
+<li>机器人坐标系在地图坐标系中，xyz三个方向上角度的偏差</li>
+</ol>
+<p>对于小车来说，不可能在空中，所以z方向距离永远为0，不会向前或者向后倒，所以xy方向的角度永远为0。</p>
+<hr>
+<p>有了这两个坐标系，就可以使用雷达进行建图了，雷达建图使用的就是这两个坐标系之间的转换关系。</p>
+<h2 id="3-7-SLAM（gmapping）"><a href="#3-7-SLAM（gmapping）" class="headerlink" title="3.7 SLAM（gmapping）"></a>3.7 SLAM（gmapping）</h2><p>创建一个SLAM软件包（里面的内容当然是用开源的了）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装</span></span><br><span class="line"><span class="built_in">sudo</span> apt install ros-noetic-gmapping</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后就可以傻瓜式使用了，直接在launch文件中添加一行</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 运行gmapping建图包 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;gmapping&quot;</span> <span class="attr">type</span>=<span class="string">&quot;slam_gmapping&quot;</span> <span class="attr">name</span>=<span class="string">&quot;slam_gmapping&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以添加一些参数</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 运行gmapping建图包 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;gmapping&quot;</span> <span class="attr">type</span>=<span class="string">&quot;slam_gmapping&quot;</span> <span class="attr">name</span>=<span class="string">&quot;slam_gmapping&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 地图更新时间间隔 5s更新一次地图 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;map_update_interval&quot;</span> <span class="attr">value</span>=<span class="string">&quot;5.0&quot;</span>/&gt;</span>  </span><br><span class="line">    <span class="comment">&lt;!-- 移动距离更新值 1.0m更新一次地图 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;linearUpdate&quot;</span> <span class="attr">value</span>=<span class="string">&quot;1.0&quot;</span>/&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">node</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后将所有节点运行起来，运行RVIZ，添加一个Map显示，就可以看到建图效果了，可以控制小车到处跑跑看看建图效果如何。</p>
+<p><img src="/2025/11/15/04.%20Linux%E5%BA%94%E7%94%A8/TspRosCar/%E5%BB%BA%E5%9B%BE%E5%8F%AF%E8%A7%86%E5%8C%96.png" alt="建图可视化"></p>
+<h2 id="3-8-地图保存和加载"><a href="#3-8-地图保存和加载" class="headerlink" title="3.8 地图保存和加载"></a>3.8 地图保存和加载</h2><p>当建图完成之后，需要把这个地图保存起来，下次启动直接调用即可。</p>
+<h3 id="3-8-1-地图保存"><a href="#3-8-1-地图保存" class="headerlink" title="3.8.1 地图保存"></a>3.8.1 地图保存</h3><p>软件包安装命令如下。会报某些软件包依赖不对的错误，根据提示补充相关依赖即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install ros-noetic-map-server</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后，先使用建图软件包完成建图，保持建图程序不要关闭。</p>
+<p>运行地图保存程序</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun map_server map_saver -f &lt;文件名&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果只有一个文件名就是当前终端的路径，这里使用绝对路径</p>
+<p>需要先创建<code>/home/lckfb/TspRosCar/RosCarWs/src/map_config/home</code>这个文件夹，否则会保存失败</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun map_server map_saver -f /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map</span><br></pre></td></tr></table></figure>
+
+<p>运行结果如下</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">lckfb@MiWiFi-R3GV2-srv:~/TspRosCar/RosCarWs$ rosrun map_server map_saver -f /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map</span><br><span class="line">[INFO] [1764853848.865978437]: Waiting <span class="keyword">for</span> the map</span><br><span class="line">[INFO] [1764853849.171315087]: Received a 4000 X 4000 map @ 0.050 m/pix</span><br><span class="line">[INFO] [1764853849.171582836]: Writing map occupancy data to /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map.pgm</span><br><span class="line">[INFO] [1764853850.342584721]: Writing map occupancy data to /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map.yaml</span><br><span class="line">[INFO] [1764853850.343969550]: Done</span><br><span class="line"></span><br><span class="line">lckfb@MiWiFi-R3GV2-srv:~/TspRosCar/RosCarWs/src/map_config$ <span class="built_in">cd</span> /home/lckfb/TspRosCar/RosCarWs/src/map_config/home</span><br><span class="line">lckfb@MiWiFi-R3GV2-srv:~/TspRosCar/RosCarWs/src/map_config/home$ <span class="built_in">ls</span></span><br><span class="line">home_map.pgm  home_map.yaml</span><br></pre></td></tr></table></figure>
+
+<p>得到两个文件，两个文件共同组成了一个地图数据。</p>
+<ul>
+<li>home_map.pgm：一张图片的格式</li>
+<li>home_map.yaml：描述了这个图片的信息，比如每个像素点对应的实际大小、起始点等信息</li>
+</ul>
+<h3 id="3-8-2-地图加载"><a href="#3-8-2-地图加载" class="headerlink" title="3.8.2 地图加载"></a>3.8.2 地图加载</h3><p>地图加载完成后，关闭建图节点，只运行一个roscore即可。</p>
+<p>运行之后，查看当前ros存在的话题是找不到<code>/map</code>的</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rostopic list</span><br></pre></td></tr></table></figure>
+
+<p>然后运行以下命令加载地图（只需要yaml文件即可，文件中有对应的地图图片的名字）</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun map_server map_server &lt;地图名.yaml&gt;</span><br></pre></td></tr></table></figure>
+
+<p>同样的这里使用绝对路径</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun map_server map_server /home/lckfb/TspRosCar/RosCarWs/src/map_config/home/home_map.yaml</span><br></pre></td></tr></table></figure>
+
+<p>加载完成之后就有地图话题了，在rviz中可以看到发布的地图。</p>
+<h2 id="3-9-导航节点"><a href="#3-9-导航节点" class="headerlink" title="3.9 导航节点"></a>3.9 导航节点</h2><p>创建一个导航软件包</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catkin_create_pkg nav_pkg roscpp rospy move_base_msgs actionlib</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<h2 id="3-10-摄像头节点"><a href="#3-10-摄像头节点" class="headerlink" title="3.10 摄像头节点"></a>3.10 摄像头节点</h2><p>这里使用系统镜像里默认支持的摄像头<code>OV5695</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">lckfb@MiWiFi-R3GV2-srv:~$ v4l2-ctl --list-devices</span><br><span class="line">rkisp-statistics (platform: rkisp):</span><br><span class="line">        /dev/video7</span><br><span class="line">        /dev/video8</span><br><span class="line"></span><br><span class="line">rkisp_mainpath (platform:rkisp-vir0):</span><br><span class="line">        /dev/video0</span><br><span class="line">        /dev/video1</span><br><span class="line">        /dev/video2</span><br><span class="line">        /dev/video3</span><br><span class="line">        /dev/video4</span><br><span class="line">        /dev/video5</span><br><span class="line">        /dev/video6</span><br><span class="line">        /dev/media0</span><br></pre></td></tr></table></figure>
+
+<p>安装依赖</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>创建一个软件包，用于发布摄像头数据</p>
+<h2 id="3-15-manage"><a href="#3-15-manage" class="headerlink" title="3.15 manage"></a>3.15 manage</h2><p>每个单独的功能都可以实现，但是和上位机交互时，需要在不同情况下调用不同的软件包。</p>
+<p>这里创建一个软件包用来管理不同的功能同步。</p>
+<p>创建管理包</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catkin_create_pkg manage_pkg rospy roscpp std_msgs</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<h2 id="3-20-常用命令"><a href="#3-20-常用命令" class="headerlink" title="3.20 常用命令"></a>3.20 常用命令</h2><p>节点相关</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看节点图关系</span></span><br><span class="line">rqt_graph</span><br></pre></td></tr></table></figure>
+
+<p>话题相关</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看当前存在的话题</span></span><br><span class="line">rostopic list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看话题的订阅者和发布者</span></span><br><span class="line">rostopic info /cmd_vel</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看实时消息内容</span></span><br><span class="line">rostopic <span class="built_in">echo</span> /cmd_vel</span><br></pre></td></tr></table></figure>
+
+<p>工具节点</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 运行速度控制器</span></span><br><span class="line">rosrun rqt_robot_steering rqt_robot_steering</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="4-APP开发"><a href="#4-APP开发" class="headerlink" title="4. APP开发"></a>4. APP开发</h1><p>这里为了实现任意电脑控制，而不是在虚拟机中的进行可视化，制作了QT上位机。</p>
+<h2 id="4-1-通信支持包"><a href="#4-1-通信支持包" class="headerlink" title="4.1 通信支持包"></a>4.1 通信支持包</h2><p>我们的上位机中肯定是无法直接运行ros来和小车进行通信的，可以使用网络通信获取ros中的消息内容。</p>
+<p>在小车中需要一个将Ros消息和网络消息转换的东西（有现成的）。</p>
+<p>将ROS环境的运行信息进行上报需要软件包<code>rosbridge_server</code>，安装命令如下</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install ros-noetic-rosbridge-suite</span><br></pre></td></tr></table></figure>
+
+<p>和其他的软件包一样，最后把这个软件包也启动起来即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roslaunch rosbridge_server rosbridge_websocket.launch</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装movebase</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install ros-noetic-navigation</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建导航包</span></span><br><span class="line">catkin_create_pkg nav_pkg roscpp rospy move_base_msgs actionlib</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+<div class="article-footer">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文由 imhaozi 编写，采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section>
+    
+
+</div>
+
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">较早文章</div><a href="/2025/11/05/08.%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/">CanDBC文件制作</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">imhaozi</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.33.1">Stellar 1.33.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E6%B3%B0%E5%B1%B1%E6%B4%BE%E8%AE%BE%E7%BD%AE"><span class="toc-text">1. 泰山派设置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E5%AE%98%E6%96%B9%E9%95%9C%E5%83%8F"><span class="toc-text">1.1 官方镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E5%86%85%E6%A0%B8%E4%BF%AE%E6%94%B9"><span class="toc-text">1.2 内核修改</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-%E7%A9%BA%E9%97%B4%E5%88%86%E9%85%8D"><span class="toc-text">1.3 空间分配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4-%E5%AE%89%E8%A3%85SSH"><span class="toc-text">1.4 安装SSH</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5-%E5%AE%89%E8%A3%85ROS"><span class="toc-text">1.5 安装ROS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-6-%E5%AE%89%E8%A3%85Vscode"><span class="toc-text">1.6 安装Vscode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-7-%E6%9D%83%E9%99%90%E8%AE%BE%E7%BD%AE"><span class="toc-text">1.7 权限设置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-1-%E4%B8%B2%E5%8F%A3%E6%9D%83%E9%99%90"><span class="toc-text">1.7.1 串口权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-2-IO%E5%BC%95%E8%84%9A"><span class="toc-text">1.7.2 IO引脚</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-7-3-%E6%91%84%E5%83%8F%E5%A4%B4%E6%9D%83%E9%99%90"><span class="toc-text">1.7.3 摄像头权限</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E4%B8%8B%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91%EF%BC%88Base%EF%BC%89"><span class="toc-text">2. 下位机开发（Base）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E7%9B%AE%E6%A0%87%E9%80%9F%E5%BA%A6%E6%8E%A7%E5%88%B6"><span class="toc-text">2.1 目标速度控制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E7%9B%AE%E6%A0%87%E9%80%9F%E5%BA%A6%E8%8E%B7%E5%8F%96"><span class="toc-text">2.2 目标速度获取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E7%8A%B6%E6%80%81%E6%98%BE%E7%A4%BA"><span class="toc-text">2.3 状态显示</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E4%B8%8A%E4%BD%8D%E6%9C%BA%E5%BC%80%E5%8F%91%EF%BC%88RosWs%EF%BC%89"><span class="toc-text">3. 上位机开发（RosWs）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE"><span class="toc-text">3.1 创建项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E7%94%B5%E8%84%91%E7%AB%AF%E5%8F%AF%E8%A7%86%E5%8C%96"><span class="toc-text">3.2 电脑端可视化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-%E4%B8%8B%E4%BD%8D%E6%9C%BA%E6%8E%A7%E5%88%B6%E5%8C%85%EF%BC%88base-ctrl-pkg%EF%BC%89"><span class="toc-text">3.3 下位机控制包（base_ctrl_pkg）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-1-%E9%80%9F%E5%BA%A6%E8%AE%A2%E9%98%85"><span class="toc-text">3.3.1 速度订阅</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-2-%E9%87%8C%E7%A8%8B%E8%AE%A1%E5%8F%91%E5%B8%83"><span class="toc-text">3.3.2 里程计发布</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-%E9%9B%B7%E8%BE%BE%E6%B6%88%E6%81%AF%E5%8C%85%EF%BC%88lidar-pkg%EF%BC%89"><span class="toc-text">3.4 雷达消息包（lidar_pkg）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-5-Launch%E5%90%AF%E5%8A%A8"><span class="toc-text">3.5 Launch启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-6-TF%E7%B3%BB%E7%BB%9F"><span class="toc-text">3.6 TF系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-7-SLAM%EF%BC%88gmapping%EF%BC%89"><span class="toc-text">3.7 SLAM（gmapping）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-8-%E5%9C%B0%E5%9B%BE%E4%BF%9D%E5%AD%98%E5%92%8C%E5%8A%A0%E8%BD%BD"><span class="toc-text">3.8 地图保存和加载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-8-1-%E5%9C%B0%E5%9B%BE%E4%BF%9D%E5%AD%98"><span class="toc-text">3.8.1 地图保存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-8-2-%E5%9C%B0%E5%9B%BE%E5%8A%A0%E8%BD%BD"><span class="toc-text">3.8.2 地图加载</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-9-%E5%AF%BC%E8%88%AA%E8%8A%82%E7%82%B9"><span class="toc-text">3.9 导航节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-10-%E6%91%84%E5%83%8F%E5%A4%B4%E8%8A%82%E7%82%B9"><span class="toc-text">3.10 摄像头节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-15-manage"><span class="toc-text">3.15 manage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-20-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-text">3.20 常用命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-APP%E5%BC%80%E5%8F%91"><span class="toc-text">4. APP开发</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E9%80%9A%E4%BF%A1%E6%94%AF%E6%8C%81%E5%8C%85"><span class="toc-text">4.1 通信支持包</span></a></li></ol></li></ol></div><div class="widget-footer"><a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/><path d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg><span>回到顶部</span></a></div></widget>
+</div></aside><div class='float-panel'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+
+
+<script type="text/javascript">
+  window.canonical = {"originalHost":null,"officialHosts":["localhost"],"encoded":""};
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+    tag_plugins: {
+      chat: Object.assign({"api":"https://siteinfo.listentothewind.cn/api/v1"}),
+    }
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"skip_search":null,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+    loading: `https://api.iconify.design/eos-icons:three-dots-loading.svg?color=%231cd0fd`,
+  };
+  const deps = {
+    jquery: `https://gcore.jsdelivr.net/npm/jquery@3.7/dist/jquery.min.js`,
+    marked: `https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js`,
+    lazyload: `/%5Bobject%20Object%5D`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = () => {
+          utils.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) => {
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index, 1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')) {
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function () {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      const maxRetry = 3;
+      let retryCount = 0;
+
+      return new Promise((resolve, reject) => {
+        const load = () => {
+          utils.onLoading?.(el);
+
+          let timedOut = false;
+          const timeout = setTimeout(() => {
+            timedOut = true;
+            console.warn('[request] 超时:', url);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject('请求超时');
+            } else {
+              setTimeout(load, 1000);
+            }
+          }, 5000);
+
+          fetch(url).then(resp => {
+            if (timedOut) return;
+            clearTimeout(timeout);
+
+            if (!resp.ok) throw new Error('响应失败');
+            return resp;
+          }).then(data => {
+            if (timedOut) return;
+            utils.onLoadSuccess?.(el);
+            callback(data);
+            resolve(data);
+          }).catch(err => {
+            clearTimeout(timeout);
+            console.warn('[request] 错误:', err);
+
+            if (++retryCount >= maxRetry) {
+              utils.onLoadFailure?.(el);
+              onFailure?.();
+              reject(err);
+            } else {
+              setTimeout(load, 1000);
+            }
+          });
+        };
+
+        load();
+      });
+    },
+    requestWithoutLoading: (url, options = {}, maxRetry = 2, timeout = 5000) => {
+      return new Promise((resolve, reject) => {
+        let retryCount = 0;
+
+        const tryRequest = () => {
+          let timedOut = false;
+          const timer = setTimeout(() => {
+            timedOut = true;
+            if (++retryCount > maxRetry) reject('timeout');
+            else tryRequest();
+          }, timeout);
+
+          fetch(url, options)
+            .then(resp => {
+              clearTimeout(timer);
+              if (!resp.ok) throw new Error('bad response');
+              resolve(resp);
+            })
+            .catch(err => {
+              clearTimeout(timer);
+              if (++retryCount > maxRetry) reject(err);
+              else setTimeout(tryRequest, 500);
+            });
+        };
+
+        tryRequest();
+      });
+    },
+    /********************** requestAnimationFrame ********************************/
+    // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+    // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+    requestAnimationFrame: (fn) => {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+      }
+      window.requestAnimationFrame(fn)
+    },
+    dark: {},
+  };
+
+  // utils.dark.mode 当前模式 dark or light
+  // utils.dark.toggle() 暗黑模式触发器
+  // utils.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  utils.dark.method = {
+    toggle: new RunItem(),
+  };
+  utils.dark = Object.assign(utils.dark, {
+    push: utils.dark.method.toggle.push,
+  });
+</script>
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+<script async src="https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+    callback_loaded: (el) => {
+      el.classList.add('loaded');
+      const wrapper = el.closest('.lazy-box');
+      const icon = wrapper?.querySelector('.lazy-icon');
+      if (icon) icon.remove();
+    }
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+
+  window.wrapLazyloadImages = (container) => {
+    if (typeof container === 'string') {
+      container = document.querySelector(container);
+    }
+    if (!container) return;
+    
+    const images = container.querySelectorAll('img');
+    images.forEach((img) => {
+      if (img.classList.contains('lazy')) return;
+
+      const src = img.getAttribute('src');
+      if (!src) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'lazy-box';
+
+      const newImg = img.cloneNode();
+      newImg.removeAttribute('src');
+      newImg.setAttribute('data-src', src);
+      newImg.classList.add('lazy');
+
+      const icon = document.createElement('div');
+      icon.className = 'lazy-icon';
+      if (def.loading) {
+        icon.style.backgroundImage = `url("${def.loading}")`;
+      }
+
+      wrapper.appendChild(newImg);
+      wrapper.appendChild(icon);
+
+      img.replaceWith(wrapper);
+    });
+
+    // 通知 LazyLoad 更新
+    if (window.lazyLoadInstance?.update) {
+      window.lazyLoadInstance.update();
+    }
+  }
+  
+</script>
+
+<!-- required -->
+<script src="/js/main.js?v=1.33.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    // applyThemeToGiscus(theme)
+  }
+
+  // FIXME: 这会导致无法使用 preferred_color_scheme 以外的主题
+  const applyThemeToGiscus = (theme) => {
+    // theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+    utils.dark.mode = newTheme === 'auto' ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : newTheme;
+    utils.dark.method.toggle.start();
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    } else {
+      utils.dark.mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    utils.dark.method.toggle.start();
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"rating":{"js":"/js/services/rating.js","api":"https://star-vote.xaox.cc/api/rating"},"vote":{"js":"/js/services/vote.js","api":"https://star-vote.xaox.cc/api/vote"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"friends_and_posts":{"js":"/js/services/friends_and_posts.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"},"voice":{"js":"/js/plugins/voice.js"},"video":{"js":"/js/plugins/video.js"},"download-file":{"js":"/js/plugins/download-file.js"},"twikoo":{"js":"/js/services/twikoo_latest_comment.js"},"waline":{"js":"/js/services/waline_latest_comment.js"},"artalk":{"js":"/js/services/artalk_latest_comment.js"},"giscus":{"js":"/js/services/giscus_latest_comment.js"},"contributors":{"edit_this_page":{"_posts/":null,"wiki/stellar/":"https://github.com/xaoxuu/hexo-theme-stellar-docs/blob/main/"},"js":"/js/services/contributors.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else if (id == 'voice') {
+        ctx.voiceAudios = document.querySelectorAll('.voice>audio');
+        if (ctx.voiceAudios?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            createVoiceDom(ctx.voiceAudios);
+          });
+        }
+      } else if (id == 'video') {
+        ctx.videos = document.querySelectorAll('.video>video');
+        if (ctx.videos?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            videoEvents(ctx.videos);
+          });
+        }
+      } else if (id == 'download-file') {
+        ctx.files = document.querySelectorAll('.file');
+        if (ctx.files?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            downloadFileEvent(ctx.files);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+
+    // chat iphone time
+    let phoneTimes = document.querySelectorAll('.chat .status-bar .time');
+
+    if (phoneTimes.length > 0) {
+      NowTime();
+      var date = new Date();
+      var sec = date.getSeconds();
+      var firstAdjustInterval = setInterval(firstAdjustTime, 1000 * (60 - sec));
+    }
+
+    function firstAdjustTime() {
+      NowTime();
+      clearInterval(firstAdjustInterval);
+      setInterval(NowTime, 1000 * 60);
+    }
+
+    function NowTime() {
+      for (let i = 0; i < phoneTimes.length; ++i) {
+        var timeSpan = phoneTimes[i];
+        var date = new Date();
+        var hour = date.getHours();
+        var min = date.getMinutes();
+        timeSpan.innerHTML = check(hour) + ":" + check(min);
+      }
+    };
+
+    function check(val) {
+      if (val < 10) {
+        return ("0" + val);
+      }
+      return (val);
+    }
+
+    // chat quote
+    const chat_quote_obverser = new IntersectionObserver((entries, observer) => {
+      entries.filter((entry) => { return entry.isIntersecting }).sort((a, b) => a.intersectionRect.y !== b.intersectionRect.y ? a.intersectionRect.y - b.intersectionRect.y : a.intersectionRect.x - b.intersectionRect.x).forEach((entry, index) => {
+          observer.unobserve(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('quote-blink');
+            setTimeout(() => {
+              entry.target.classList.remove('quote-blink');
+            }, 1000);
+          }, Math.max(100, 16) * (index + 1));
+        });
+    });
+
+    var chatQuotes = document.querySelectorAll(".chat .talk .quote");
+    chatQuotes.forEach((quote) => {
+      quote.addEventListener('click', function () {
+        var chatCellDom = document.getElementById("quote-" + quote.getAttribute("quotedCellTag"));
+        if (chatCellDom) {
+          var chatDiv = chatCellDom.parentElement;
+          var mid = chatDiv.clientHeight / 2;
+          var offsetTop = chatCellDom.offsetTop;
+          if (offsetTop > mid - chatCellDom.clientHeight / 2) {
+            chatDiv.scrollTo({
+              top: chatCellDom.offsetTop - mid + chatCellDom.clientHeight / 2,
+              behavior: "smooth"
+            });
+          } else {
+            chatDiv.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
+          }
+          chat_quote_obverser.observe(chatCellDom);
+        }
+      });
+    });
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error), .with-fancybox .atk-content img:not([atk-emoticon])';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const memos = document.getElementsByClassName('ds-memos');
+    if (memos != undefined && memos.length > 0) {
+      needFancybox = true;
+    }
+    const fancybox = document.getElementsByClassName('with-fancybox');
+    if (fancybox != undefined && fancybox.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>

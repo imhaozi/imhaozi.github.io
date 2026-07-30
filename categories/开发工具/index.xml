@@ -1,0 +1,594 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>imhaozi 的博客 – 开发工具</title><link>https://imhaozi.github.io/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/</link><description>Recent content in 开发工具 on imhaozi 的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 11 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://imhaozi.github.io/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/index.xml" rel="self" type="application/rss+xml"/><item><title>vscode开发stm32</title><link>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/vscode%E5%BC%80%E5%8F%91stm32/</link><pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate><guid>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/vscode%E5%BC%80%E5%8F%91stm32/</guid><description>
+&lt;h2&gt;1. 环境准备&lt;span class="hx:absolute hx:-mt-20" id="1-环境准备"&gt;&lt;/span&gt;
+&lt;a href="#1-%e7%8e%af%e5%a2%83%e5%87%86%e5%a4%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Windows下为了在vscode中开发单片机，需要准备的工具如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;ARM交叉编译工具&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make管理工具（也用于编译windows环境运行的c/c++）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OpenOCD烧录和调试工具&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;1.1 ARM交叉编译工具&lt;span class="hx:absolute hx:-mt-20" id="11-arm交叉编译工具"&gt;&lt;/span&gt;
+&lt;a href="#11-arm%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在windows下编译arm单片机程序的交叉编译器为：&lt;code&gt;arm-none-eabi-gcc&lt;/code&gt;，&lt;/p&gt;
+&lt;p&gt;下载地址：https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;不要选择太旧的&lt;/p&gt;
+&lt;p&gt;实测cubemx版本为6.15.0生成的代码中，使用经典版本gcc-arm-none-eabi-10.3-2021.10-win32.exe已经无法处理生成的一些链接文件导致编译报错&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这里使用的版本为如下。前者直接安装自动配置环境变量；后者直接解压缩即可，但是需要自己配置环境变量。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;arm-gnu-toolchain-15.2.rel1-mingw-w64-x86_64-arm-none-eabi.msi&lt;/li&gt;
+&lt;li&gt;arm-gnu-toolchain-15.2.rel1-mingw-w64-x86_64-arm-none-eabi.zip&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;**这里建议选择压缩包，自己解压并添加环境变量，因为修改路径比较容易。**这里解压后修改文件夹名字为：&lt;code&gt;arm-none-eabi-gcc_15.2&lt;/code&gt;，原名字太长了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%99%a8.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;添加环境变量，系统变量-&amp;gt;Path（到bin路径）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%99%a8%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;检查是否配置可用，在cmd窗口中使用如下指令，能看到版本号表示配置正确。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;arm-none-eabi-gcc --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;where arm-none-eabi-gcc&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;另外，还有一个老版本的交叉编译工具链，这里建议下载压缩包解压后留着，但是不用添加环境变量。这里放到了路径：&lt;code&gt;D:\ToolChain\arm-none-eabi-gcc_10.3&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;gcc-arm-none-eabi-10.3-2021.10-win32.zip&lt;/li&gt;
+&lt;li&gt;gcc-arm-none-eabi-10.3-2021.10-win32.exe&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;cubemx6.17生成的工程，使用这个旧版本的工具链不能编译，链接脚本中有些命令老版本不支持。&lt;/p&gt;
+&lt;p&gt;但是新版本的工具链可以编译，但是调试代码有问题，还需要安装一些其他的配置。&lt;/p&gt;
+&lt;p&gt;因此可以选择使用新版本的编译，老版本的调试。或者把新版本所需的其他环境也配齐。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;1.2 Make管理工具&lt;span class="hx:absolute hx:-mt-20" id="12-make管理工具"&gt;&lt;/span&gt;
+&lt;a href="#12-make%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在windows下的make工具为：&lt;code&gt;mingw64&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;下载地址：&lt;a href="https://github.com/niXman/mingw-builds-binaries/releases"target="_blank" rel="noopener"&gt;https://github.com/niXman/mingw-builds-binaries/releases&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;根据电脑架构选择即可，这里使用当前最新的。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;x86_64-16.1.0-release-win32-seh-ucrt-rt_v14-rev1.7z&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;安装方式同上，直接解压并添加环境变量即可，这里解压完把最外层名字很长的文件夹删了，修改文件夹名字为&lt;code&gt;mingw64_16.1&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/make%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;添加环境变量，系统变量-&amp;gt;Path（到bin路径）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/make%e5%b7%a5%e5%85%b7%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;检查是否配置可用，在cmd窗口中使用如下指令，能看到版本号表示配置正确。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;mingw32-make --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;where mingw32-make&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;1.3 OpenOCD烧录和调试工具&lt;span class="hx:absolute hx:-mt-20" id="13-openocd烧录和调试工具"&gt;&lt;/span&gt;
+&lt;a href="#13-openocd%e7%83%a7%e5%bd%95%e5%92%8c%e8%b0%83%e8%af%95%e5%b7%a5%e5%85%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在vscode中比较通用的工具为：OpenOCD&lt;/p&gt;
+&lt;p&gt;下载地址：https://openocd.org/&lt;/p&gt;
+&lt;p&gt;这里也下载当前最新的。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;xpack-openocd-0.12.0-7-win32-x64.zip&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;安装方式同上，直接解压并添加环境变量即可，修改文件夹名字为&lt;code&gt;openocd_0.12.0&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/openocd%e5%b7%a5%e5%85%b7.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;添加环境变量，系统变量-&amp;gt;Path（到bin路径）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/openocd%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;检查是否配置可用，使用如下指令，能看到版本号表示配置正确。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;openocd --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;where openocd&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2&gt;2. 代码编译&lt;span class="hx:absolute hx:-mt-20" id="2-代码编译"&gt;&lt;/span&gt;
+&lt;a href="#2-%e4%bb%a3%e7%a0%81%e7%bc%96%e8%af%91" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;使用cubemx创建一个点灯工程，这里使用STM32F401CCU6。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在生成的工程类型中选择Makefile&lt;/strong&gt;，其余正常配置即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/cubemx%e5%b7%a5%e7%a8%8b.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;生成工程后使用vscode打开工程。&lt;/p&gt;
+&lt;p&gt;工程中已经包含了一个makefile文件，可以看到他这里如果定义了GCC_PATH就会按照定义的路径寻找编译器。如果没有则直接使用arm-none-eabi-gcc编译器。&lt;/p&gt;
+&lt;p&gt;这里生成的makefile中默认没有定义这个路径，所以会走else分支，使用arm-none-eabi-gcc编译器，因为这个编译器路径已经在环境变量里了，所以系统是可以直接找到的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e9%bb%98%e8%ae%a4makefile.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;打开一个终端，输入如下指令进行编译：&lt;code&gt;mingw32-make -j8&lt;/code&gt;，编译完成后的结果存放于生成的&lt;strong&gt;build文件夹&lt;/strong&gt;下。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e7%bc%96%e8%af%91%e7%bb%93%e6%9e%9c.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;这个名字是因为在mingw64工具中的make工具就是这个名字，如果想直接使用make指令，只需要把这个文件在这里再复制一个，并改个名字叫make.exe，以后就可以直接输入make命令编译了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e5%88%9b%e5%bb%bamake%e5%b7%a5%e5%85%b7.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;清除编译make clean命令还是有点问题，需要修改makefile或者安装其他工具，这里先不麻烦了，直接删除build文件夹即可。&lt;/p&gt;
+&lt;h2&gt;3. 代码烧录和调试&lt;span class="hx:absolute hx:-mt-20" id="3-代码烧录和调试"&gt;&lt;/span&gt;
+&lt;a href="#3-%e4%bb%a3%e7%a0%81%e7%83%a7%e5%bd%95%e5%92%8c%e8%b0%83%e8%af%95" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;3.1 代码烧录&lt;span class="hx:absolute hx:-mt-20" id="31-代码烧录"&gt;&lt;/span&gt;
+&lt;a href="#31-%e4%bb%a3%e7%a0%81%e7%83%a7%e5%bd%95" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;写一段闪灯逻辑，并编译完成。&lt;/p&gt;
+&lt;p&gt;然后代码烧录比较简单，直接使用如下命令即可&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;openocd -f interface/cmsis-dap.cfg -c &lt;span class="s2"&gt;&amp;#34;transport select swd&amp;#34;&lt;/span&gt; -f target/stm32f4x.cfg -c &lt;span class="s2"&gt;&amp;#34;program build/debug_demo.hex verify reset exit&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;命令解释：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-f interface/cmsis-dap.cfg 选择下载器
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-c &amp;#34;transport select swd&amp;#34; 指定下载方式swd（非必须 会自动检测）
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-f target/stm32f4x.cfg 指定下载对象
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-c &amp;#34;program build/debug_demo.hex verify reset exit 指定要下载的文件 校验、复位后退出&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选的下载器位于安装路径下：CompilationTools\xpack-openocd-0.12.0-7-win32-x64\xpack-openocd-0.12.0-7\openocd\scripts\interface&lt;/p&gt;
+&lt;p&gt;可选的下载mcu位于安装路径下：E:\CompilationTools\xpack-openocd-0.12.0-7-win32-x64\xpack-openocd-0.12.0-7\openocd\scripts\target&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;下载效果如下，完成后自动复位运行。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e7%a8%8b%e5%ba%8f%e7%83%a7%e5%bd%95.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;3.2 代码调试&lt;span class="hx:absolute hx:-mt-20" id="32-代码调试"&gt;&lt;/span&gt;
+&lt;a href="#32-%e4%bb%a3%e7%a0%81%e8%b0%83%e8%af%95" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;vscode中安装&lt;code&gt;Cortex-Debug&lt;/code&gt;插件，他还会自动安装所需的其他插件。&lt;/p&gt;
+&lt;p&gt;安装完成后，点击左侧调试按钮，选择创建launch文件，选择Cortex Debug类型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e5%88%9b%e5%bb%ba%e8%b0%83%e8%af%95%e4%bb%bb%e5%8a%a1.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;在生成的launch文件中填入如下内容：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;{
+// 使用 IntelliSense 了解相关属性。
+// 悬停以查看现有属性的描述。
+// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+&amp;#34;version&amp;#34;: &amp;#34;0.2.0&amp;#34;,
+&amp;#34;configurations&amp;#34;: [
+{
+&amp;#34;name&amp;#34;: &amp;#34;Cortex Debug&amp;#34;,
+&amp;#34;type&amp;#34;: &amp;#34;cortex-debug&amp;#34;,
+&amp;#34;request&amp;#34;: &amp;#34;launch&amp;#34;,
+&amp;#34;servertype&amp;#34;: &amp;#34;openocd&amp;#34;,
+&amp;#34;cwd&amp;#34;: &amp;#34;${workspaceFolder}&amp;#34;,
+// 可执行文件（必须是elf）
+&amp;#34;executable&amp;#34;: &amp;#34;./build/debug_demo.elf&amp;#34;,
+// 芯片型号
+&amp;#34;device&amp;#34;: &amp;#34;STM32F401CC&amp;#34;,
+// OpenOCD 配置
+&amp;#34;configFiles&amp;#34;: [
+&amp;#34;interface/cmsis-dap.cfg&amp;#34;,
+&amp;#34;target/stm32f4x.cfg&amp;#34;
+],
+// 显式指定 SWD 传输
+&amp;#34;openOCDLaunchCommands&amp;#34;: [
+&amp;#34;transport select swd&amp;#34;
+],
+// 到main函数停止
+&amp;#34;runToEntryPoint&amp;#34;: &amp;#34;main&amp;#34;
+}
+]
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/launch%e6%96%87%e4%bb%b6%e5%86%85%e5%ae%b9.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;然后点击左侧调试栏上方的开始按钮，或者按下F5开始调试。&lt;/p&gt;
+&lt;p&gt;然后大概率肯定超时失败，报错信息中包含如下这句话。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;If you cannot, it is most likely because &lt;span class="s2"&gt;&amp;#34;libncurses&amp;#34;&lt;/span&gt; or &lt;span class="s2"&gt;&amp;#34;python&amp;#34;&lt;/span&gt; is not installed. Some GDBs require these&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;我这里在一台电脑上重复多次都一直不能成功，在另一台电脑上重新启动一次就进入调试了。&lt;/p&gt;
+&lt;p&gt;如果进不去调试，有两种办法。&lt;/p&gt;
+&lt;p&gt;第一种，把新版本的工具缺少的环境补齐（没研究是啥，不想装）。&lt;/p&gt;
+&lt;p&gt;第二种，在luanch文件中再添加一个参数&lt;code&gt;gdbPath&lt;/code&gt;，显式指定调试工具路径，使用10.3老版本的工具。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;{
+// 使用 IntelliSense 了解相关属性。
+// 悬停以查看现有属性的描述。
+// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+&amp;#34;version&amp;#34;: &amp;#34;0.2.0&amp;#34;,
+&amp;#34;configurations&amp;#34;: [
+{
+&amp;#34;name&amp;#34;: &amp;#34;Cortex Debug&amp;#34;,
+&amp;#34;type&amp;#34;: &amp;#34;cortex-debug&amp;#34;,
+&amp;#34;request&amp;#34;: &amp;#34;launch&amp;#34;,
+&amp;#34;servertype&amp;#34;: &amp;#34;openocd&amp;#34;,
+&amp;#34;cwd&amp;#34;: &amp;#34;${workspaceFolder}&amp;#34;,
+// 可执行文件（必须是elf）
+&amp;#34;executable&amp;#34;: &amp;#34;./build/debug_demo.elf&amp;#34;,
+// 芯片型号
+&amp;#34;device&amp;#34;: &amp;#34;STM32F401CC&amp;#34;,
+// OpenOCD 配置
+&amp;#34;configFiles&amp;#34;: [
+&amp;#34;interface/cmsis-dap.cfg&amp;#34;,
+&amp;#34;target/stm32f4x.cfg&amp;#34;
+],
+// 显式指定 SWD 传输
+&amp;#34;openOCDLaunchCommands&amp;#34;: [
+&amp;#34;transport select swd&amp;#34;
+],
+// 到main函数停止
+&amp;#34;runToEntryPoint&amp;#34;: &amp;#34;main&amp;#34;,
+// 显式指定调试服务器的路径（可以指定老版本）
+&amp;#34;gdbPath&amp;#34;: &amp;#34;D:/ToolChain/arm-none-eabi-gcc_10.3/bin/arm-none-eabi-gdb.exe&amp;#34;
+}
+]
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;然后就可以开心的调试了。&lt;/p&gt;
+&lt;h2&gt;4. 编辑界面优化&lt;span class="hx:absolute hx:-mt-20" id="4-编辑界面优化"&gt;&lt;/span&gt;
+&lt;a href="#4-%e7%bc%96%e8%be%91%e7%95%8c%e9%9d%a2%e4%bc%98%e5%8c%96" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;待定&lt;/p&gt;
+&lt;h2&gt;5. printf&lt;span class="hx:absolute hx:-mt-20" id="5-printf"&gt;&lt;/span&gt;
+&lt;a href="#5-printf" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;gcc实现printf，串口中添加如下方法即可。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;__io_putchar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;ch&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;HAL_UART_Transmit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;huart1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;uint8_t&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;ch&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mh"&gt;0xffff&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;ch&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;gcc的编译器节省体积默认删掉了float的格式化打印，可以手动修改makefile，添加这个字段，就支持了.&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-makefile" data-lang="makefile"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nv"&gt;LDFLAGS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ... -Wl,-u,_printf_float
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item><item><title>simulink解析can报文</title><link>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/simulink%E8%A7%A3%E6%9E%90can%E6%8A%A5%E6%96%87/</link><pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate><guid>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/simulink%E8%A7%A3%E6%9E%90can%E6%8A%A5%E6%96%87/</guid><description>
+&lt;h2&gt;1. 工程准备&lt;span class="hx:absolute hx:-mt-20" id="1-工程准备"&gt;&lt;/span&gt;
+&lt;a href="#1-%e5%b7%a5%e7%a8%8b%e5%87%86%e5%a4%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;1.1 创建工程&lt;span class="hx:absolute hx:-mt-20" id="11-创建工程"&gt;&lt;/span&gt;
+&lt;a href="#11-%e5%88%9b%e5%bb%ba%e5%b7%a5%e7%a8%8b" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;创建一个空白文件夹用于保存工程，将工作目录切换到此目录，打开simulink并创建模型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image1.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;模型设置如下：&lt;/p&gt;
+&lt;p&gt;求解器步长为1&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image2.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;代码生成为嵌入式代码&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image3.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;1.2 DBC准备&lt;span class="hx:absolute hx:-mt-20" id="12-dbc准备"&gt;&lt;/span&gt;
+&lt;a href="#12-dbc%e5%87%86%e5%a4%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;简单创建一个dbc文件，这里创建了个有两条报文的dbc，并且也放到工程目录下，或者随便找个有报文的dbc文件就可以。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image4.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;1.3 外部接口准备&lt;span class="hx:absolute hx:-mt-20" id="13-外部接口准备"&gt;&lt;/span&gt;
+&lt;a href="#13-%e5%a4%96%e9%83%a8%e6%8e%a5%e5%8f%a3%e5%87%86%e5%a4%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在工程目录下创建interface文件夹，用于存放需要调用的外部接口。&lt;/p&gt;
+&lt;p&gt;最终目录如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image5.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;其中&lt;/p&gt;
+&lt;p&gt;can_fd_message.h、can_message.h是从matlab安装目录复制过来的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;E:\R2025bR3\R2025bR3\toolbox\shared\can\src\scanutil\can_message.h&lt;/p&gt;
+&lt;p&gt;E:\R2025bR3\R2025bR3\toolbox\shared\can\src\scanutil\can_fd_message.h&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;然后注释/删除最下面没有用的接口，其他的全部保留。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image6.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;另外两个是用户自己写的接收can消息的接口，实现可以为空，定义在即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image7.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：数据类型CAN_MESSAGE不要修改，结构体类型定义在他提供的那两个文件里。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2&gt;2. 模型搭建&lt;span class="hx:absolute hx:-mt-20" id="2-模型搭建"&gt;&lt;/span&gt;
+&lt;a href="#2-%e6%a8%a1%e5%9e%8b%e6%90%ad%e5%bb%ba" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;2.1 仿真运行&lt;span class="hx:absolute hx:-mt-20" id="21-仿真运行"&gt;&lt;/span&gt;
+&lt;a href="#21-%e4%bb%bf%e7%9c%9f%e8%bf%90%e8%a1%8c" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Can消息处理主要用到这两个模块CAN Pack 和 CAN Unpack。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image8.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;CAN Pack：将输入参数按照dbc中的定义，打包为一帧CAN报文格式&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;CAN Unpack：将一帧CAN报文按照dbc中的定义，解析为多个字段&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;创建一个CAN Pack模型，双击选择参数，数据格式选择CANdb，数据库文件选择创建的dbc文件，报文列表中选择要打包的报文。&lt;/p&gt;
+&lt;p&gt;这里将&amp;quot;作为总线输出也勾选上&amp;quot;，打包后的数据类型可以使用bus解析模块查看。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image9.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;再添加一个CAN Unpack模型，同样的，选择数据格式和要处理的报文。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image10.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;连接Pack 和 Unpack模块，并添加一个固定的输入，然后点击仿真运行。数据会被打包成can报文进入另一个模块，再解析成数据。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image11.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;为了查看CAN Msg的数据，添加一个Bus Selector模块解析这个数据，可以看到这个结构体是由以下部分组成的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image12.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;仿真后结果如下所示（需要勾选Pack的作为总线输出，才可以使用bus解析模块解析）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image13.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：CAN Msg是一个结构体类型的数据，就是can_message.h中定义的，只是这里还没有用到那个文件。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3&gt;2.2 接收模型&lt;span class="hx:absolute hx:-mt-20" id="22-接收模型"&gt;&lt;/span&gt;
+&lt;a href="#22-%e6%8e%a5%e6%94%b6%e6%a8%a1%e5%9e%8b" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;创建一个模块，接收can报文，有几条消息，就创建几个模块，这里有两条需要处理的报文，所以创建两个。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image14.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;这里需要使用一个&amp;quot;C Caller&amp;quot;模块，调用外部接口接收can报文。需要先在模型中添加外部文件的定义。&lt;/p&gt;
+&lt;p&gt;头文件&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image15.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;源文件&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image16.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;文件路径&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image17.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;添加一个&amp;quot;C Caller&amp;quot;模块，双击模块，点击右侧刷新后选择接收数据的接口（如果刷新不出来接口，说明上面路径或者头文件没配置对）。修改模块的端口设定，将ch设置为input，data这里是输出的报文，设置为Output。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image18.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：这里多出来一个out端口，是因为定义的函数的返回值是int类型的，如果不需要可以忽略这个输出，或者将函数返回值改成void即可。也可以将其用作是否获取到数据的Enable信号。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;完成后重新连接模型，传入一个固定的通道1，读取到can报文后，传入到解析模块进行解析。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image19.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;2.3 生成代码&lt;span class="hx:absolute hx:-mt-20" id="23-生成代码"&gt;&lt;/span&gt;
+&lt;a href="#23-%e7%94%9f%e6%88%90%e4%bb%a3%e7%a0%81" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;此时直接生成代码还是会报错，因为没有数据类型定义。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image20.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;在命令行中调用如下命令&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-matlab" data-lang="matlab"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Simulink&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;importExternalCTypes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;interface\\can_message.h&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;该命令会将can_message.h中的结构体定义自动在工作区中添加对应的bus类型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image21.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;此时，再点击生成代码，就可以正常生成代码了（注意是生成，不是编译，编译肯定过不去的）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image22.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;以上就可以正常生成代码了。&lt;/p&gt;
+&lt;p&gt;但是工作区的内容关闭后下次打开就没有了，为了不用每次打开模型都需要重新创建工作区的内容。&lt;/p&gt;
+&lt;p&gt;双击创建的can消息类型，在右侧数据域选择已导入，头文件填入can_message.h，然后点击导出，选择对象格式，命名为can_message.m&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image23.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;保存完成之后，生成的是一个创建这个数据类型定义的脚本。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image24.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;回到模型界面，在空白区域右键，选择模型属性。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image25.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;在回调界面中的initFcn中填入如下内容后点击确定。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-matlab" data-lang="matlab"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&amp;#34;&lt;span class="n"&gt;can_message&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&amp;#34;&lt;span class="p"&gt;);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image26.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;此时关闭模型，在工作区右键并清空工作区，重新打开模型后如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image27.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;然后首次点击生成代码后失败，但左侧工作区中就出现了刚才定义的数据类型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image28.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;再次点击生成代码即可正常生成代码了。&lt;/p&gt;
+&lt;h3&gt;2.4 代码集成&lt;span class="hx:absolute hx:-mt-20" id="24-代码集成"&gt;&lt;/span&gt;
+&lt;a href="#24-%e4%bb%a3%e7%a0%81%e9%9b%86%e6%88%90" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;生成代码后，代码中会依赖定义数据格式的头文件，因此代码编译时，也需要把can_message.h放过去。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image29.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;在生成的周期执行的函数中，会调用我们传入的获取数据的接口来读取报文，并顺序判断ID来处理。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image30.png" alt="" loading="lazy" /&gt;&lt;/p&gt;</description></item><item><title>CanDBC文件制作</title><link>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/</link><pubDate>Wed, 05 Nov 2025 00:00:00 +0000</pubDate><guid>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/candbc/</guid><description>
+&lt;h2&gt;1. 工具下载&lt;span class="hx:absolute hx:-mt-20" id="1-工具下载"&gt;&lt;/span&gt;
+&lt;a href="#1-%e5%b7%a5%e5%85%b7%e4%b8%8b%e8%bd%bd" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;这里使用的工具是：Vector CANdb++ Editor&lt;/p&gt;
+&lt;p&gt;下载地址：https://www.vector.com/cn/zh/support-downloads/download-center&lt;/p&gt;
+&lt;p&gt;按照下图中的选项找到软件。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e8%bd%af%e4%bb%b6%e4%b8%8b%e8%bd%bd.png" alt="软件下载" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;下载完成之后，按照提示安装即可。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可能需要翻墙，不然加载很慢，或者加载不出来。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;2. dbc制作&lt;span class="hx:absolute hx:-mt-20" id="2-dbc制作"&gt;&lt;/span&gt;
+&lt;a href="#2-dbc%e5%88%b6%e4%bd%9c" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;CAN消息结构如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CAN消息
+&lt;ul&gt;
+&lt;li&gt;ID&lt;/li&gt;
+&lt;li&gt;DATA
+&lt;ul&gt;
+&lt;li&gt;字节/位&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;根据上述结构，将报文进行分解：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一条消息：对应一个ID&lt;/li&gt;
+&lt;li&gt;一串数据：对应一串Data，标准8字节数据则共64个位&lt;/li&gt;
+&lt;li&gt;一个位数据：对应Data中的一个或多个字节或位&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这里创建dbc的消息也是按照这个结构开始的。&lt;/p&gt;
+&lt;h3&gt;2.1 创建dbc文件&lt;span class="hx:absolute hx:-mt-20" id="21-创建dbc文件"&gt;&lt;/span&gt;
+&lt;a href="#21-%e5%88%9b%e5%bb%badbc%e6%96%87%e4%bb%b6" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;打开软件后，点击左上角&lt;code&gt;File&lt;/code&gt;-&amp;gt;&lt;code&gt;Create Database&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;选择&lt;code&gt;CANTemplate.dbc&lt;/code&gt;，然后点击OK，起个名字，保存文件即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e5%88%9b%e5%bb%badbc.png" alt="创建dbc" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;创建完成后，左侧主要看&lt;strong&gt;Messages&lt;/strong&gt;和&lt;strong&gt;Signals&lt;/strong&gt;，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Message定义了一共有几条消息&lt;/li&gt;
+&lt;li&gt;Signals定义了消息中用到的各个字节和位的含义。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=".././candbc/dbc%e7%9b%ae%e5%bd%95.png" alt="dbc目录" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;2.2 创建消息&lt;span class="hx:absolute hx:-mt-20" id="22-创建消息"&gt;&lt;/span&gt;
+&lt;a href="#22-%e5%88%9b%e5%bb%ba%e6%b6%88%e6%81%af" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;上位机发送以下消息&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;id：
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x010AFE
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;data：
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 字节0：要控制的设备编号
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 字节1：0：关机，1：启动
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 字节2：0：充电，1：放电
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 字节3-7：保留
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;len：
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 8&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;上位机接收以下消息&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;id：
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x02FE0A
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;data：
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 字节0：设备编号
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 字节1：bit0:短路; bit1:输出过压; bit2:输入欠压; bit3:过温保护;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 字节2-3：当前电压（u16,低字节在前）
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 字节4-5：当前电流（u16,低字节在前）
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 字节6：当前温度（u8,偏移40）
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;len：
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 8&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;先创建这两条消息&lt;/p&gt;
+&lt;p&gt;在左侧目录的&lt;code&gt;Message&lt;/code&gt;处，点击右键&lt;code&gt;New&lt;/code&gt;，在弹出的界面中填入&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;消息名称（随便写）&lt;/li&gt;
+&lt;li&gt;消息类型（扩展帧/标准帧）&lt;/li&gt;
+&lt;li&gt;消息ID&lt;/li&gt;
+&lt;li&gt;消息长度&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e5%88%9b%e5%bb%ba%e6%b6%88%e6%81%af.png" alt="创建消息" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;重复操作，添加需要的所有消息。&lt;/p&gt;
+&lt;p&gt;添加完成后如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e6%b6%88%e6%81%af%e5%88%97%e8%a1%a8.png" alt="消息列表" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;这个时候消息已经添加完成了，但是还没有定义消息中的数据分别是干啥的。&lt;/p&gt;
+&lt;h3&gt;2.3 添加单字节信号&lt;span class="hx:absolute hx:-mt-20" id="23-添加单字节信号"&gt;&lt;/span&gt;
+&lt;a href="#23-%e6%b7%bb%e5%8a%a0%e5%8d%95%e5%ad%97%e8%8a%82%e4%bf%a1%e5%8f%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;比如以下数据是由一个字节定义的。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;0x010AFE&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;字节0、1、2&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;0x02FE0A&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;字节0&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在左侧目录的&lt;code&gt;Signals&lt;/code&gt;处，点击右键&lt;code&gt;New&lt;/code&gt;，或者点击&lt;code&gt;Signals&lt;/code&gt;后，右侧在空白处右键&lt;code&gt;New&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;在弹出的界面中填入信号信息。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e5%8d%95%e5%ad%97%e8%8a%82%e4%bf%a1%e5%8f%b7%e5%88%9b%e5%bb%ba.png" alt="单字节信号创建" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;然后将这个信号添加到对应的消息中。&lt;/p&gt;
+&lt;p&gt;双击消息名称，在消息的&lt;code&gt;Signals&lt;/code&gt;中点击&lt;code&gt;Add&lt;/code&gt;，选择创建的信号，然后点击OK即可。&lt;/p&gt;
+&lt;p&gt;同一个信号可以在多条消息中重复添加。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e6%b7%bb%e5%8a%a0%e5%8d%95%e5%ad%97%e8%8a%82%e4%bf%a1%e5%8f%b7.png" alt="添加单字节信号" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;枚举信号&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;比如以下数据是有固定的枚举类型的，就可以给这个信号创建枚举类型的选择表。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;0x010AFE
+&lt;ul&gt;
+&lt;li&gt;字节1、2&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;同样的方法首先创建一个单字节信号，比如这里只有0和1。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e6%9e%9a%e4%b8%be%e4%bf%a1%e5%8f%b7%e8%8c%83%e5%9b%b4.png" alt="枚举信号范围" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;然后创建一个枚举表。&lt;/p&gt;
+&lt;p&gt;点击&lt;code&gt;View&lt;/code&gt;-&amp;gt;&lt;code&gt;Value Tables&lt;/code&gt;，在弹出的页面中右键&lt;code&gt;New&lt;/code&gt;，在&lt;code&gt;Value Descriptions&lt;/code&gt;中多次点击&lt;code&gt;Add&lt;/code&gt;并修改不同枚举值的含义，&lt;code&gt;Definition&lt;/code&gt;中可定义这个枚举值的名称，然后点击确定即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e6%9e%9a%e4%b8%be%e8%a1%a8.png" alt="枚举表" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;然后把这个枚举值绑定到一个&lt;code&gt;Signals&lt;/code&gt;中。&lt;/p&gt;
+&lt;p&gt;双击要绑定的信号，选择目标枚举表，然后点击确定即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e7%bb%91%e5%ae%9a%e6%9e%9a%e4%b8%be.png" alt="绑定枚举" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;创建完成后，把这个信号也绑定到消息中。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e6%b6%88%e6%81%af%e7%bb%91%e5%ae%9a%e6%9e%9a%e4%b8%be%e4%bf%a1%e5%8f%b7.png" alt="消息绑定枚举信号" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;重复上述步骤可以继续添加消息中的其他信号。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;验证&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;保存当前dbc文件，在ZCANPRO中使用dbc发送，并加载此dbc文件。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;字节0未定义枚举，可以直接在实际值中填写&lt;/li&gt;
+&lt;li&gt;字节1定义了枚举，可以在值描述中选择已经定义的值&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=".././candbc/dbc%e5%8f%91%e9%80%81%e6%9e%9a%e4%b8%be.png" alt="dbc发送枚举" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;2.4 添加位信号&lt;span class="hx:absolute hx:-mt-20" id="24-添加位信号"&gt;&lt;/span&gt;
+&lt;a href="#24-%e6%b7%bb%e5%8a%a0%e4%bd%8d%e4%bf%a1%e5%8f%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;比如以下数据是需要按位解析的&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;0x02FE0A
+&lt;ul&gt;
+&lt;li&gt;字节1的bit0-bit4&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;创建一个信号，其中信号长度填1个bit。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e5%88%9b%e5%bb%babit%e4%bf%a1%e5%8f%b7.png" alt="创建bit信号" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;然后将信号绑定到消息中，可以看到这个消息是从bit8开始的，长度为1个bit。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e7%bb%91%e5%ae%9abit%e4%bf%a1%e5%8f%b7.png" alt="绑定bit信号" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;重复此操作，创建并添加剩下的bit信息。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././candbc/%e7%bb%91%e5%ae%9a%e5%a4%9a%e4%b8%aabit%e4%bf%a1%e5%8f%b7.png" alt="绑定bit信号" loading="lazy" /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这些bit信号也可以创建并绑定枚举表，比如0正常，1错误。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;2.5 添加多字节信号&lt;span class="hx:absolute hx:-mt-20" id="25-添加多字节信号"&gt;&lt;/span&gt;
+&lt;a href="#25-%e6%b7%bb%e5%8a%a0%e5%a4%9a%e5%ad%97%e8%8a%82%e4%bf%a1%e5%8f%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;同单字节信号，将信号长度改为16位，根据实际需求设置大小端模式和倍率。&lt;/p&gt;</description></item></channel></rss>

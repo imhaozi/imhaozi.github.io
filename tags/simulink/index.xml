@@ -1,0 +1,115 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>imhaozi 的博客 – Simulink</title><link>https://imhaozi.github.io/tags/simulink/</link><description>Recent content in Simulink on imhaozi 的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 09 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://imhaozi.github.io/tags/simulink/index.xml" rel="self" type="application/rss+xml"/><item><title>simulink解析can报文</title><link>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/simulink%E8%A7%A3%E6%9E%90can%E6%8A%A5%E6%96%87/</link><pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate><guid>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/simulink%E8%A7%A3%E6%9E%90can%E6%8A%A5%E6%96%87/</guid><description>
+&lt;h2&gt;1. 工程准备&lt;span class="hx:absolute hx:-mt-20" id="1-工程准备"&gt;&lt;/span&gt;
+&lt;a href="#1-%e5%b7%a5%e7%a8%8b%e5%87%86%e5%a4%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;1.1 创建工程&lt;span class="hx:absolute hx:-mt-20" id="11-创建工程"&gt;&lt;/span&gt;
+&lt;a href="#11-%e5%88%9b%e5%bb%ba%e5%b7%a5%e7%a8%8b" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;创建一个空白文件夹用于保存工程，将工作目录切换到此目录，打开simulink并创建模型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image1.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;模型设置如下：&lt;/p&gt;
+&lt;p&gt;求解器步长为1&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image2.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;代码生成为嵌入式代码&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image3.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;1.2 DBC准备&lt;span class="hx:absolute hx:-mt-20" id="12-dbc准备"&gt;&lt;/span&gt;
+&lt;a href="#12-dbc%e5%87%86%e5%a4%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;简单创建一个dbc文件，这里创建了个有两条报文的dbc，并且也放到工程目录下，或者随便找个有报文的dbc文件就可以。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image4.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;1.3 外部接口准备&lt;span class="hx:absolute hx:-mt-20" id="13-外部接口准备"&gt;&lt;/span&gt;
+&lt;a href="#13-%e5%a4%96%e9%83%a8%e6%8e%a5%e5%8f%a3%e5%87%86%e5%a4%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在工程目录下创建interface文件夹，用于存放需要调用的外部接口。&lt;/p&gt;
+&lt;p&gt;最终目录如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image5.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;其中&lt;/p&gt;
+&lt;p&gt;can_fd_message.h、can_message.h是从matlab安装目录复制过来的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;E:\R2025bR3\R2025bR3\toolbox\shared\can\src\scanutil\can_message.h&lt;/p&gt;
+&lt;p&gt;E:\R2025bR3\R2025bR3\toolbox\shared\can\src\scanutil\can_fd_message.h&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;然后注释/删除最下面没有用的接口，其他的全部保留。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image6.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;另外两个是用户自己写的接收can消息的接口，实现可以为空，定义在即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image7.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：数据类型CAN_MESSAGE不要修改，结构体类型定义在他提供的那两个文件里。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2&gt;2. 模型搭建&lt;span class="hx:absolute hx:-mt-20" id="2-模型搭建"&gt;&lt;/span&gt;
+&lt;a href="#2-%e6%a8%a1%e5%9e%8b%e6%90%ad%e5%bb%ba" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;2.1 仿真运行&lt;span class="hx:absolute hx:-mt-20" id="21-仿真运行"&gt;&lt;/span&gt;
+&lt;a href="#21-%e4%bb%bf%e7%9c%9f%e8%bf%90%e8%a1%8c" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Can消息处理主要用到这两个模块CAN Pack 和 CAN Unpack。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image8.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;CAN Pack：将输入参数按照dbc中的定义，打包为一帧CAN报文格式&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;CAN Unpack：将一帧CAN报文按照dbc中的定义，解析为多个字段&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;创建一个CAN Pack模型，双击选择参数，数据格式选择CANdb，数据库文件选择创建的dbc文件，报文列表中选择要打包的报文。&lt;/p&gt;
+&lt;p&gt;这里将&amp;quot;作为总线输出也勾选上&amp;quot;，打包后的数据类型可以使用bus解析模块查看。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image9.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;再添加一个CAN Unpack模型，同样的，选择数据格式和要处理的报文。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image10.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;连接Pack 和 Unpack模块，并添加一个固定的输入，然后点击仿真运行。数据会被打包成can报文进入另一个模块，再解析成数据。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image11.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;为了查看CAN Msg的数据，添加一个Bus Selector模块解析这个数据，可以看到这个结构体是由以下部分组成的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image12.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;仿真后结果如下所示（需要勾选Pack的作为总线输出，才可以使用bus解析模块解析）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image13.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：CAN Msg是一个结构体类型的数据，就是can_message.h中定义的，只是这里还没有用到那个文件。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3&gt;2.2 接收模型&lt;span class="hx:absolute hx:-mt-20" id="22-接收模型"&gt;&lt;/span&gt;
+&lt;a href="#22-%e6%8e%a5%e6%94%b6%e6%a8%a1%e5%9e%8b" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;创建一个模块，接收can报文，有几条消息，就创建几个模块，这里有两条需要处理的报文，所以创建两个。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image14.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;这里需要使用一个&amp;quot;C Caller&amp;quot;模块，调用外部接口接收can报文。需要先在模型中添加外部文件的定义。&lt;/p&gt;
+&lt;p&gt;头文件&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image15.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;源文件&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image16.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;文件路径&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image17.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;添加一个&amp;quot;C Caller&amp;quot;模块，双击模块，点击右侧刷新后选择接收数据的接口（如果刷新不出来接口，说明上面路径或者头文件没配置对）。修改模块的端口设定，将ch设置为input，data这里是输出的报文，设置为Output。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image18.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意：这里多出来一个out端口，是因为定义的函数的返回值是int类型的，如果不需要可以忽略这个输出，或者将函数返回值改成void即可。也可以将其用作是否获取到数据的Enable信号。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;完成后重新连接模型，传入一个固定的通道1，读取到can报文后，传入到解析模块进行解析。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image19.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;2.3 生成代码&lt;span class="hx:absolute hx:-mt-20" id="23-生成代码"&gt;&lt;/span&gt;
+&lt;a href="#23-%e7%94%9f%e6%88%90%e4%bb%a3%e7%a0%81" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;此时直接生成代码还是会报错，因为没有数据类型定义。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image20.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;在命令行中调用如下命令&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-matlab" data-lang="matlab"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Simulink&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;importExternalCTypes&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;interface\\can_message.h&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;该命令会将can_message.h中的结构体定义自动在工作区中添加对应的bus类型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image21.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;此时，再点击生成代码，就可以正常生成代码了（注意是生成，不是编译，编译肯定过不去的）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image22.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;以上就可以正常生成代码了。&lt;/p&gt;
+&lt;p&gt;但是工作区的内容关闭后下次打开就没有了，为了不用每次打开模型都需要重新创建工作区的内容。&lt;/p&gt;
+&lt;p&gt;双击创建的can消息类型，在右侧数据域选择已导入，头文件填入can_message.h，然后点击导出，选择对象格式，命名为can_message.m&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image23.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;保存完成之后，生成的是一个创建这个数据类型定义的脚本。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image24.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;回到模型界面，在空白区域右键，选择模型属性。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image25.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;在回调界面中的initFcn中填入如下内容后点击确定。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-matlab" data-lang="matlab"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&amp;#34;&lt;span class="n"&gt;can_message&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;m&lt;/span&gt;&amp;#34;&lt;span class="p"&gt;);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image26.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;此时关闭模型，在工作区右键并清空工作区，重新打开模型后如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image27.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;然后首次点击生成代码后失败，但左侧工作区中就出现了刚才定义的数据类型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image28.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;再次点击生成代码即可正常生成代码了。&lt;/p&gt;
+&lt;h3&gt;2.4 代码集成&lt;span class="hx:absolute hx:-mt-20" id="24-代码集成"&gt;&lt;/span&gt;
+&lt;a href="#24-%e4%bb%a3%e7%a0%81%e9%9b%86%e6%88%90" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;生成代码后，代码中会依赖定义数据格式的头文件，因此代码编译时，也需要把can_message.h放过去。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image29.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;在生成的周期执行的函数中，会调用我们传入的获取数据的接口来读取报文，并顺序判断ID来处理。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././simulink%e8%a7%a3%e6%9e%90can%e6%8a%a5%e6%96%87/image30.png" alt="" loading="lazy" /&gt;&lt;/p&gt;</description></item></channel></rss>

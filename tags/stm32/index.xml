@@ -1,0 +1,684 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>imhaozi 的博客 – STM32</title><link>https://imhaozi.github.io/tags/stm32/</link><description>Recent content in STM32 on imhaozi 的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 27 Jul 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://imhaozi.github.io/tags/stm32/index.xml" rel="self" type="application/rss+xml"/><item><title>HardFault定位排查</title><link>https://imhaozi.github.io/blog/02.mcu/hardfault%E5%AE%9A%E4%BD%8D%E6%8E%92%E6%9F%A5/</link><pubDate>Mon, 27 Jul 2026 00:00:00 +0000</pubDate><guid>https://imhaozi.github.io/blog/02.mcu/hardfault%E5%AE%9A%E4%BD%8D%E6%8E%92%E6%9F%A5/</guid><description>
+&lt;h2&gt;1. HardFault&lt;span class="hx:absolute hx:-mt-20" id="1-hardfault"&gt;&lt;/span&gt;
+&lt;a href="#1-hardfault" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Cortex-M内核定义的一种严重异常，发生后意味着已无法继续正常运行，会进入HardFault_Handler中断进行处理。&lt;/p&gt;
+&lt;p&gt;常见发生原因：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;访问无效内存&lt;/li&gt;
+&lt;li&gt;栈溢出&lt;/li&gt;
+&lt;li&gt;非法指令&lt;/li&gt;
+&lt;li&gt;…&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;想要排查这个故障，一般都要从寄存器出发。&lt;/p&gt;
+&lt;h2&gt;2. 内核寄存器&lt;span class="hx:absolute hx:-mt-20" id="2-内核寄存器"&gt;&lt;/span&gt;
+&lt;a href="#2-%e5%86%85%e6%a0%b8%e5%af%84%e5%ad%98%e5%99%a8" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;这里相关的Cortex-M内核寄存器主要有以下几个：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;R0-R12：通用寄存器，用于保存数据等操作&lt;/li&gt;
+&lt;li&gt;R13（MSP、PSP）：主堆栈指针（MSP）、进城堆栈指针（PSP）&lt;/li&gt;
+&lt;li&gt;R14：连接寄存器（LR）&lt;/li&gt;
+&lt;li&gt;R15：程序计数器（PC）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这里主要需要知道的寄存器&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;R13：堆栈指针&lt;/li&gt;
+&lt;li&gt;R14：保存下一条需要运行的指令的地址&lt;/li&gt;
+&lt;li&gt;R15：当前程序运行到的地址&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当 HardFault 等异常触发时，CPU 会立即暂停当前任务，并自动将 8 个关键寄存器的值压入当前使用的堆栈（MSP 或 PSP）中，形成一个固定的“异常堆栈帧”。&lt;/p&gt;
+&lt;p&gt;8个寄存器分别为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;stacked_pc&lt;/code&gt;&lt;/strong&gt;：它保存了&lt;strong&gt;触发 HardFault 的那条指令的地址&lt;/strong&gt;。这是所有线索中最核心的一条&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;stacked_lr&lt;/code&gt;&lt;/strong&gt; ：它记录了异常发生前，程序是从哪个函数调用过来的，即&lt;strong&gt;返回地址&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;stacked_r0&lt;/code&gt; ~ &lt;code&gt;stacked_r3&lt;/code&gt;&lt;/strong&gt;：这些寄存器通常用于传递函数参数或存放临时变量&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;stacked_psr&lt;/code&gt;&lt;/strong&gt; ：它包含了处理器状态、中断优先级等关键信息。通过解析 PSR，可以确认异常发生时处理器处于线程模式还是处理模式，以及是否启用了浮点单元等，帮助排除一些环境配置问题。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;3. Debug验证&lt;span class="hx:absolute hx:-mt-20" id="3-debug验证"&gt;&lt;/span&gt;
+&lt;a href="#3-debug%e9%aa%8c%e8%af%81" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;创建一个空白工程，添加以下代码，编译后进行debug测试。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// cubemx生成的初始化
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;HAL_Init&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;SystemClock_Config&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;MX_GPIO_Init&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;MX_USART3_UART_Init&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 用户代码
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;volatile&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 访问非法地址
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;test&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="mh"&gt;0x56785678&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;while&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;当程序运行到异常段后。会进入&lt;code&gt;HardFault_Handler&lt;/code&gt;，这里添加一段汇编指令，获取异常发生时的寄存器数据，并使用串口进行打印。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;HardFault_Handler&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cm"&gt;/* USER CODE BEGIN HardFault_IRQn 0 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kr"&gt;__asm&lt;/span&gt; &lt;span class="k"&gt;volatile&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="s"&gt;&amp;#34;TST lr, #4 &lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt; &lt;span class="c1"&gt;// 检查LR的bit[2]，判断使用MSP还是PSP
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="s"&gt;&amp;#34;ITE EQ &lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="s"&gt;&amp;#34;MRSEQ r0, MSP &lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt; &lt;span class="c1"&gt;// 若相等，使用主堆栈指针(MSP)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="s"&gt;&amp;#34;MRSNE r0, PSP &lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt; &lt;span class="c1"&gt;// 若不等，使用进程堆栈指针(PSP)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="s"&gt;&amp;#34;B hard_fault_handler_c &lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt; &lt;span class="c1"&gt;// 跳转到C函数处理
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cm"&gt;/* USER CODE END HardFault_IRQn 0 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;while&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cm"&gt;/* USER CODE BEGIN W1_HardFault_IRQn 0 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cm"&gt;/* USER CODE END W1_HardFault_IRQn 0 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;打印的C函数如下&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;hard_fault_handler_c&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;unsigned&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;hardfault_args&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;uint32_t&lt;/span&gt; &lt;span class="n"&gt;stacked_r0&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hardfault_args&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt; &lt;span class="c1"&gt;// 堆栈偏移+0字节 = R0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;uint32_t&lt;/span&gt; &lt;span class="n"&gt;stacked_r1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hardfault_args&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt; &lt;span class="c1"&gt;// 堆栈偏移+4字节 = R1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;uint32_t&lt;/span&gt; &lt;span class="n"&gt;stacked_r2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hardfault_args&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt; &lt;span class="c1"&gt;// 堆栈偏移+8字节 = R2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;uint32_t&lt;/span&gt; &lt;span class="n"&gt;stacked_r3&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hardfault_args&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt; &lt;span class="c1"&gt;// 堆栈偏移+12字节 = R3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;uint32_t&lt;/span&gt; &lt;span class="n"&gt;stacked_r12&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hardfault_args&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt; &lt;span class="c1"&gt;// 堆栈偏移+16字节 = R12
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;uint32_t&lt;/span&gt; &lt;span class="n"&gt;stacked_lr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hardfault_args&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt; &lt;span class="c1"&gt;// 堆栈偏移+20字节 = LR
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;uint32_t&lt;/span&gt; &lt;span class="n"&gt;stacked_pc&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hardfault_args&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt; &lt;span class="c1"&gt;// 堆栈偏移+24字节 = PC
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;uint32_t&lt;/span&gt; &lt;span class="n"&gt;stacked_psr&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;hardfault_args&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt; &lt;span class="c1"&gt;// 堆栈偏移+28字节 = PSR
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;HardFault!&lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;R0 = 0x%08X &lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stacked_r0&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;R1 = 0x%08X &lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stacked_r1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;R2 = 0x%08X &lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stacked_r2&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;R3 = 0x%08X &lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stacked_r3&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;R12 = 0x%08X &lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stacked_r12&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;LR = 0x%08X &lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stacked_lr&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;PC = 0x%08X &lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stacked_pc&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;printf&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;PSR = 0x%08X &lt;/span&gt;&lt;span class="se"&gt;\r\n&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stacked_psr&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;while&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt; &lt;span class="c1"&gt;// 停在此处，方便调试器连接
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;比如这里打印结果如下&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;HardFault&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;R0&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0x56785678&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;R1&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0x20000110&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;R2&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0x00000000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;R3&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0x00000000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;R12&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0x01FFFFFF&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;LR&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0x08003819&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;PC&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0x0800482C&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;PSR&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mh"&gt;0x01000000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;可以通过PC指针地址定位到发生错误的行。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././HardFault%e5%ae%9a%e4%bd%8d%e6%8e%92%e6%9f%a5/%e6%90%9c%e7%b4%a2%e6%95%85%e9%9a%9c%e8%a1%8c.png" alt="1.1.2" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h2&gt;4. addr2line工具&lt;span class="hx:absolute hx:-mt-20" id="4-addr2line工具"&gt;&lt;/span&gt;
+&lt;a href="#4-addr2line%e5%b7%a5%e5%85%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;找问题的时候总不能常年连着调试器，有可能只有个串口或者其他接口能把异常命令地址记录下来，因此我们需要想办法根据地址直接定位到故障的地方。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第一步&lt;/strong&gt;：准备elf文件&lt;/p&gt;
+&lt;p&gt;正常代码编译后，我们用到的主要是&lt;code&gt;hex&lt;/code&gt;文件，如果OTA可能用到&lt;code&gt;bin&lt;/code&gt;文件，有的 IDE 也会默认生成&lt;code&gt;elf&lt;/code&gt;文件（Keil 中生成的是axf文件，其实是一样的）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;bin：纯二进制机器码&lt;/li&gt;
+&lt;li&gt;hex：带地址的十六进制文本&lt;/li&gt;
+&lt;li&gt;elf：包含完整的调试信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;程序烧录，基本都是使用的hex文件，也有的会用elf文件。这里调试需要对应的&lt;code&gt;elf文件&lt;/code&gt;，软件不能修改哦。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第二步&lt;/strong&gt;：安装add2line工具&lt;/p&gt;
+&lt;p&gt;安装&lt;code&gt;addr2line工具&lt;/code&gt;，这个工具是包含在ARM交叉编译工具里面的。&lt;/p&gt;
+&lt;p&gt;下载地址：https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads&lt;/p&gt;
+&lt;p&gt;安装方法参考&lt;strong&gt;vscode开发stm32&lt;/strong&gt;的文章。&lt;/p&gt;
+&lt;p&gt;可以看到版本号表示安装完成&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;C:&lt;span class="se"&gt;\U&lt;/span&gt;sers&lt;span class="se"&gt;\X&lt;/span&gt;CHARGE-2024Q2-LT003&amp;gt;arm-none-eabi-addr2line.exe --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;GNU addr2line &lt;span class="o"&gt;(&lt;/span&gt;Arm GNU Toolchain 15.2.Rel1 &lt;span class="o"&gt;(&lt;/span&gt;Build arm-15.86&lt;span class="o"&gt;))&lt;/span&gt; 2.45.1.20251203
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Copyright &lt;span class="o"&gt;(&lt;/span&gt;C&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="m"&gt;2025&lt;/span&gt; Free Software Foundation, Inc.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;This program is free software&lt;span class="p"&gt;;&lt;/span&gt; you may redistribute it under the terms of
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;the GNU General Public License version &lt;span class="m"&gt;3&lt;/span&gt; or &lt;span class="o"&gt;(&lt;/span&gt;at your option&lt;span class="o"&gt;)&lt;/span&gt; any later version.
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;This program has absolutely no warranty.&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;第三步&lt;/strong&gt;：测试&lt;/p&gt;
+&lt;p&gt;首先直接运行程序，并在串口中打印了异常命令地址，记录下PC指针的值。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-txt" data-lang="txt"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;HardFault!
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;R0 = 0x56785678
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;R1 = 0x00000014
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;R2 = 0x00000000
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;R3 = 0x00000000
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;R12 = 0x01FFFFFF
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;LR = 0x08004849
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;PC = 0x08004762
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;PSR = 0x01000200 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;查找异常位置&lt;code&gt;arm-none-eabi-addr2line.exe -e &amp;lt;调试文件&amp;gt; -a -f &amp;lt;命令地址&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;C:&lt;span class="se"&gt;\U&lt;/span&gt;sers&lt;span class="se"&gt;\X&lt;/span&gt;CHARGE-2024Q2-LT003&lt;span class="se"&gt;\D&lt;/span&gt;esktop&amp;gt;arm-none-eabi-addr2line.exe -e threadx_test.axf -a -f 0x08004762
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;0x08004762
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;func_A
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;C:&lt;span class="se"&gt;\U&lt;/span&gt;sers&lt;span class="se"&gt;\X&lt;/span&gt;CHARGE-2024Q2-LT003&lt;span class="se"&gt;\D&lt;/span&gt;esktop&lt;span class="se"&gt;\t&lt;/span&gt;hreadx_test&lt;span class="se"&gt;\M&lt;/span&gt;DK-ARM/../Core/Src/main.c:60&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;可以看到运行后会打印异常命令具体是在哪个函数中调用的、在代码中的哪一行。&lt;/p&gt;</description></item><item><title>vscode开发stm32</title><link>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/vscode%E5%BC%80%E5%8F%91stm32/</link><pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate><guid>https://imhaozi.github.io/blog/06.%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/vscode%E5%BC%80%E5%8F%91stm32/</guid><description>
+&lt;h2&gt;1. 环境准备&lt;span class="hx:absolute hx:-mt-20" id="1-环境准备"&gt;&lt;/span&gt;
+&lt;a href="#1-%e7%8e%af%e5%a2%83%e5%87%86%e5%a4%87" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Windows下为了在vscode中开发单片机，需要准备的工具如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;ARM交叉编译工具&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make管理工具（也用于编译windows环境运行的c/c++）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;OpenOCD烧录和调试工具&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;1.1 ARM交叉编译工具&lt;span class="hx:absolute hx:-mt-20" id="11-arm交叉编译工具"&gt;&lt;/span&gt;
+&lt;a href="#11-arm%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%b7%a5%e5%85%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在windows下编译arm单片机程序的交叉编译器为：&lt;code&gt;arm-none-eabi-gcc&lt;/code&gt;，&lt;/p&gt;
+&lt;p&gt;下载地址：https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;不要选择太旧的&lt;/p&gt;
+&lt;p&gt;实测cubemx版本为6.15.0生成的代码中，使用经典版本gcc-arm-none-eabi-10.3-2021.10-win32.exe已经无法处理生成的一些链接文件导致编译报错&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这里使用的版本为如下。前者直接安装自动配置环境变量；后者直接解压缩即可，但是需要自己配置环境变量。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;arm-gnu-toolchain-15.2.rel1-mingw-w64-x86_64-arm-none-eabi.msi&lt;/li&gt;
+&lt;li&gt;arm-gnu-toolchain-15.2.rel1-mingw-w64-x86_64-arm-none-eabi.zip&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;**这里建议选择压缩包，自己解压并添加环境变量，因为修改路径比较容易。**这里解压后修改文件夹名字为：&lt;code&gt;arm-none-eabi-gcc_15.2&lt;/code&gt;，原名字太长了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%99%a8.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;添加环境变量，系统变量-&amp;gt;Path（到bin路径）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e4%ba%a4%e5%8f%89%e7%bc%96%e8%af%91%e5%99%a8%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;检查是否配置可用，在cmd窗口中使用如下指令，能看到版本号表示配置正确。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;arm-none-eabi-gcc --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;where arm-none-eabi-gcc&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;另外，还有一个老版本的交叉编译工具链，这里建议下载压缩包解压后留着，但是不用添加环境变量。这里放到了路径：&lt;code&gt;D:\ToolChain\arm-none-eabi-gcc_10.3&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;gcc-arm-none-eabi-10.3-2021.10-win32.zip&lt;/li&gt;
+&lt;li&gt;gcc-arm-none-eabi-10.3-2021.10-win32.exe&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;cubemx6.17生成的工程，使用这个旧版本的工具链不能编译，链接脚本中有些命令老版本不支持。&lt;/p&gt;
+&lt;p&gt;但是新版本的工具链可以编译，但是调试代码有问题，还需要安装一些其他的配置。&lt;/p&gt;
+&lt;p&gt;因此可以选择使用新版本的编译，老版本的调试。或者把新版本所需的其他环境也配齐。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;1.2 Make管理工具&lt;span class="hx:absolute hx:-mt-20" id="12-make管理工具"&gt;&lt;/span&gt;
+&lt;a href="#12-make%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在windows下的make工具为：&lt;code&gt;mingw64&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;下载地址：&lt;a href="https://github.com/niXman/mingw-builds-binaries/releases"target="_blank" rel="noopener"&gt;https://github.com/niXman/mingw-builds-binaries/releases&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;根据电脑架构选择即可，这里使用当前最新的。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;x86_64-16.1.0-release-win32-seh-ucrt-rt_v14-rev1.7z&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;安装方式同上，直接解压并添加环境变量即可，这里解压完把最外层名字很长的文件夹删了，修改文件夹名字为&lt;code&gt;mingw64_16.1&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/make%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;添加环境变量，系统变量-&amp;gt;Path（到bin路径）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/make%e5%b7%a5%e5%85%b7%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;检查是否配置可用，在cmd窗口中使用如下指令，能看到版本号表示配置正确。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;mingw32-make --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;where mingw32-make&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3&gt;1.3 OpenOCD烧录和调试工具&lt;span class="hx:absolute hx:-mt-20" id="13-openocd烧录和调试工具"&gt;&lt;/span&gt;
+&lt;a href="#13-openocd%e7%83%a7%e5%bd%95%e5%92%8c%e8%b0%83%e8%af%95%e5%b7%a5%e5%85%b7" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;在vscode中比较通用的工具为：OpenOCD&lt;/p&gt;
+&lt;p&gt;下载地址：https://openocd.org/&lt;/p&gt;
+&lt;p&gt;这里也下载当前最新的。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;xpack-openocd-0.12.0-7-win32-x64.zip&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;安装方式同上，直接解压并添加环境变量即可，修改文件夹名字为&lt;code&gt;openocd_0.12.0&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/openocd%e5%b7%a5%e5%85%b7.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;添加环境变量，系统变量-&amp;gt;Path（到bin路径）。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/openocd%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;检查是否配置可用，使用如下指令，能看到版本号表示配置正确。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;openocd --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;where openocd&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2&gt;2. 代码编译&lt;span class="hx:absolute hx:-mt-20" id="2-代码编译"&gt;&lt;/span&gt;
+&lt;a href="#2-%e4%bb%a3%e7%a0%81%e7%bc%96%e8%af%91" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;使用cubemx创建一个点灯工程，这里使用STM32F401CCU6。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在生成的工程类型中选择Makefile&lt;/strong&gt;，其余正常配置即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/cubemx%e5%b7%a5%e7%a8%8b.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;生成工程后使用vscode打开工程。&lt;/p&gt;
+&lt;p&gt;工程中已经包含了一个makefile文件，可以看到他这里如果定义了GCC_PATH就会按照定义的路径寻找编译器。如果没有则直接使用arm-none-eabi-gcc编译器。&lt;/p&gt;
+&lt;p&gt;这里生成的makefile中默认没有定义这个路径，所以会走else分支，使用arm-none-eabi-gcc编译器，因为这个编译器路径已经在环境变量里了，所以系统是可以直接找到的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e9%bb%98%e8%ae%a4makefile.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;打开一个终端，输入如下指令进行编译：&lt;code&gt;mingw32-make -j8&lt;/code&gt;，编译完成后的结果存放于生成的&lt;strong&gt;build文件夹&lt;/strong&gt;下。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e7%bc%96%e8%af%91%e7%bb%93%e6%9e%9c.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;这个名字是因为在mingw64工具中的make工具就是这个名字，如果想直接使用make指令，只需要把这个文件在这里再复制一个，并改个名字叫make.exe，以后就可以直接输入make命令编译了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e5%88%9b%e5%bb%bamake%e5%b7%a5%e5%85%b7.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;清除编译make clean命令还是有点问题，需要修改makefile或者安装其他工具，这里先不麻烦了，直接删除build文件夹即可。&lt;/p&gt;
+&lt;h2&gt;3. 代码烧录和调试&lt;span class="hx:absolute hx:-mt-20" id="3-代码烧录和调试"&gt;&lt;/span&gt;
+&lt;a href="#3-%e4%bb%a3%e7%a0%81%e7%83%a7%e5%bd%95%e5%92%8c%e8%b0%83%e8%af%95" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;3.1 代码烧录&lt;span class="hx:absolute hx:-mt-20" id="31-代码烧录"&gt;&lt;/span&gt;
+&lt;a href="#31-%e4%bb%a3%e7%a0%81%e7%83%a7%e5%bd%95" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;写一段闪灯逻辑，并编译完成。&lt;/p&gt;
+&lt;p&gt;然后代码烧录比较简单，直接使用如下命令即可&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;openocd -f interface/cmsis-dap.cfg -c &lt;span class="s2"&gt;&amp;#34;transport select swd&amp;#34;&lt;/span&gt; -f target/stm32f4x.cfg -c &lt;span class="s2"&gt;&amp;#34;program build/debug_demo.hex verify reset exit&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;命令解释：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-markdown" data-lang="markdown"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-f interface/cmsis-dap.cfg 选择下载器
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-c &amp;#34;transport select swd&amp;#34; 指定下载方式swd（非必须 会自动检测）
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-f target/stm32f4x.cfg 指定下载对象
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;-c &amp;#34;program build/debug_demo.hex verify reset exit 指定要下载的文件 校验、复位后退出&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选的下载器位于安装路径下：CompilationTools\xpack-openocd-0.12.0-7-win32-x64\xpack-openocd-0.12.0-7\openocd\scripts\interface&lt;/p&gt;
+&lt;p&gt;可选的下载mcu位于安装路径下：E:\CompilationTools\xpack-openocd-0.12.0-7-win32-x64\xpack-openocd-0.12.0-7\openocd\scripts\target&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;下载效果如下，完成后自动复位运行。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e7%a8%8b%e5%ba%8f%e7%83%a7%e5%bd%95.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;3.2 代码调试&lt;span class="hx:absolute hx:-mt-20" id="32-代码调试"&gt;&lt;/span&gt;
+&lt;a href="#32-%e4%bb%a3%e7%a0%81%e8%b0%83%e8%af%95" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;vscode中安装&lt;code&gt;Cortex-Debug&lt;/code&gt;插件，他还会自动安装所需的其他插件。&lt;/p&gt;
+&lt;p&gt;安装完成后，点击左侧调试按钮，选择创建launch文件，选择Cortex Debug类型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/%e5%88%9b%e5%bb%ba%e8%b0%83%e8%af%95%e4%bb%bb%e5%8a%a1.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;在生成的launch文件中填入如下内容：&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;{
+// 使用 IntelliSense 了解相关属性。
+// 悬停以查看现有属性的描述。
+// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+&amp;#34;version&amp;#34;: &amp;#34;0.2.0&amp;#34;,
+&amp;#34;configurations&amp;#34;: [
+{
+&amp;#34;name&amp;#34;: &amp;#34;Cortex Debug&amp;#34;,
+&amp;#34;type&amp;#34;: &amp;#34;cortex-debug&amp;#34;,
+&amp;#34;request&amp;#34;: &amp;#34;launch&amp;#34;,
+&amp;#34;servertype&amp;#34;: &amp;#34;openocd&amp;#34;,
+&amp;#34;cwd&amp;#34;: &amp;#34;${workspaceFolder}&amp;#34;,
+// 可执行文件（必须是elf）
+&amp;#34;executable&amp;#34;: &amp;#34;./build/debug_demo.elf&amp;#34;,
+// 芯片型号
+&amp;#34;device&amp;#34;: &amp;#34;STM32F401CC&amp;#34;,
+// OpenOCD 配置
+&amp;#34;configFiles&amp;#34;: [
+&amp;#34;interface/cmsis-dap.cfg&amp;#34;,
+&amp;#34;target/stm32f4x.cfg&amp;#34;
+],
+// 显式指定 SWD 传输
+&amp;#34;openOCDLaunchCommands&amp;#34;: [
+&amp;#34;transport select swd&amp;#34;
+],
+// 到main函数停止
+&amp;#34;runToEntryPoint&amp;#34;: &amp;#34;main&amp;#34;
+}
+]
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=".././vscode%e5%bc%80%e5%8f%91stm32/launch%e6%96%87%e4%bb%b6%e5%86%85%e5%ae%b9.png" alt="" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;然后点击左侧调试栏上方的开始按钮，或者按下F5开始调试。&lt;/p&gt;
+&lt;p&gt;然后大概率肯定超时失败，报错信息中包含如下这句话。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;If you cannot, it is most likely because &lt;span class="s2"&gt;&amp;#34;libncurses&amp;#34;&lt;/span&gt; or &lt;span class="s2"&gt;&amp;#34;python&amp;#34;&lt;/span&gt; is not installed. Some GDBs require these&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;我这里在一台电脑上重复多次都一直不能成功，在另一台电脑上重新启动一次就进入调试了。&lt;/p&gt;
+&lt;p&gt;如果进不去调试，有两种办法。&lt;/p&gt;
+&lt;p&gt;第一种，把新版本的工具缺少的环境补齐（没研究是啥，不想装）。&lt;/p&gt;
+&lt;p&gt;第二种，在luanch文件中再添加一个参数&lt;code&gt;gdbPath&lt;/code&gt;，显式指定调试工具路径，使用10.3老版本的工具。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;{
+// 使用 IntelliSense 了解相关属性。
+// 悬停以查看现有属性的描述。
+// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+&amp;#34;version&amp;#34;: &amp;#34;0.2.0&amp;#34;,
+&amp;#34;configurations&amp;#34;: [
+{
+&amp;#34;name&amp;#34;: &amp;#34;Cortex Debug&amp;#34;,
+&amp;#34;type&amp;#34;: &amp;#34;cortex-debug&amp;#34;,
+&amp;#34;request&amp;#34;: &amp;#34;launch&amp;#34;,
+&amp;#34;servertype&amp;#34;: &amp;#34;openocd&amp;#34;,
+&amp;#34;cwd&amp;#34;: &amp;#34;${workspaceFolder}&amp;#34;,
+// 可执行文件（必须是elf）
+&amp;#34;executable&amp;#34;: &amp;#34;./build/debug_demo.elf&amp;#34;,
+// 芯片型号
+&amp;#34;device&amp;#34;: &amp;#34;STM32F401CC&amp;#34;,
+// OpenOCD 配置
+&amp;#34;configFiles&amp;#34;: [
+&amp;#34;interface/cmsis-dap.cfg&amp;#34;,
+&amp;#34;target/stm32f4x.cfg&amp;#34;
+],
+// 显式指定 SWD 传输
+&amp;#34;openOCDLaunchCommands&amp;#34;: [
+&amp;#34;transport select swd&amp;#34;
+],
+// 到main函数停止
+&amp;#34;runToEntryPoint&amp;#34;: &amp;#34;main&amp;#34;,
+// 显式指定调试服务器的路径（可以指定老版本）
+&amp;#34;gdbPath&amp;#34;: &amp;#34;D:/ToolChain/arm-none-eabi-gcc_10.3/bin/arm-none-eabi-gdb.exe&amp;#34;
+}
+]
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;然后就可以开心的调试了。&lt;/p&gt;
+&lt;h2&gt;4. 编辑界面优化&lt;span class="hx:absolute hx:-mt-20" id="4-编辑界面优化"&gt;&lt;/span&gt;
+&lt;a href="#4-%e7%bc%96%e8%be%91%e7%95%8c%e9%9d%a2%e4%bc%98%e5%8c%96" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;待定&lt;/p&gt;
+&lt;h2&gt;5. printf&lt;span class="hx:absolute hx:-mt-20" id="5-printf"&gt;&lt;/span&gt;
+&lt;a href="#5-printf" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;gcc实现printf，串口中添加如下方法即可。&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;__io_putchar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;ch&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nf"&gt;HAL_UART_Transmit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;huart1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;uint8_t&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;ch&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mh"&gt;0xffff&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;ch&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;gcc的编译器节省体积默认删掉了float的格式化打印，可以手动修改makefile，添加这个字段，就支持了.&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-makefile" data-lang="makefile"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nv"&gt;LDFLAGS&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; ... -Wl,-u,_printf_float
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="复制代码"
+aria-label="复制代码"
+data-copied-label="已复制！"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item><item><title>stm32内存分析</title><link>https://imhaozi.github.io/blog/02.mcu/stm32%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/</link><pubDate>Tue, 18 Apr 2023 00:00:00 +0000</pubDate><guid>https://imhaozi.github.io/blog/02.mcu/stm32%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/</guid><description>
+&lt;h2&gt;1. STM32内存简述&lt;span class="hx:absolute hx:-mt-20" id="1-stm32内存简述"&gt;&lt;/span&gt;
+&lt;a href="#1-stm32%e5%86%85%e5%ad%98%e7%ae%80%e8%bf%b0" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;1.1. STM32寻址范围&lt;span class="hx:absolute hx:-mt-20" id="11-stm32寻址范围"&gt;&lt;/span&gt;
+&lt;a href="#11-stm32%e5%af%bb%e5%9d%80%e8%8c%83%e5%9b%b4" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;STM32是一个&lt;strong&gt;32位&lt;/strong&gt;的单片机，因此，它有&lt;strong&gt;32根地址线&lt;/strong&gt;，每个地址线有两种状态：导通 或 不导通。&lt;/li&gt;
+&lt;li&gt;单片机内存的地址访问存储单元是按照&lt;strong&gt;字节编址&lt;/strong&gt;的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;按照字节编址，也就是说，访问一个地址上存储的数据，得到的是一个字节的数据。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;根据上述两条，可以得出结论：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;STM32的寻址（内存）大小为：&lt;strong&gt;2^32（字节） = 4G（字节）&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;STM32的寻址范围为：&lt;strong&gt;0X0000 0000 ~ 0XFFFF FFFF&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;1.2. 存储器功能划分&lt;span class="hx:absolute hx:-mt-20" id="12-存储器功能划分"&gt;&lt;/span&gt;
+&lt;a href="#12-%e5%ad%98%e5%82%a8%e5%99%a8%e5%8a%9f%e8%83%bd%e5%88%92%e5%88%86" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;上述存储地址被分为了&lt;strong&gt;8个块&lt;/strong&gt;（目前我用到的芯片F1、F4、L4的都是，其他的没用过不确定）。
+如下表所示：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;存储块&lt;/th&gt;
+&lt;th&gt;功能&lt;/th&gt;
+&lt;th&gt;地址范围&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Block0&lt;/td&gt;
+&lt;td&gt;Code(Flash)&lt;/td&gt;
+&lt;td&gt;0x0000 0000 ~ 0X1FFF FFFF(512M)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Block1&lt;/td&gt;
+&lt;td&gt;SRAM&lt;/td&gt;
+&lt;td&gt;0x2000 0000 ~ 0X3FFF FFFF(512M)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Block2&lt;/td&gt;
+&lt;td&gt;片上外设&lt;/td&gt;
+&lt;td&gt;0x4000 0000 ~ 0X5FFF FFFF(512M)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Block3&lt;/td&gt;
+&lt;td&gt;FSMC BanK1&amp;amp;2&lt;/td&gt;
+&lt;td&gt;0x6000 0000 ~ 0X7FFF FFFF(512M)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Block4&lt;/td&gt;
+&lt;td&gt;FSMC BanK3&amp;amp;4&lt;/td&gt;
+&lt;td&gt;0x8000 0000 ~ 0X9FFF FFFF(512M)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Block5&lt;/td&gt;
+&lt;td&gt;FSMC寄存器&lt;/td&gt;
+&lt;td&gt;0xA000 0000 ~ 0XBFFF FFFF(512M)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Block6&lt;/td&gt;
+&lt;td&gt;没用到&lt;/td&gt;
+&lt;td&gt;0xC000 0000 ~ 0XDFFF FFFF(512M)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Block7&lt;/td&gt;
+&lt;td&gt;Cotrx M3内部外设&lt;/td&gt;
+&lt;td&gt;0xE000 0000 ~ 0XFFFF FFFF(512M)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;比如，这里打开STM32L475的芯片手册上可以看到，从&lt;strong&gt;0X0000 0000 ~ 0XFFFF FFFF&lt;/strong&gt;被分成了八份，也就是八个块。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;不同芯片在整体的划分上都差不多，但是在实际的划分细节（大小）上会有差异。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;![请添加图片描述](./stm32内存分析/l475 memory map.png)&lt;/p&gt;
+&lt;h2&gt;2. SRAM、ROM位置&lt;span class="hx:absolute hx:-mt-20" id="2-sramrom位置"&gt;&lt;/span&gt;
+&lt;a href="#2-sramrom%e4%bd%8d%e7%bd%ae" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;简单说：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;RAM：读写速度快、掉电数据丢失；类比于电脑内存的作用。&lt;/li&gt;
+&lt;li&gt;ROM：读写速度相对慢、掉电数据仍在；类比于电脑硬盘的作用。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;其中对于STM32而言，&lt;strong&gt;SRAM就是内存；Flash就是硬盘&lt;/strong&gt;。
+&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/ram_rom%e5%88%86%e7%b1%bb.png" alt="请添加图片描述" loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;以最最最常见的==STM32F103C8T6==为例：
+&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/f103cubemx%e5%86%85%e5%ad%98.png" alt="请添加图片描述" loading="lazy" /&gt;
+它有64K字节的Flash、20K字节的RAM。&lt;/p&gt;
+&lt;p&gt;使用CubeMX对该芯片创建一个工程，然后点击魔术棒可以看到：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;它的&lt;strong&gt;内置ROM起始地址为&lt;code&gt;0X0800 0000&lt;/code&gt;，大小为&lt;code&gt;0X10000&lt;/code&gt;&lt;/strong&gt;，也就是FLASH的大小为：0X10000个字节 = 65536个字节 = 64k个字节 = 64kBytes。&lt;/li&gt;
+&lt;li&gt;它的&lt;strong&gt;内置RAM起始地址为&lt;code&gt;0X2000 0000&lt;/code&gt;，大小为&lt;code&gt;0X5000&lt;/code&gt;&lt;/strong&gt;，也就是RAM的大小为：0X5000个字节 = 20480个字节 = 20k个字节 = 20kBytes。
+&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/f103%e5%86%85%e5%ad%98.png" alt="请添加图片描述" loading="lazy" /&gt;
+对比一下芯片的数据手册：可以看到，其中FLASH位于第一块（索引0）的中间区域，RAM位于第二块（索引1）的开头。
+&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/f103%e6%89%8b%e5%86%8c%e5%86%85%e5%ad%98.png" alt="请添加图片描述" loading="lazy" /&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如果在KEIL软件中使用STLINK下载代码，就会发现代码是从0X0800 0000处开始保存的。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;但是对于部分芯片来讲，其不止有一块RAM，比如==STM32L475VET6==，它有512K字节的Flash、128K字节的RAM。
+&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/l475cubemx%e5%86%85%e5%ad%98.png" alt="请添加图片描述" loading="lazy" /&gt;
+同样的使用CubeMX对该芯片创建一个工程，然后点击魔术棒：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;它的&lt;strong&gt;内置ROM起始地址为&lt;code&gt;0X0800 0000&lt;/code&gt;，大小为&lt;code&gt;0X80000&lt;/code&gt;&lt;/strong&gt;，也就是FLASH的大小为：0X80000个字节 = 524288个字节 = 512k个字节 = 512kBytes。&lt;/li&gt;
+&lt;li&gt;它的&lt;strong&gt;内置RAM分为两块，第一块起始地址为&lt;code&gt;0X2000 0000&lt;/code&gt;，大小为&lt;code&gt;0X18000&lt;/code&gt;；第二块起始地址为&lt;code&gt;0X1000 000&lt;/code&gt;，大小为&lt;code&gt;0X8000&lt;/code&gt;&lt;/strong&gt;，也就是RAM的大小为：0X18000+0X8000个字节 = 0X20000个字节 = 131072个字节 = 128k个字节 = 128kBytes。
+&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/l475%e5%86%85%e5%ad%98.png" alt="请添加图片描述" loading="lazy" /&gt;
+同样对比一下芯片的数据手册：可以看到，其中FLASH位于第一块（索引0）的中间区域，RAM1位于第二块（索引1）的开头，RAM2位于第一块（索引0）的中间区域。
+&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/l475%e6%89%8b%e5%86%8c%e5%86%85%e5%ad%98.png" alt="请添加图片描述" loading="lazy" /&gt;
+通过对比两个芯片的内存分布，可以看到，不同芯片的分布是有点差别的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;了解这部分的内容主要是因为：在使用内存池的时候，要知道内存池到底是怎么划分的，可以划分几个内存池，每个内存池的大小最大可以划分多大，都要参考这部分的内容。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;另外关注一下：&lt;strong&gt;地址0x1FFFF 0000到0x1FFF 7000&lt;/strong&gt;这部分，这部分是系统存储器，不需要我们用户来操作，但是要知道这部分出厂的时候就已经存了有东西的，后面看到Bootloader的时候会说到。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;3. 程序占用内存大小&lt;span class="hx:absolute hx:-mt-20" id="3-程序占用内存大小"&gt;&lt;/span&gt;
+&lt;a href="#3-%e7%a8%8b%e5%ba%8f%e5%8d%a0%e7%94%a8%e5%86%85%e5%ad%98%e5%a4%a7%e5%b0%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3&gt;3.1. 查看程序大小&lt;span class="hx:absolute hx:-mt-20" id="31-查看程序大小"&gt;&lt;/span&gt;
+&lt;a href="#31-%e6%9f%a5%e7%9c%8b%e7%a8%8b%e5%ba%8f%e5%a4%a7%e5%b0%8f" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;使用 CubeMX 创建一个 stm32 工程，创建完成后什么也不写，直接使用 Keil 对编写的程序进行编译，编译完成之后，软件最下方会提示编写的程序所占空间的大小。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://i-blog.csdnimg.cn/blog_migrate/87264a1b007cbc79db5fe3b97bcf83e1.png" alt="在这里插入图片描述" loading="lazy" /&gt;
+也可以在工程目录中保存编译结果的文件夹中找到&lt;code&gt;.map&lt;/code&gt;文件，在文件最下方查看更详细的信息。
+&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/map%e6%96%87%e4%bb%b6.png" alt="请添加图片描述" loading="lazy" /&gt;&lt;/p&gt;
+&lt;h3&gt;3.2. 占用内存分析&lt;span class="hx:absolute hx:-mt-20" id="32-占用内存分析"&gt;&lt;/span&gt;
+&lt;a href="#32-%e5%8d%a0%e7%94%a8%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90" class="subheading-anchor" aria-label="此章节的永久链接"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;数据类型解释：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Code：代码，也就是编译之后产生的机器指令。&lt;/li&gt;
+&lt;li&gt;RO_data：Read Only data，只读数据域，指程序中用到的只读数据，这些数据被存储在ROM区，因而程序不能修改其内容。C语言中const关键字定义的变量就是典型的RO-data。这部分在程序运行过程中不能被更改，因此在运行时只需要来读取即可，无需占用 RAM 空间。&lt;/li&gt;
+&lt;li&gt;RW_data：Read Write data，可读写数据域，指初始化为“非0值”的可读写数据，程序刚运行时，这些数据具有非0的初始值，且运行的时候它们会常驻在RAM区，因而应用程序可以修改其内容。C语言中定义的全局变量，且定义时赋予“非0值”给该变量进行初始化。&lt;/li&gt;
+&lt;li&gt;ZI_data：Zero Initialie data，即0初始化数据，它指初始化为“0值”的可读写数据域。它与RW-data的区别是程序刚运行时这些数据初始值全都为 0，而后续运行过程与RW-data的性质一样，它们也常驻在RAM区，因而应用程序可以更改其内容。例如C语言中使用定义的全局变量，且定义时赋予“ 0 值”给该变量进行初始化(若定义该变量时没有赋予初始值，编译器会把它当ZI-data来对待，初始化为 0)；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;再补充一个&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ZI-data 的栈空间(Stack)及堆空间(Heap)：在C语言中，函数内部定义的局部变量属于栈空间，进入函数的时候会向栈空间申请内存给局部变量，退出时释放局部变量，归还内存空间。而使用malloc动态分配的变量属于堆空间。在程序中的栈空间和堆空间都是属于ZI-data区域的，这些空间都会被初始值化为0值。编译器给出的ZI-data占用的空间值中包含了堆栈的大小(经实际测试，若程序中完全没有使用malloc动态申请堆空间，编译器会优化，不把堆空间计算在内)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;上述四种类型的数据占用内存情况如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在程序烧录完成之后如左图所示。Code + RO_data + RW_data（RO + RW）三种类型需要占用 Flash 空间。RAM不需要用到。&lt;/li&gt;
+&lt;li&gt;在程序运行时的情况如右图所示。Flash 的空间未发生变化；对于RAM的空间，程序启动时首先需要把 Flash 中的 RW_data（RW）复制到 RAM 中，然后把 ZI_data 加载到 RAM中。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/%e5%86%85%e5%ad%98%e7%83%a7%e5%bd%95%e5%88%86%e5%b8%83.png" alt="在这里插入图片描述" loading="lazy" /&gt;
+对应到具体的内存上，结合启动流程如下图所示。
+&lt;img src=".././stm32%e5%86%85%e5%ad%98%e5%88%86%e6%9e%90/%e5%86%85%e5%ad%98%e8%bf%90%e8%a1%8c%e5%88%86%e5%b8%83.png" alt="在这里插入图片描述" loading="lazy" /&gt;
+结论，想要让一个程序正常运行。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;芯片的 Flash 大小 要大于 Code + RO-data + RW-data 的大小；&lt;/li&gt;
+&lt;li&gt;芯片的 RAM 大小 要大于 RW-data + ZI_data 的大小。&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>
